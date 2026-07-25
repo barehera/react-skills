@@ -72,23 +72,52 @@ export type QueryOptionsData<TOptions> =
 export type InfiniteQueryOptionsData<TOptions> =
   InfiniteQueryOptionsParts<TOptions>["data"];
 
+type QueryFactoryOptions<TFactory> =
+  TFactory extends (...args: never[]) => infer TOptions
+    ? TOptions
+    : never;
+
+type QueryFactoryInput<TFactory> =
+  TFactory extends (input: infer TInput) => unknown
+    ? NonNullable<TInput>
+    : never;
+
+export type QueryData<TFactory> =
+  QueryOptionsData<QueryFactoryOptions<TFactory>>;
+
+export type InfiniteQueryData<TFactory> =
+  InfiniteQueryOptionsData<QueryFactoryOptions<TFactory>>;
+
+type QueryHookOptionName =
+  | "enabled"
+  | "select"
+  | "placeholderData"
+  | "refetchInterval"
+  | "refetchIntervalInBackground"
+  | "refetchOnMount"
+  | "refetchOnReconnect"
+  | "refetchOnWindowFocus"
+  | "notifyOnChangeProps"
+  | "subscribed"
+  | "throwOnError";
+
 export type QueryOptionsOverride<
   TOptions,
   TData = QueryOptionsData<TOptions>,
-> = Omit<
+> = Pick<
   UseQueryOptions<
     QueryOptionsParts<TOptions>["queryFnData"],
     QueryOptionsParts<TOptions>["error"],
     TData,
     QueryOptionsParts<TOptions>["queryKey"]
   >,
-  "queryKey" | "queryFn"
+  QueryHookOptionName
 >;
 
 export type InfiniteQueryOptionsOverride<
   TOptions,
   TData = InfiniteQueryOptionsData<TOptions>,
-> = Omit<
+> = Pick<
   UseInfiniteQueryOptions<
     InfiniteQueryOptionsParts<TOptions>["queryFnData"],
     InfiniteQueryOptionsParts<TOptions>["error"],
@@ -96,7 +125,7 @@ export type InfiniteQueryOptionsOverride<
     InfiniteQueryOptionsParts<TOptions>["queryKey"],
     InfiniteQueryOptionsParts<TOptions>["pageParam"]
   >,
-  "queryKey" | "queryFn" | "initialPageParam" | "getNextPageParam"
+  QueryHookOptionName
 >;
 
 export type QueryOptionsWithData<TOptions, TData> =
@@ -141,14 +170,22 @@ export interface MergeInfiniteQueryOptionsInput<
   queryOptions?: InfiniteQueryOptionsOverride<TOptions, TData>;
 }
 
-export type QueryHookInput<TInput, TQueryOptions, TData> = TInput & {
-  queryOptions?: QueryOptionsOverride<TQueryOptions, TData>;
+export type QueryHookInput<
+  TFactory,
+  TData = QueryData<TFactory>,
+> = QueryFactoryInput<TFactory> & {
+  queryOptions?: QueryOptionsOverride<
+    QueryFactoryOptions<TFactory>,
+    TData
+  >;
 };
 
 export type InfiniteQueryHookInput<
-  TInput,
-  TQueryOptions,
-  TData,
-> = TInput & {
-  queryOptions?: InfiniteQueryOptionsOverride<TQueryOptions, TData>;
+  TFactory,
+  TData = InfiniteQueryData<TFactory>,
+> = QueryFactoryInput<TFactory> & {
+  queryOptions?: InfiniteQueryOptionsOverride<
+    QueryFactoryOptions<TFactory>,
+    TData
+  >;
 };

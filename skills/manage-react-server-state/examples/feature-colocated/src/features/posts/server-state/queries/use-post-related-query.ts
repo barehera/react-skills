@@ -2,27 +2,21 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type {
+  QueryData,
   QueryHookInput,
-  QueryOptionsData,
 } from "@/server-state/types";
 import { mergeQueryOptions } from "@/server-state/utils";
 
-import type { PostRelatedQueryInput } from "../types";
 import { postsQueries } from "./options";
 
-type PostRelatedQueryOptions = ReturnType<typeof postsQueries.related>;
-
-type UsePostRelatedQueryInput<TData> = QueryHookInput<
-  PostRelatedQueryInput,
-  PostRelatedQueryOptions,
-  TData
->;
-
 export function usePostRelatedQuery<
-  TData = QueryOptionsData<PostRelatedQueryOptions>,
->({ queryOptions, ...input }: UsePostRelatedQueryInput<TData>) {
+  TData = QueryData<typeof postsQueries.related>,
+>({
+  queryOptions,
+  ...input
+}: QueryHookInput<typeof postsQueries.related, TData>) {
   return useQuery(
-    mergeQueryOptions<PostRelatedQueryOptions, TData>({
+    mergeQueryOptions({
       baseOptions: postsQueries.related(input),
       queryOptions,
     }),
