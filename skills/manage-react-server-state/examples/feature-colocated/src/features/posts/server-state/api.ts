@@ -76,9 +76,10 @@ export const postsApi = {
     postId,
     ...post
   }: PostUpdateInput) {
-    const response = await api.patch<unknown>(postsRoutes.detail(postId), {
+    const response = await api.patch<unknown>(
+      postsRoutes.detail(postId),
       post,
-    });
+    );
     return parseApiPayload(postDetailResponseSchema, response.data);
   },
 
