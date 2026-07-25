@@ -18,15 +18,51 @@ Typed consumer overrides may control presentation and lifecycle behavior such as
 
 ## Authentication
 
-Use the project's real authentication source. Centralize auth gating once when multiple protected queries need it. Combine authentication with consumer conditions:
+Use the project's real authentication source. Do not mark an example endpoint as protected without contract evidence, and do not add a fake auth hook just to demonstrate integration.
+
+When protected queries need shared gating, instantiate the authenticated-query factory once at the project integration boundary:
 
 ```ts
-enabled: isAuthenticated && (options.enabled ?? true)
+import { useProjectAuth } from "@/auth/use-project-auth";
+import { createAuthenticatedQueryHooks } from "@/server-state/create-authenticated-query-hooks";
+
+function useServerStateAuthentication() {
+  const { user } = useProjectAuth();
+
+  return { isAuthenticated: Boolean(user) };
+}
+
+export const {
+  useAuthenticatedQuery,
+  useAuthenticatedInfiniteQuery,
+} = createAuthenticatedQueryHooks({
+  useAuthentication: useServerStateAuthentication,
+});
 ```
 
-For TanStack Query, use `skipToken` or another mechanism that also prevents an imperative refetch from calling the protected function while unauthenticated. Frontend gating only avoids unnecessary calls; backend authorization remains required.
+Adapt the import, user signal, and authentication semantics to the inspected project. A loading session may need a separate readiness condition.
 
-Expose one hook per operation with the correct policy. Do not create public and authenticated aliases for an endpoint that is always protected.
+Use the authenticated hook directly inside an operation that is always protected:
+
+```ts
+export function usePostRelatedQuery<
+  TData = QueryData<typeof postsQueries.related>,
+>({
+  queryOptions,
+  ...input
+}: QueryHookInput<typeof postsQueries.related, TData>) {
+  return useAuthenticatedQuery(
+    mergeQueryOptions({
+      baseOptions: postsQueries.related(input),
+      queryOptions,
+    }),
+  );
+}
+```
+
+The wrapper must combine authentication with the caller's `enabled` condition and use `skipToken` or an equivalent mechanism so an unauthenticated imperative refetch cannot execute the request. Frontend gating only avoids unnecessary calls; backend authorization remains required.
+
+Expose one hook per operation with the correct policy. Do not create public and authenticated aliases for an endpoint that is always protected. If the project has no verified protected endpoint, keep the factory uninstantiated until one exists.
 
 ## Selection and server shape
 
