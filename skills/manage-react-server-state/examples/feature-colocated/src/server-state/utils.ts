@@ -2,10 +2,7 @@ import axios from "axios";
 import type { z } from "zod";
 
 import { apiErrorResponseSchema } from "./schemas";
-import type { ApiErrorResponse } from "./schemas";
 import type {
-  ApiErrorResponseInput,
-  ApiRequestErrorOptions,
   InfiniteQueryOptionsSource,
   InfiniteQueryOptionsWithData,
   MergeInfiniteQueryOptionsInput,
@@ -13,6 +10,15 @@ import type {
   QueryOptionsWithData,
   QueryOptionsSource,
 } from "./types";
+
+interface ApiRequestErrorOptions {
+  message: string;
+  code: string;
+  status?: number;
+  reason?: string;
+  details?: unknown;
+  cause?: unknown;
+}
 
 export class ApiRequestError extends Error {
   readonly status?: number;
@@ -105,22 +111,4 @@ export function mergeInfiniteQueryOptions<
     ...baseOptions,
     ...queryOptions,
   } as InfiniteQueryOptionsWithData<TOptions, TData>;
-}
-
-export function errorResponse({
-  status,
-  code,
-  message,
-  details,
-}: ApiErrorResponseInput) {
-  return Response.json(
-    {
-      error: {
-        code,
-        message,
-        ...(details === undefined ? {} : { details }),
-      },
-    } satisfies ApiErrorResponse,
-    { status },
-  );
 }

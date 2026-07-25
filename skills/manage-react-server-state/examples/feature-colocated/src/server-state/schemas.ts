@@ -34,5 +34,3 @@ export function createApiPageResponseSchema<
     }),
   });
 }
-
-export type ApiErrorResponse = z.infer<typeof apiErrorResponseSchema>;

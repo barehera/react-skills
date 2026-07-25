@@ -4,22 +4,6 @@ import type {
 } from "@tanstack/react-query";
 import type { z } from "zod";
 
-export interface ApiRequestErrorOptions {
-  message: string;
-  code: string;
-  status?: number;
-  reason?: string;
-  details?: unknown;
-  cause?: unknown;
-}
-
-export interface ApiErrorResponseInput {
-  status: number;
-  code: string;
-  message: string;
-  details?: unknown;
-}
-
 export interface ApiDataResponseSchemaInput<
   TSchema extends z.ZodType,
 > {
