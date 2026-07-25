@@ -8,7 +8,7 @@ import { serverStateDefaults } from "@/server-state/constants";
 import { postsApi } from "../api";
 import { postsQueryDefaults } from "../constants";
 import { postsOperationNames } from "../names";
-import type { PostPageParam } from "../schemas";
+import type { PostCursor } from "../schemas";
 import type {
   PostDetailQueryInput,
   PostListQueryInput,
@@ -60,7 +60,7 @@ export const postsQueries = {
           pageParam,
           signal,
         }),
-      initialPageParam: null as PostPageParam,
+      initialPageParam: null as PostCursor,
       getNextPageParam: (lastPage) =>
         lastPage.meta.nextCursor ?? undefined,
       staleTime: serverStateDefaults.queryStaleTimeMs,
