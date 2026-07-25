@@ -15,10 +15,6 @@ import type {
   PostRelatedInput,
   PostUpdateInput,
 } from "./types";
-import {
-  normalizePostFilters,
-  normalizePostRelatedLimit,
-} from "./utils";
 
 const postsRoutes = {
   collection: "/posts",
@@ -31,13 +27,13 @@ const postsRoutes = {
 export const postsApi = {
   async [postsOperationNames.list]({
     filters,
-    pageParam,
+    cursor,
     signal,
-  }: PostListInput = {}) {
+  }: PostListInput) {
     const response = await api.get<unknown>(postsRoutes.collection, {
       params: {
-        ...normalizePostFilters({ filters }),
-        cursor: pageParam ?? undefined,
+        ...filters,
+        cursor: cursor ?? undefined,
       },
       signal,
     });
@@ -58,9 +54,8 @@ export const postsApi = {
     limit,
     signal,
   }: PostRelatedInput) {
-    const normalizedLimit = normalizePostRelatedLimit({ limit });
     const response = await api.get<unknown>(postsRoutes.related(postId), {
-      params: { limit: normalizedLimit },
+      params: { limit },
       signal,
     });
 

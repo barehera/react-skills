@@ -57,7 +57,7 @@ export const postsQueries = {
       queryFn: ({ pageParam, signal }) =>
         postsApi.list({
           filters: normalizedFilters,
-          pageParam,
+          cursor: pageParam,
           signal,
         }),
       initialPageParam: null as PostCursor,

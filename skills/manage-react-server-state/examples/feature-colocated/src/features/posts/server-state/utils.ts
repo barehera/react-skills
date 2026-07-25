@@ -11,29 +11,51 @@ import type {
   NormalizePostRelatedLimitInput,
 } from "./types";
 
+function normalizeLimit({
+  value,
+  fallback,
+  maximum,
+}: {
+  value: number | undefined;
+  fallback: number;
+  maximum: number;
+}) {
+  const finiteValue =
+    typeof value === "number" && Number.isFinite(value)
+      ? value
+      : fallback;
+  const integerValue = Math.trunc(finiteValue);
+
+  return Math.min(
+    Math.max(integerValue, postsQueryConstraints.minimumLimit),
+    maximum,
+  );
+}
+
 export function normalizePostFilters({
   filters = {},
-  defaultLimit = postsQueryDefaults.infiniteList.limit,
-}: NormalizePostFiltersInput = {}): NormalizedPostFilters {
+  defaultLimit,
+}: NormalizePostFiltersInput): NormalizedPostFilters {
   const search = filters.search?.trim();
-  const requestedLimit = Math.trunc(filters.limit ?? defaultLimit);
 
   return {
     search: search || undefined,
-    limit: Math.min(
-      Math.max(requestedLimit, postsQueryConstraints.minimumLimit),
-      postsQueryConstraints.maximumListLimit,
-    ),
+    limit: normalizeLimit({
+      value: filters.limit,
+      fallback: defaultLimit,
+      maximum: postsQueryConstraints.maximumListLimit,
+    }),
   };
 }
 
 export function normalizePostRelatedLimit({
-  limit = postsQueryDefaults.related.limit,
+  limit,
 }: NormalizePostRelatedLimitInput = {}) {
-  return Math.min(
-    Math.max(Math.trunc(limit), postsQueryConstraints.minimumLimit),
-    postsQueryConstraints.maximumRelatedLimit,
-  );
+  return normalizeLimit({
+    value: limit,
+    fallback: postsQueryDefaults.related.limit,
+    maximum: postsQueryConstraints.maximumRelatedLimit,
+  });
 }
 
 export function isPostsRelatedQueryKey(queryKey: QueryKey) {
