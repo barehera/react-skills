@@ -64,7 +64,7 @@ For `GET /posts/:postId/comments`, first inspect the current post key structure.
 
 ## Example: protected query
 
-If the project already has an authenticated Query wrapper, reuse it. If several protected queries need one and no wrapper exists, adapt `examples/feature-colocated/src/server-state/create-authenticated-query-hooks.ts` to the real auth state. Ensure logged-out imperative refetches cannot execute the request.
+If the project already has an authenticated Query wrapper, reuse it. Otherwise, instantiate `examples/feature-colocated/src/server-state/create-authenticated-query-hooks.ts` once with the real auth hook, then call the resulting authenticated hook inside each protected operation hook. Do not expose both public and authenticated versions of an always-protected operation. Ensure logged-out imperative refetches cannot execute the request.
 
 ## Example: refactor without forcing the reference layout
 
