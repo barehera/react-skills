@@ -1,5 +1,5 @@
-import { readFile, stat } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { readdir, readFile, stat } from "node:fs/promises";
+import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -11,7 +11,31 @@ if (registry.$schema !== "https://ui.shadcn.com/schema/registry.json") {
 }
 
 const names = new Set();
+const registeredFiles = new Set();
 const dependencyFields = ["dependencies", "devDependencies"];
+const publicationRoots = [
+  "skills/manage-react-server-state",
+  "cursor/manage-react-server-state.mdc",
+];
+
+async function listFiles(path) {
+  const pathStat = await stat(path);
+
+  if (pathStat.isFile()) {
+    return [path];
+  }
+
+  const entries = await readdir(path, { withFileTypes: true });
+  const nestedFiles = await Promise.all(
+    entries.map((entry) => listFiles(resolve(path, entry.name))),
+  );
+
+  return nestedFiles.flat();
+}
+
+function toRegistryPath(path) {
+  return relative(root, path).replaceAll("\\", "/");
+}
 
 function getDependencyRange(dependency) {
   const separatorIndex = dependency.lastIndexOf("@");
@@ -36,6 +60,11 @@ for (const item of registry.items ?? []) {
   }
 
   for (const file of item.files ?? []) {
+    if (registeredFiles.has(file.path)) {
+      throw new Error(`Duplicate registry file: ${file.path}`);
+    }
+    registeredFiles.add(file.path);
+
     const absoluteFilePath = resolve(root, file.path);
     await stat(absoluteFilePath);
 
@@ -73,6 +102,37 @@ if (
 ) {
   throw new Error(
     "The registry must publish only the manage-react-server-state skill",
+  );
+}
+
+const publishedFiles = (
+  await Promise.all(
+    publicationRoots.map((path) => listFiles(resolve(root, path))),
+  )
+)
+  .flat()
+  .map(toRegistryPath);
+
+const missingRegistryFiles = publishedFiles.filter(
+  (path) => !registeredFiles.has(path),
+);
+const unexpectedRegistryFiles = [...registeredFiles].filter(
+  (path) => !publishedFiles.includes(path),
+);
+
+if (missingRegistryFiles.length > 0 || unexpectedRegistryFiles.length > 0) {
+  throw new Error(
+    [
+      "registry.json publication files are out of sync.",
+      missingRegistryFiles.length > 0
+        ? `Missing: ${missingRegistryFiles.join(", ")}`
+        : undefined,
+      unexpectedRegistryFiles.length > 0
+        ? `Unexpected: ${unexpectedRegistryFiles.join(", ")}`
+        : undefined,
+    ]
+      .filter(Boolean)
+      .join("\n"),
   );
 }
 
