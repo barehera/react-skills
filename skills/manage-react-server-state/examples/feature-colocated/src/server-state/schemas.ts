@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import type {
+  ApiCursorPageResponseSchemaInput,
   ApiDataResponseSchemaInput,
-  ApiPageResponseSchemaInput,
 } from "./types";
 
 export const apiErrorResponseSchema = z.object({
@@ -20,17 +20,17 @@ export function createApiDataResponseSchema<TSchema extends z.ZodType>(
   return z.object({ data: dataSchema });
 }
 
-export function createApiPageResponseSchema<
+export function createApiCursorPageResponseSchema<
   TItemSchema extends z.ZodType,
-  TPageParamSchema extends z.ZodType,
+  TCursorSchema extends z.ZodType,
 >({
   itemSchema,
-  pageParamSchema,
-}: ApiPageResponseSchemaInput<TItemSchema, TPageParamSchema>) {
+  cursorSchema,
+}: ApiCursorPageResponseSchemaInput<TItemSchema, TCursorSchema>) {
   return z.object({
     data: z.array(itemSchema),
     meta: z.object({
-      nextCursor: pageParamSchema,
+      nextCursor: cursorSchema,
     }),
   });
 }

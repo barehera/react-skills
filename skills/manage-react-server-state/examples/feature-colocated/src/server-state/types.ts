@@ -10,12 +10,12 @@ export interface ApiDataResponseSchemaInput<
   dataSchema: TSchema;
 }
 
-export interface ApiPageResponseSchemaInput<
+export interface ApiCursorPageResponseSchemaInput<
   TItemSchema extends z.ZodType,
-  TPageParamSchema extends z.ZodType,
+  TCursorSchema extends z.ZodType,
 > {
   itemSchema: TItemSchema;
-  pageParamSchema: TPageParamSchema;
+  cursorSchema: TCursorSchema;
 }
 
 type QueryOptionsParts<TOptions> =

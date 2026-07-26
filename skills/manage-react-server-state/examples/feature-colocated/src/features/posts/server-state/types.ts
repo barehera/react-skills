@@ -3,7 +3,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type {
   Post,
   PostCreateRequest,
-  PostPageParam,
+  PostCursor,
   PostUpdateRequest,
 } from "./schemas";
 
@@ -69,7 +69,7 @@ export interface PostUpdateInput extends PostUpdateRequest {
 }
 
 export interface PostListInput extends PostListQueryInput {
-  pageParam?: PostPageParam;
+  pageParam?: PostCursor;
   signal?: AbortSignal;
 }
 

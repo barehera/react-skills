@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import {
+  createApiCursorPageResponseSchema,
   createApiDataResponseSchema,
-  createApiPageResponseSchema,
 } from "@/server-state/schemas";
 
 export const postSchema = z.object({
@@ -13,7 +13,7 @@ export const postSchema = z.object({
   updatedAt: z.iso.datetime(),
 });
 
-export const postPageParamSchema = z.number().int().nonnegative().nullable();
+export const postCursorSchema = z.number().int().nonnegative().nullable();
 
 export const postDetailResponseSchema =
   createApiDataResponseSchema({ dataSchema: postSchema });
@@ -22,9 +22,9 @@ export const postRelatedResponseSchema = createApiDataResponseSchema({
   dataSchema: z.array(postSchema),
 });
 
-export const postListResponseSchema = createApiPageResponseSchema({
+export const postListResponseSchema = createApiCursorPageResponseSchema({
   itemSchema: postSchema,
-  pageParamSchema: postPageParamSchema,
+  cursorSchema: postCursorSchema,
 });
 
 export const postCreateRequestSchema = z.object({
@@ -35,9 +35,6 @@ export const postCreateRequestSchema = z.object({
 export const postUpdateRequestSchema = postCreateRequestSchema.partial();
 
 export type Post = z.infer<typeof postSchema>;
-export type PostPageParam = z.infer<typeof postPageParamSchema>;
-export type PostDetailResponse = z.infer<typeof postDetailResponseSchema>;
-export type PostRelatedResponse = z.infer<typeof postRelatedResponseSchema>;
-export type PostListResponse = z.infer<typeof postListResponseSchema>;
+export type PostCursor = z.infer<typeof postCursorSchema>;
 export type PostCreateRequest = z.input<typeof postCreateRequestSchema>;
 export type PostUpdateRequest = z.input<typeof postUpdateRequestSchema>;
