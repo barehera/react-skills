@@ -46,6 +46,7 @@ export const postsCache = {
   }: PostCacheDetailInput) {
     queryClient.removeQueries({
       queryKey: postsQueries.detail({ postId }).queryKey,
+      exact: false,
     });
   },
 } as const;

@@ -3,9 +3,11 @@ import { parseApiPayload } from "@/server-state/utils";
 
 import { postsOperationNames } from "./names";
 import {
+  postCreateRequestSchema,
   postDetailResponseSchema,
   postListResponseSchema,
   postRelatedResponseSchema,
+  postUpdateRequestSchema,
 } from "./schemas";
 import type {
   PostCreateInput,
@@ -63,17 +65,22 @@ export const postsApi = {
   },
 
   async [postsOperationNames.create](input: PostCreateInput) {
-    const response = await api.post<unknown>(postsRoutes.collection, input);
+    const request = postCreateRequestSchema.parse(input);
+    const response = await api.post<unknown>(
+      postsRoutes.collection,
+      request,
+    );
     return parseApiPayload(postDetailResponseSchema, response.data);
   },
 
   async [postsOperationNames.update]({
     postId,
-    ...post
+    ...input
   }: PostUpdateInput) {
+    const request = postUpdateRequestSchema.parse(input);
     const response = await api.patch<unknown>(
       postsRoutes.detail(postId),
-      post,
+      request,
     );
     return parseApiPayload(postDetailResponseSchema, response.data);
   },
