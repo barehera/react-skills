@@ -23,12 +23,13 @@ The semantic responsibilities matter; their exact directories do not.
 | Project style | Reasonable placement |
 | --- | --- |
 | Feature-colocated | `src/features/posts/server-state/*` |
+| Server-state-rooted | `src/server-state/shared/*`, `src/server-state/posts/*` |
 | Domain-oriented | `src/domains/posts/api/*`, `queries/*`, `mutations/*` |
 | Layer-oriented | `src/api/posts.ts`, `src/queries/posts/*`, `src/mutations/posts/*` |
 | Compact application | `src/server-state/posts/*` or a cohesive `posts.ts` |
 | Generated client | Keep generated transport/types untouched; place Query adapters beside the consuming domain |
 
-If the project is new and the user delegates placement, default to feature-colocated code because ownership and deletion boundaries remain clear. Explain that choice briefly.
+If the project is new and the user delegates placement, default to feature-colocated code because ownership and deletion boundaries remain clear. If the project intentionally avoids feature or domain folders, use resource-first folders under `src/server-state` instead of scattering each resource across global technical layers. Read [placements.md](placements.md) for the exact mapping and boundaries.
 
 ## Semantic responsibilities
 

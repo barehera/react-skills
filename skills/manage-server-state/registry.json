@@ -23,6 +23,11 @@
           "target": "~/.agents/skills/manage-server-state/references/architecture.md"
         },
         {
+          "path": "references/placements.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/references/placements.md"
+        },
+        {
           "path": "references/naming.md",
           "type": "registry:file",
           "target": "~/.agents/skills/manage-server-state/references/naming.md"

@@ -25,6 +25,7 @@ Separate decisions into three groups:
 6. Ask only questions whose answers cannot be established and would materially change the result. Combine related questions. If the user delegates the choice, use the project convention or the defaults in the references and state the choice.
 7. Read only the references needed for the task:
    - [architecture.md](references/architecture.md) for placement, dependency direction, and adapting file structure.
+   - [placements.md](references/placements.md) when choosing between feature-colocated, server-state-rooted, compact, or layer-oriented placement.
    - [naming.md](references/naming.md) for the project vocabulary and migration rules.
    - [backend-contracts.md](references/backend-contracts.md) for contract intake, validation, errors, or pagination.
    - [queries.md](references/queries.md) for keys, factories, hooks, overrides, and authentication.
@@ -52,6 +53,8 @@ Do not force `src/features`, Zod, Axios, Query Key Factory, shared response enve
 
 ## Reference implementation
 
-The complete feature-colocated example is under [examples/feature-colocated](examples/feature-colocated). It demonstrates shared primitives, a Posts feature, finite and infinite queries, context keys, an authenticated-query factory, mutations, and cache actions.
+The complete implementation is under [examples/feature-colocated](examples/feature-colocated). It demonstrates shared primitives, a Posts resource, finite and infinite queries, context keys, an authenticated-query factory, mutations, and cache actions.
+
+Use [placements.md](references/placements.md) to map that implementation into a server-state-rooted, compact, or established layer-oriented project. Do not duplicate the implementation only to change directories.
 
 Copy its reasoning, not its backend contract or paths. Replace every route, schema, type, authenticated-query policy, pagination field, default, and cache rule with verified project facts.
