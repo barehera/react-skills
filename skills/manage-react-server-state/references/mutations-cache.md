@@ -18,9 +18,9 @@ Use the backend result and mutation variables. Do not broadly invalidate every r
 
 Build cache identities through the same key source as reads. Account for finite, infinite, filtered, detail, and context caches as different shapes.
 
-Keep cache helpers dependent on key factories and cached data types, not query-option factories imported only to recover a key. Annotate the cached data type explicitly when the key factory does not brand it.
+Prefer an option factory's typed `queryKey` for cache reads and writes when it preserves cached-data inference without a cycle. Raw key factories remain useful for prefix invalidation and removal.
 
-TanStack Query filters prefix-match by default. Choose `exact` deliberately, and name a removal action to reveal whether it removes one query or an owned key tree.
+TanStack Query filters prefix-match by default. Choose `exact` deliberately and define consistently whether detail removal includes owned context queries.
 
 ## Choosing mutation effects
 

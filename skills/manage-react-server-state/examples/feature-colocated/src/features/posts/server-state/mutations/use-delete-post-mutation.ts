@@ -11,7 +11,7 @@ export function useDeletePostMutation() {
   return useMutation({
     mutationFn: postsApi.delete,
     onSuccess: (_, { postId }) => {
-      postsCache.removeDetailTree({ queryClient, postId });
+      postsCache.removeDetail({ queryClient, postId });
       return postsCache.invalidateLists({ queryClient });
     },
   });
