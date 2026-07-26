@@ -1,6 +1,6 @@
 {
   "branches": ["main"],
-  "tagFormat": "manage-react-server-state-v${version}",
+  "tagFormat": "v${version}",
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -68,11 +68,11 @@
       "@semantic-release/github",
       {
         "releaseNameTemplate": "v<%= nextRelease.version %>",
-        "releaseBodyTemplate": "An adaptive Agent Skill for creating, extending, refactoring, and auditing type-safe React server state without forcing a project layout or backend contract.\n\n### Install or update\n\n```bash\nnpx shadcn@latest add barehera/server-state-registry/manage-react-server-state --overwrite\n```\n\nThis installs the canonical skill under `.agents/skills` and its thin Cursor adapter. It does not install runtime dependencies or write application code into `src`.\n\n### Changes\n\n<%= nextRelease.notes.trim() || 'No user-facing changes were recorded for this release.' %>\n\n### Release asset\n\n- `manage-react-server-state.json` — the built shadcn registry item for this exact release.\n\n<% if (lastRelease.gitTag) { %>### Compare\n\n[View all changes from <%= lastRelease.gitTag %> to <%= nextRelease.gitTag %>](https://github.com/barehera/server-state-registry/compare/<%= lastRelease.gitTag %>...<%= nextRelease.gitTag %>)\n<% } %>",
+        "releaseBodyTemplate": "A growing catalog of maintainable Agent Skills for React development.\n\n### Choose and install\n\n```bash\nnpx --yes github:barehera/react-skills\n```\n\nTo install a known skill directly, run `npx shadcn@latest add barehera/react-skills/<skill-name>`.\n\n### Changes\n\n<%= nextRelease.notes.trim() || 'No user-facing changes were recorded for this release.' %>\n\n### Registry assets\n\nThe attached JSON files are the built catalog and skill items for this exact release.\n\n<% if (lastRelease.gitTag) { %>### Compare\n\n[View all changes from <%= lastRelease.gitTag %> to <%= nextRelease.gitTag %>](https://github.com/barehera/react-skills/compare/<%= lastRelease.gitTag %>...<%= nextRelease.gitTag %>)\n<% } %>",
         "assets": [
           {
-            "path": "public/r/manage-react-server-state.json",
-            "label": "manage-react-server-state.json"
+            "path": "public/r/*.json",
+            "label": "Built React Skills registry"
           }
         ]
       }
