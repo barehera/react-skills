@@ -1,14 +1,26 @@
 {
-  "name": "server-state-registry",
+  "name": "react-skills",
   "version": "0.0.0-development",
   "private": true,
   "type": "module",
+  "description": "A growing catalog of maintainable Agent Skills for React development.",
+  "homepage": "https://github.com/barehera/react-skills",
+  "repository": "github:barehera/react-skills",
+  "bin": {
+    "react-skills": "./bin/react-skills.mjs"
+  },
+  "files": [
+    "bin",
+    "registry.json",
+    "skills/*/registry.json"
+  ],
   "scripts": {
     "registry:build": "shadcn build",
     "shadcn": "shadcn",
     "release": "semantic-release",
+    "skills:list": "node bin/react-skills.mjs --list",
     "typecheck:examples": "tsc --project tsconfig.examples.json",
-    "validate": "node scripts/validate-registry.mjs && npm run typecheck:examples && npm run registry:build"
+    "validate": "node scripts/validate-registry.mjs && npm run skills:list && npm run typecheck:examples && npm run registry:build"
   },
   "devDependencies": {
     "@lukemorales/query-key-factory": "^1.3.4",

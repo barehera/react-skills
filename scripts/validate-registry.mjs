@@ -1,22 +1,15 @@
 import { readdir, readFile, stat } from "node:fs/promises";
-import { dirname, relative, resolve } from "node:path";
+import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const registryPath = resolve(root, "registry.json");
-const registry = JSON.parse(await readFile(registryPath, "utf8"));
-
-if (registry.$schema !== "https://ui.shadcn.com/schema/registry.json") {
-  throw new Error("registry.json must use the official shadcn schema");
-}
-
-const names = new Set();
-const registeredFiles = new Set();
+const skillsRoot = resolve(root, "skills");
+const registrySchema = "https://ui.shadcn.com/schema/registry.json";
 const dependencyFields = ["dependencies", "devDependencies"];
-const publicationRoots = [
-  "skills/manage-react-server-state",
-  "cursor/manage-react-server-state.mdc",
-];
+
+async function readJson(path) {
+  return JSON.parse(await readFile(path, "utf8"));
+}
 
 async function listFiles(path) {
   const pathStat = await stat(path);
@@ -33,8 +26,21 @@ async function listFiles(path) {
   return nestedFiles.flat();
 }
 
-function toRegistryPath(path) {
-  return relative(root, path).replaceAll("\\", "/");
+function toPosixPath(path) {
+  return path.replaceAll("\\", "/");
+}
+
+function toRepositoryPath(path) {
+  return toPosixPath(relative(root, path));
+}
+
+function isInside(parentPath, childPath) {
+  const relativePath = relative(parentPath, childPath);
+
+  return (
+    relativePath === "" ||
+    (!relativePath.startsWith("..") && !isAbsolute(relativePath))
+  );
 }
 
 function getDependencyRange(dependency) {
@@ -43,11 +49,109 @@ function getDependencyRange(dependency) {
   return separatorIndex > 0 ? dependency.slice(separatorIndex + 1) : "";
 }
 
-for (const item of registry.items ?? []) {
-  if (names.has(item.name)) {
+async function loadRegistry(path, ancestry = new Set()) {
+  const resolvedPath = resolve(path);
+
+  if (ancestry.has(resolvedPath)) {
+    throw new Error(`Circular registry include: ${toRepositoryPath(resolvedPath)}`);
+  }
+
+  const registry = await readJson(resolvedPath);
+
+  if (registry.$schema !== registrySchema) {
+    throw new Error(
+      `${toRepositoryPath(resolvedPath)} must use the official shadcn schema`,
+    );
+  }
+
+  const nextAncestry = new Set(ancestry);
+  nextAncestry.add(resolvedPath);
+
+  const includedItems = await Promise.all(
+    (registry.include ?? []).map((includePath) =>
+      loadRegistry(resolve(dirname(resolvedPath), includePath), nextAncestry),
+    ),
+  );
+
+  return [
+    ...(registry.items ?? []).map((item) => ({
+      item,
+      registryPath: resolvedPath,
+    })),
+    ...includedItems.flat(),
+  ];
+}
+
+const rootRegistryPath = resolve(root, "registry.json");
+const rootRegistry = await readJson(rootRegistryPath);
+
+if (
+  rootRegistry.$schema !== registrySchema ||
+  rootRegistry.name !== "react-skills" ||
+  rootRegistry.homepage !== "https://github.com/barehera/react-skills"
+) {
+  throw new Error("The root registry metadata must identify React Skills");
+}
+
+if ((rootRegistry.items ?? []).length > 0) {
+  throw new Error("Define skill items in skill-local registries, not the root");
+}
+
+const skillDirectories = (await readdir(skillsRoot, { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort();
+
+if (skillDirectories.length === 0) {
+  throw new Error("The React Skills catalog must contain at least one skill");
+}
+
+const expectedIncludes = skillDirectories.map(
+  (skillName) => `skills/${skillName}/registry.json`,
+);
+const actualIncludes = [...(rootRegistry.include ?? [])].sort();
+
+if (JSON.stringify(actualIncludes) !== JSON.stringify(expectedIncludes)) {
+  throw new Error(
+    "The root registry must include every skill-local registry exactly once",
+  );
+}
+
+const resolvedItems = await loadRegistry(rootRegistryPath);
+const itemNames = new Set();
+const registeredFiles = new Set();
+
+for (const { item, registryPath } of resolvedItems) {
+  if (itemNames.has(item.name)) {
     throw new Error(`Duplicate registry item: ${item.name}`);
   }
-  names.add(item.name);
+
+  itemNames.add(item.name);
+
+  if (
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.name) ||
+    item.name.length > 64
+  ) {
+    throw new Error(`Invalid skill name: ${item.name}`);
+  }
+
+  const skillDirectory = resolve(skillsRoot, item.name);
+  const expectedRegistryPath = resolve(skillDirectory, "registry.json");
+
+  if (registryPath !== expectedRegistryPath) {
+    throw new Error(
+      `${item.name} must be declared in skills/${item.name}/registry.json`,
+    );
+  }
+
+  if (
+    item.type !== "registry:item" ||
+    !item.title ||
+    !item.description ||
+    !item.docs
+  ) {
+    throw new Error(`${item.name} requires complete registry metadata`);
+  }
 
   for (const field of dependencyFields) {
     for (const dependency of item[field] ?? []) {
@@ -59,14 +163,25 @@ for (const item of registry.items ?? []) {
     }
   }
 
-  for (const file of item.files ?? []) {
-    if (registeredFiles.has(file.path)) {
-      throw new Error(`Duplicate registry file: ${file.path}`);
-    }
-    registeredFiles.add(file.path);
+  const itemFiles = new Set();
 
-    const absoluteFilePath = resolve(root, file.path);
+  for (const file of item.files ?? []) {
+    const absoluteFilePath = resolve(dirname(registryPath), file.path);
+
+    if (!isInside(skillDirectory, absoluteFilePath)) {
+      throw new Error(`${item.name}:${file.path} must stay inside its skill folder`);
+    }
+
     await stat(absoluteFilePath);
+
+    const repositoryPath = toRepositoryPath(absoluteFilePath);
+
+    if (registeredFiles.has(repositoryPath)) {
+      throw new Error(`Duplicate registry file: ${repositoryPath}`);
+    }
+
+    registeredFiles.add(repositoryPath);
+    itemFiles.add(repositoryPath);
 
     if (file.type === "registry:file" && !file.target) {
       throw new Error(`${item.name}:${file.path} requires a target`);
@@ -78,68 +193,102 @@ for (const item of registry.items ?? []) {
       );
     }
 
+    if (
+      !file.path.startsWith("adapters/") &&
+      !file.target?.startsWith(`~/.agents/skills/${item.name}/`)
+    ) {
+      throw new Error(
+        `${item.name}:${file.path} must install inside its canonical skill folder`,
+      );
+    }
+  }
+
+  const expectedSkillFiles = (await listFiles(skillDirectory))
+    .filter((path) => !["README.md", "registry.json"].includes(relative(skillDirectory, path)))
+    .map(toRepositoryPath)
+    .sort();
+  const actualSkillFiles = [...itemFiles].sort();
+
+  if (JSON.stringify(actualSkillFiles) !== JSON.stringify(expectedSkillFiles)) {
+    const missing = expectedSkillFiles.filter((path) => !itemFiles.has(path));
+    const unexpected = actualSkillFiles.filter(
+      (path) => !expectedSkillFiles.includes(path),
+    );
+
+    throw new Error(
+      [
+        `${item.name} publication files are out of sync.`,
+        missing.length > 0 ? `Missing: ${missing.join(", ")}` : undefined,
+        unexpected.length > 0
+          ? `Unexpected: ${unexpected.join(", ")}`
+          : undefined,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    );
+  }
+
+  await stat(resolve(skillDirectory, "README.md"));
+  await stat(resolve(skillDirectory, "agents/openai.yaml"));
+
+  const skill = (
+    await readFile(resolve(skillDirectory, "SKILL.md"), "utf8")
+  ).replaceAll("\r\n", "\n");
+
+  if (skill.includes("TODO")) {
+    throw new Error(`${item.name}/SKILL.md contains TODO placeholders`);
+  }
+
+  if (!skill.startsWith(`---\nname: ${item.name}\n`)) {
+    throw new Error(`${item.name}/SKILL.md frontmatter is missing or invalid`);
+  }
+
+  if (item.name === "manage-react-server-state") {
+    for (const repositoryPath of itemFiles) {
+      if (repositoryPath.toLowerCase().includes("stream")) {
+        throw new Error(
+          `${item.name}:${repositoryPath} must not publish a stream example`,
+        );
+      }
+    }
+
     const featureExampleRoot =
       "skills/manage-react-server-state/examples/feature-colocated/src/features/";
 
-    if (
-      file.path.startsWith(featureExampleRoot) &&
-      !file.path.startsWith(`${featureExampleRoot}posts/`)
-    ) {
-      throw new Error(
-        `${item.name}:${file.path} is outside the canonical Posts example`,
-      );
-    }
-
-    if (file.path.toLowerCase().includes("stream")) {
-      throw new Error(`${item.name}:${file.path} must not publish a stream example`);
+    for (const repositoryPath of itemFiles) {
+      if (
+        repositoryPath.startsWith(featureExampleRoot) &&
+        !repositoryPath.startsWith(`${featureExampleRoot}posts/`)
+      ) {
+        throw new Error(
+          `${item.name}:${repositoryPath} is outside the canonical Posts example`,
+        );
+      }
     }
   }
 }
 
 if (
-  names.size !== 1 ||
-  !names.has("manage-react-server-state")
+  itemNames.size !== skillDirectories.length ||
+  skillDirectories.some((skillName) => !itemNames.has(skillName))
 ) {
-  throw new Error(
-    "The registry must publish only the manage-react-server-state skill",
-  );
+  throw new Error("Every skill folder must publish exactly one matching item");
 }
 
-const publishedFiles = (
-  await Promise.all(
-    publicationRoots.map((path) => listFiles(resolve(root, path))),
-  )
-)
-  .flat()
-  .map(toRegistryPath);
+await stat(resolve(root, ".github/workflows/release.yml"));
+await stat(resolve(root, "bin/react-skills.mjs"));
+await stat(resolve(root, "docs/adding-a-skill.md"));
 
-const missingRegistryFiles = publishedFiles.filter(
-  (path) => !registeredFiles.has(path),
-);
-const unexpectedRegistryFiles = [...registeredFiles].filter(
-  (path) => !publishedFiles.includes(path),
-);
+const packageJson = await readJson(resolve(root, "package.json"));
 
-if (missingRegistryFiles.length > 0 || unexpectedRegistryFiles.length > 0) {
-  throw new Error(
-    [
-      "registry.json publication files are out of sync.",
-      missingRegistryFiles.length > 0
-        ? `Missing: ${missingRegistryFiles.join(", ")}`
-        : undefined,
-      unexpectedRegistryFiles.length > 0
-        ? `Unexpected: ${unexpectedRegistryFiles.join(", ")}`
-        : undefined,
-    ]
-      .filter(Boolean)
-      .join("\n"),
-  );
+if (
+  packageJson.name !== "react-skills" ||
+  packageJson.bin?.["react-skills"] !== "./bin/react-skills.mjs"
+) {
+  throw new Error("package.json must expose the React Skills selector");
 }
 
-await stat(resolve(root, ".github/workflows/release-skill.yml"));
-
-const releaseConfigPath = resolve(root, ".releaserc.json");
-const releaseConfig = JSON.parse(await readFile(releaseConfigPath, "utf8"));
+const releaseConfig = await readJson(resolve(root, ".releaserc.json"));
 const githubReleasePlugin = releaseConfig.plugins?.find(
   (plugin) =>
     Array.isArray(plugin) && plugin[0] === "@semantic-release/github",
@@ -148,29 +297,14 @@ const githubReleaseOptions = githubReleasePlugin?.[1];
 
 if (
   !releaseConfig.branches?.includes("main") ||
-  releaseConfig.tagFormat !== "manage-react-server-state-v${version}" ||
-  githubReleaseOptions?.releaseNameTemplate !==
-    "v<%= nextRelease.version %>" ||
+  releaseConfig.tagFormat !== "v${version}" ||
+  githubReleaseOptions?.releaseNameTemplate !== "v<%= nextRelease.version %>" ||
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Changes") ||
-  !githubReleaseOptions?.releaseBodyTemplate?.includes("### Install or update")
+  !githubReleaseOptions?.releaseBodyTemplate?.includes("### Choose and install")
 ) {
-  throw new Error("semantic-release naming or release details are invalid");
-}
-
-const skillPath = resolve(
-  root,
-  "skills/manage-react-server-state/SKILL.md",
-);
-const skill = (await readFile(skillPath, "utf8")).replaceAll("\r\n", "\n");
-
-if (skill.includes("TODO")) {
-  throw new Error("The Agent Skill still contains TODO placeholders");
-}
-
-if (!skill.startsWith("---\nname: manage-react-server-state\n")) {
-  throw new Error("The Agent Skill frontmatter is missing or invalid");
+  throw new Error("React Skills release naming or details are invalid");
 }
 
 console.log(
-  `Validated ${names.size} registry items and the manage-react-server-state skill.`,
+  `Validated ${itemNames.size} skill${itemNames.size === 1 ? "" : "s"} in the React Skills catalog.`,
 );

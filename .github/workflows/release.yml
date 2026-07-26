@@ -1,4 +1,4 @@
-name: Release skill
+name: Release React Skills
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: manage-react-server-state-release
+  group: react-skills-release
   cancel-in-progress: false
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate registry and skill
+      - name: Validate catalog and skills
         run: npm run validate
 
       - name: Analyze commits and release
