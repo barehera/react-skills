@@ -35,6 +35,8 @@ Do not invent a universal `{ data }`, pagination, or error envelope. Shared buil
 - Return the validated backend shape unchanged unless the project intentionally maps distinct models.
 - Encode dynamic URL segments and forward cancellation through `AbortSignal` when the transport supports it.
 - Normalize filters only to produce a stable request/key representation, apply centralized policy, or meet backend constraints.
+- Execute request schemas that contain refinements or transforms at the chosen validation boundary; do not infer types from rules the application never runs.
+- Let the transport set `Content-Type` for requests with bodies unless the backend requires a project-wide override. Forcing it onto bodyless cross-origin requests can cause unnecessary preflights.
 
 ## Pagination
 

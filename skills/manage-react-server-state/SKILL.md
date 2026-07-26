@@ -53,4 +53,4 @@ Do not force `src/features`, Zod, Axios, Query Key Factory, shared response enve
 
 The complete feature-colocated example is under [examples/feature-colocated](examples/feature-colocated). It demonstrates shared primitives, a Posts feature, finite and infinite queries, context keys, an authenticated-query factory, mutations, and cache actions.
 
-Copy its reasoning, not its backend contract or paths. Replace every route, schema, type, auth import, pagination field, default, and cache rule with verified project facts.
+Copy its reasoning, not its backend contract or paths. Replace every route, schema, type, authenticated-query policy, pagination field, default, and cache rule with verified project facts.

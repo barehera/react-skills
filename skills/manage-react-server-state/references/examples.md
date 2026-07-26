@@ -7,7 +7,7 @@ Read [../examples/feature-colocated](../examples/feature-colocated) when impleme
 - `src/server-state`: project-wide names, option-override types, parsing/error helpers, transport setup, and authenticated query factory.
 - `src/features/posts/server-state`: a complete resource with finite and infinite lists, detail and related context queries, mutations, partial cache writes, invalidation, and removal.
 
-This is one tested composition. Do not copy its paths, Axios client, Zod envelopes, auth integration, Posts fields, pagination, or defaults without verifying they match the target project.
+This is one tested composition. Do not copy its paths, Axios client, Zod envelopes, authenticated-query policy, Posts fields, pagination, or defaults without verifying they match the target project. The example does not assume Posts writes affect the `related` query; verify that relationship and add a targeted cache effect when the real backend requires one.
 
 ## Example: create a feature in an established project
 
