@@ -19,7 +19,7 @@ Each skill is independently documented, installable, and versioned through this 
 
 | Skill | Purpose |
 | --- | --- |
-| [Manage React Server State](skills/manage-react-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
+| [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
 
 More skills can be added without changing the installation workflow.
 
@@ -36,7 +36,7 @@ It reads the catalog, shows every available skill, and lets you select one or mo
 To install a known skill directly:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-react-server-state
+npx shadcn@latest add barehera/react-skills/manage-server-state
 ```
 
 To inspect the catalog without installing:
@@ -48,8 +48,8 @@ npx --yes github:barehera/react-skills --list
 Review a skill before applying it:
 
 ```bash
-npx shadcn@latest view barehera/react-skills/manage-react-server-state
-npx shadcn@latest add barehera/react-skills/manage-react-server-state --dry-run
+npx shadcn@latest view barehera/react-skills/manage-server-state
+npx shadcn@latest add barehera/react-skills/manage-server-state --dry-run
 ```
 
 ## Use an installed skill
@@ -57,14 +57,14 @@ npx shadcn@latest add barehera/react-skills/manage-react-server-state --dry-run
 Name the skill in your request:
 
 ```text
-Use $manage-react-server-state to add the Products server state.
+Use $manage-server-state to add the Products server state.
 Inspect this repository and its API documentation before writing code.
 ```
 
 If your agent does not discover skills automatically:
 
 ```text
-Read .agents/skills/manage-react-server-state/SKILL.md completely and follow it
+Read .agents/skills/manage-server-state/SKILL.md completely and follow it
 for this task.
 ```
 
@@ -74,7 +74,7 @@ Open the selector again or update one skill directly:
 
 ```bash
 npx --yes github:barehera/react-skills --overwrite
-npx shadcn@latest add barehera/react-skills/manage-react-server-state --overwrite
+npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
 ```
 
 ## Repository organization

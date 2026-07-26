@@ -9,7 +9,7 @@
     "noEmit": true,
     "paths": {
       "@/*": [
-        "./skills/manage-react-server-state/examples/feature-colocated/src/*"
+        "./skills/manage-server-state/examples/feature-colocated/src/*"
       ]
     },
     "skipLibCheck": true,
@@ -17,7 +17,7 @@
     "target": "ES2022"
   },
   "include": [
-    "skills/manage-react-server-state/examples/feature-colocated/src/**/*.ts",
-    "skills/manage-react-server-state/examples/feature-colocated/src/**/*.tsx"
+    "skills/manage-server-state/examples/feature-colocated/src/**/*.ts",
+    "skills/manage-server-state/examples/feature-colocated/src/**/*.tsx"
   ]
 }
