@@ -94,17 +94,14 @@ For an undocumented `POST`, `PATCH`, or `DELETE`, inspect documentation, source,
 
 ## Example: adapt placement
 
-If the project is layer-oriented, map the same responsibilities instead of creating `features/<feature>/server-state`:
+Read [placements.md](placements.md) before creating a new structure. If the project avoids feature folders but centralizes remote state, map the same implementation into resource-first modules:
 
 ```text
-src/api/posts.ts                 transport and contracts if colocated
-src/query-keys/posts.ts          cache identity
-src/queries/posts/options.ts     read policy
-src/queries/posts/use-post.ts    component API
-src/mutations/posts/use-update-post.ts
+src/server-state/shared/*        project-wide server-state primitives
+src/server-state/posts/*         Posts transport, contracts, queries, mutations, and cache
 ```
 
-If the project is small, a single `src/server-state/posts.ts` may remain cohesive. Split it only when operations or responsibilities grow.
+Do not create a second copy of the reference implementation merely to change paths. If the project is layer-oriented, preserve its existing `api`, `queries`, and `mutations` layers. If it is small, a single `src/server-state/posts.ts` may remain cohesive until operations or responsibilities grow.
 
 ## Example: add a child endpoint
 

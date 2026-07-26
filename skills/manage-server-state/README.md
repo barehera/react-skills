@@ -71,6 +71,7 @@ type-safety problems.
 
 - [Canonical skill instructions](SKILL.md)
 - [Architecture and file placement](references/architecture.md)
+- [Feature-colocated and server-state-rooted placement](references/placements.md)
 - [Backend contracts and pagination](references/backend-contracts.md)
 - [Queries and authentication](references/queries.md)
 - [Mutations and cache behavior](references/mutations-cache.md)

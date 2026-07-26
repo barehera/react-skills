@@ -10,7 +10,7 @@ Useful compact questions include:
 - Pagination: “Is this cursor, offset, or page based, and which response value indicates the next request?”
 - Authentication: “Is this endpoint public or protected, and which existing auth hook/client should gate it?”
 - Cache: “Does the mutation return the complete entity, and which visible collections or relationships can it change?”
-- New architecture: “I found no existing server-state convention. May I use feature-colocated files and the current transport, or do you prefer a layer-based layout?”
+- New architecture: “I found no existing server-state convention. I recommend feature-colocated files; if this project intentionally avoids feature folders, I can keep resource-first modules under `src/server-state`.”
 - Dependency: “The project has no runtime validation/key factory. Should I add the proposed dependency or implement with existing tools?”
 
 Do not ask users to choose between implementation details they delegated. Recommend one option with a reason and proceed when the choice is reversible and within scope.
