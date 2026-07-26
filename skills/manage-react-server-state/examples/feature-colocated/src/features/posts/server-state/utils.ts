@@ -1,10 +1,7 @@
-import type { QueryKey } from "@tanstack/react-query";
-
 import {
   postsQueryConstraints,
   postsQueryDefaults,
 } from "./constants";
-import { postsOperationNames, postsQueryScope } from "./names";
 import type {
   NormalizedPostFilters,
   NormalizePostFiltersInput,
@@ -33,16 +30,5 @@ export function normalizePostRelatedLimit({
   return Math.min(
     Math.max(Math.trunc(limit), postsQueryConstraints.minimumLimit),
     postsQueryConstraints.maximumRelatedLimit,
-  );
-}
-
-export function isPostsRelatedQueryKey(queryKey: QueryKey) {
-  const [scope, operation, postId, contextOperation] = queryKey;
-
-  return (
-    scope === postsQueryScope &&
-    operation === postsOperationNames.detail &&
-    typeof postId === "string" &&
-    contextOperation === postsOperationNames.related
   );
 }

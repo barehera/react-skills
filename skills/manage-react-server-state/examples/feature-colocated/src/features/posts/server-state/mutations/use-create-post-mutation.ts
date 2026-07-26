@@ -14,10 +14,7 @@ export function useCreatePostMutation() {
       (await postsApi.create(input)).data,
     onSuccess: (createdPost) => {
       postsCache.setDetail({ queryClient, post: createdPost });
-      return Promise.all([
-        postsCache.invalidateLists({ queryClient }),
-        postsCache.invalidateRelated({ queryClient }),
-      ]);
+      return postsCache.invalidateLists({ queryClient });
     },
   });
 }

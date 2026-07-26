@@ -1,16 +1,14 @@
-import { postsCacheActionNames } from "./names";
 import { postsQueryKeys } from "./queries/keys";
-import type { Post } from "./schemas";
+import { postsQueries } from "./queries/options";
 import type {
   PostCacheDetailInput,
   PostCachePatchDetailInput,
   PostCacheSetDetailInput,
   PostsCacheInput,
 } from "./types";
-import { isPostsRelatedQueryKey } from "./utils";
 
 export const postsCache = {
-  [postsCacheActionNames.invalidateLists]({ queryClient }: PostsCacheInput) {
+  invalidateLists({ queryClient }: PostsCacheInput) {
     return Promise.all([
       queryClient.invalidateQueries({
         queryKey: postsQueryKeys.list._def,
@@ -21,41 +19,33 @@ export const postsCache = {
     ]);
   },
 
-  [postsCacheActionNames.invalidateRelated]({
-    queryClient,
-  }: PostsCacheInput) {
-    return queryClient.invalidateQueries({
-      predicate: ({ queryKey }) => isPostsRelatedQueryKey(queryKey),
-    });
-  },
-
-  [postsCacheActionNames.setDetail]({
+  setDetail({
     queryClient,
     post,
   }: PostCacheSetDetailInput) {
-    queryClient.setQueryData<Post>(
-      postsQueryKeys.detail({ postId: post.id }).queryKey,
+    queryClient.setQueryData(
+      postsQueries.detail({ postId: post.id }).queryKey,
       post,
     );
   },
 
-  [postsCacheActionNames.patchDetail]({
+  patchDetail({
     queryClient,
     postId,
     patch,
   }: PostCachePatchDetailInput) {
-    queryClient.setQueryData<Post>(
-      postsQueryKeys.detail({ postId }).queryKey,
+    queryClient.setQueryData(
+      postsQueries.detail({ postId }).queryKey,
       (current) => (current ? { ...current, ...patch } : current),
     );
   },
 
-  [postsCacheActionNames.removeDetail]({
+  removeDetail({
     queryClient,
     postId,
   }: PostCacheDetailInput) {
     queryClient.removeQueries({
-      queryKey: postsQueryKeys.detail({ postId }).queryKey,
+      queryKey: postsQueries.detail({ postId }).queryKey,
     });
   },
 } as const;

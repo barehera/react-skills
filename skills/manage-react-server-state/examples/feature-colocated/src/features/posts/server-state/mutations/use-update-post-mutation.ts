@@ -14,10 +14,7 @@ export function useUpdatePostMutation() {
       (await postsApi.update(input)).data,
     onSuccess: (updatedPost) => {
       postsCache.setDetail({ queryClient, post: updatedPost });
-      return Promise.all([
-        postsCache.invalidateLists({ queryClient }),
-        postsCache.invalidateRelated({ queryClient }),
-      ]);
+      return postsCache.invalidateLists({ queryClient });
     },
   });
 }

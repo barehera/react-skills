@@ -12,10 +12,7 @@ export function useDeletePostMutation() {
     mutationFn: postsApi.delete,
     onSuccess: (_, { postId }) => {
       postsCache.removeDetail({ queryClient, postId });
-      return Promise.all([
-        postsCache.invalidateLists({ queryClient }),
-        postsCache.invalidateRelated({ queryClient }),
-      ]);
+      return postsCache.invalidateLists({ queryClient });
     },
   });
 }
