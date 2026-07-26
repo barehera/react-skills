@@ -7,7 +7,7 @@
       "name": "manage-react-server-state",
       "type": "registry:item",
       "title": "Manage React Server State Agent Skill",
-      "description": "Adaptive Agent Skill for creating, extending, refactoring, and auditing React server state without forcing a project layout or backend contract.",
+      "description": "Adaptive Agent Skill for creating, extending, refactoring, and auditing React server state from documented, observed, or conservatively inferred backend contracts.",
       "files": [
         {
           "path": "skills/manage-react-server-state/SKILL.md",

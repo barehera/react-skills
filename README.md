@@ -16,8 +16,9 @@
 It teaches an AI agent to:
 
 - Inspect your project before writing code.
+- Discover endpoint contracts from documentation, raw JSON examples, generated clients, and repository evidence before using runtime inspection.
 - Follow your existing folder structure and naming.
-- Use your real backend routes, types, authentication, errors, and pagination.
+- Use your real backend routes, serialized data shapes, authentication, errors, and pagination.
 - Create type-safe TanStack Query keys, options, hooks, mutations, and cache helpers.
 - Ask for missing backend details instead of inventing them.
 
@@ -46,28 +47,38 @@ Use $manage-react-server-state to create the Products server state.
 
 Inspect this repository first and follow its existing architecture.
 
-GET /api/products?search=
-Response: { "data": Product[] }
+Endpoint:
+GET /api/products?search=phone
 
-GET /api/products/:productId
-Response: { "data": Product }
+Documentation:
+./docs/openapi.json
 
-Product: { id: string, name: string, price: number }
+Example 200 response:
+{
+  "data": [
+    {
+      "id": "product_1",
+      "name": "Phone",
+      "price": 1299
+    }
+  ]
+}
 
-Ask me for any missing backend details that affect correctness.
+Use the documentation and raw JSON as contract evidence. Ask me only for
+details that the documentation, examples, and repository cannot establish.
 ```
 
-Provide whatever backend information you already have:
+Provide whichever backend evidence your team has:
 
-- Routes and HTTP methods.
-- Path, query, and body parameters.
-- Success and error response shapes.
-- Generated backend types or schema files.
+- OpenAPI, Swagger, Scalar, Postman, or other API documentation.
+- Routes, methods, parameters, and request bodies.
+- Representative success and error responses as actual JSON.
+- Generated clients, backend types, schemas, cURL examples, or sanitized HAR files.
 - Authentication requirements.
 - Pagination fields and end-of-list behavior.
 - Expected cache updates after mutations.
 
-The agent should inspect the repository first, reuse facts it can verify, and ask only for important missing information.
+The agent should use your evidence first, inspect the repository for anything already known, and ask for missing documentation or payload examples before runtime inspection. Observing existing local application traffic comes later. Sending a discovery request is the final fallback.
 
 ## Common tasks
 
@@ -77,8 +88,21 @@ The agent should inspect the repository first, reuse facts it can verify, and as
 Use $manage-react-server-state to add a cursor-paginated Orders query.
 Follow the existing Orders structure and preserve the backend response shape.
 
-GET /api/orders?cursor=<string>&limit=<number>
-Response: { "data": Order[], "meta": { "nextCursor": string | null } }
+GET /api/orders?cursor=order_100&limit=20
+
+Example 200 response:
+{
+  "data": [
+    {
+      "id": "order_101",
+      "status": "processing",
+      "total": 249.9
+    }
+  ],
+  "meta": {
+    "nextCursor": "order_101"
+  }
+}
 ```
 
 ### Add an authenticated query
@@ -112,7 +136,7 @@ When your project does not already have a convention, the skill uses these defau
 | Mark cache stale | `invalidate` |
 | Remove cached data | `remove` |
 
-It also favors object inputs, complete query keys, reusable query-option factories, thin hooks, explicit cache effects, request cancellation, backend-owned types, and centralized defaults.
+It also favors object inputs, complete query keys, reusable query-option factories, thin hooks, explicit cache effects, request cancellation, honest frontend boundary types, and centralized defaults.
 
 ## AI tool support
 
@@ -129,7 +153,8 @@ Portable prompt:
 ```text
 Read .agents/skills/manage-react-server-state/SKILL.md completely and follow it
 for this task. Inspect the repository before proposing a structure and do not
-invent missing backend contracts.
+invent missing backend contracts. Use documentation and supplied JSON before
+runtime inspection, and send a discovery request only as the final fallback.
 ```
 
 ## Update
@@ -144,7 +169,7 @@ npx shadcn@latest add barehera/server-state-registry/manage-react-server-state -
 
 - [Skill instructions](skills/manage-react-server-state/SKILL.md)
 - [Architecture and file placement](skills/manage-react-server-state/references/architecture.md)
-- [Backend contracts and pagination](skills/manage-react-server-state/references/backend-contracts.md)
+- [Backend contract discovery and pagination](skills/manage-react-server-state/references/backend-contracts.md)
 - [Queries and authentication](skills/manage-react-server-state/references/queries.md)
 - [Mutations and cache behavior](skills/manage-react-server-state/references/mutations-cache.md)
 - [Naming conventions](skills/manage-react-server-state/references/naming.md)

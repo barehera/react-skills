@@ -8,6 +8,8 @@ Keep cache invariants and shared side effects inside the hook. For component-spe
 
 Use the backend result and mutation variables. Do not broadly invalidate every resource by habit.
 
+Do not execute a mutation solely to discover its contract or cache effects. Use documentation, backend/source evidence, existing application behavior, and user-confirmed business rules.
+
 ## Cache semantics
 
 - `set`: write a complete value when the response is sufficient.
