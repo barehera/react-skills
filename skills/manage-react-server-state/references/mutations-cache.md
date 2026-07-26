@@ -4,6 +4,8 @@
 
 Follow the project's public API style. A mutation hook normally owns `useMutation`, calls the transport operation, obtains the QueryClient, and applies the endpoint's actual cache effects. Separate reusable cache actions when more than one mutation or workflow needs them; keep a simple one-off update local when extraction adds no clarity.
 
+Keep cache invariants and shared side effects inside the hook. For component-specific reactions, use the mutation call's supported callbacks, such as `mutate(input, { onSuccess, onError })`. Do not add generic hook arguments that merely forward mutation options.
+
 Use the backend result and mutation variables. Do not broadly invalidate every resource by habit.
 
 ## Cache semantics

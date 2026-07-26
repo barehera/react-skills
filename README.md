@@ -116,16 +116,13 @@ It also favors object inputs, complete query keys, reusable query-option factori
 
 ## AI tool support
 
-The canonical skill works with repository-aware coding agents.
+The canonical skill works with repository-aware coding agents. Native skill discovery and invocation differ by tool, so use the portable prompt below whenever direct naming does not activate it.
 
-| Tool | How to invoke it |
+| Tool | Usage |
 | --- | --- |
-| OpenAI Codex | Use `$manage-react-server-state` or `/skills`. |
-| Cursor | Name the skill or select its installed rule. |
-| Gemini CLI / Antigravity | List available skills, then name it in your prompt. |
-| GitHub Copilot | Use automatic discovery or `/manage-react-server-state` in Copilot CLI. |
-| Claude Code | Ask Claude to read `.agents/skills/manage-react-server-state/SKILL.md`. |
-| Other file-aware agents | Point the agent directly to the installed `SKILL.md`. |
+| OpenAI Codex, Cursor | Name `manage-react-server-state` in the prompt or select it from the available skills/rules. |
+| Gemini CLI, Antigravity, GitHub Copilot | Name `manage-react-server-state` after installation; use the portable prompt if it is not discovered automatically. |
+| Claude Code, DeepSeek, other file-aware agents | Use the portable prompt to load the installed `SKILL.md` directly. |
 
 Portable prompt:
 
