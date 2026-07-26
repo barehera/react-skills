@@ -6,7 +6,7 @@ Inspect first. Ask only when an unresolved answer changes routes, types, placeme
 
 Useful compact questions include:
 
-- Contract: “What are the exact method, route, request fields, success body, and error body? A response example is enough.”
+- Contract evidence: “Please share the endpoint documentation, OpenAPI or collection file, redacted cURL, or representative request and response JSON. Which of these is available?”
 - Pagination: “Is this cursor, offset, or page based, and which response value indicates the next request?”
 - Authentication: “Is this endpoint public or protected, and which existing auth hook/client should gate it?”
 - Cache: “Does the mutation return the complete entity, and which visible collections or relationships can it change?”
@@ -14,6 +14,28 @@ Useful compact questions include:
 - Dependency: “The project has no runtime validation/key factory. Should I add the proposed dependency or implement with existing tools?”
 
 Do not ask users to choose between implementation details they delegated. Recommend one option with a reason and proceed when the choice is reversible and within scope.
+
+## Discover an endpoint contract
+
+1. Read the method, route, documentation, descriptions, raw JSON, and request examples supplied by the user.
+2. Inspect the repository for specifications, collections, generated clients, backend schemas, route handlers, fixtures, existing consumers, and neighboring features.
+3. Record which contract facts are verified, observed, inferred, or unresolved.
+4. Ask one compact question for missing documentation or representative request, success, and error JSON.
+5. If the user cannot provide more evidence, observe the request through the local application's normal flow when tooling permits.
+6. Send a direct request only as the final fallback under the safety rules in [backend-contracts.md](backend-contracts.md).
+7. Implement only after the route, inputs, response shape, authentication, pagination, and relevant cache behavior are sufficiently established.
+
+Do not block a useful frontend boundary merely because the backend is weakly typed. Build the narrowest honest frontend contract supported by the available evidence, validate untrusted responses when appropriate, and report remaining uncertainty.
+
+## Endpoint supplied without documentation
+
+If the user provides only a method and URL:
+
+1. Inspect the repository before asking for information it already contains.
+2. Request API documentation, raw request/response JSON, or a redacted cURL/HAR example.
+3. Do not immediately call the endpoint.
+4. Use passive local traffic observation only after the documentation path is exhausted.
+5. Use a direct request last and never execute a mutation solely for discovery.
 
 ## Create from scratch
 
@@ -53,6 +75,8 @@ Report evidence with file and line locations. Do not implement fixes unless auth
 - Placement follows the project or has an explicit rationale.
 - One vocabulary is used for each operation.
 - Backend routes, request fields, and response handling match evidence.
+- Contract facts distinguish verified, observed, inferred, and unresolved evidence.
+- Runtime requests were not used when documentation or repository evidence was sufficient.
 - Runtime validation or generated-type trust is deliberate.
 - Query keys include every discriminating input.
 - Finite and infinite data shapes do not share an identity.
@@ -66,4 +90,4 @@ Report evidence with file and line locations. Do not implement fixes unless auth
 
 ## Completion report
 
-State the selected layout, naming and contract sources, dependencies added, assumptions made, cache policy, validation performed, and any questions still blocking full correctness.
+State the selected layout, naming and contract evidence, evidence quality, dependencies added, assumptions made, cache policy, validation performed, runtime inspection performed if any, and any questions still blocking full correctness.

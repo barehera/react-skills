@@ -4,6 +4,8 @@
 
 Use the project's existing key strategy. Query Key Factory is a good option when installed, but typed key functions or another consistent factory are valid. Every value that changes the result must appear in a serializable, stable key.
 
+Derive discriminating inputs from documentation, repository evidence, and actual consumer requirements. A single observed request may omit supported filters or context that still belongs in the key.
+
 Keep finite and infinite variants distinct because their cached data shapes differ. Normalize equivalent inputs before key construction. Parent/child context keys are useful for real ownership such as a post detail with related posts; do not add nesting only to make the key look structured.
 
 Keep query-key predicates next to pure key utilities, not mixed into a key declaration file when the project separates those responsibilities.

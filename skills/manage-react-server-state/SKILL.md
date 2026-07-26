@@ -1,6 +1,6 @@
 ---
 name: manage-react-server-state
-description: Create, extend, refactor, or audit type-safe React server-state code while adapting to the repository's existing architecture, backend contracts, transport, authentication, validation strategy, and naming. Use for TanStack Query features, API operations, query keys and options, hooks, mutations, pagination, cache synchronization, authenticated requests, or establishing a server-state structure from scratch.
+description: Create, extend, refactor, or audit type-safe React server-state code while adapting to the repository's existing architecture, backend contracts, transport, authentication, validation strategy, and naming. Discover contracts from user-provided documentation, raw JSON examples, generated clients, and repository evidence before using runtime inspection. Use for TanStack Query features, API operations, query keys and options, hooks, mutations, pagination, cache synchronization, authenticated requests, or establishing a server-state structure from scratch.
 ---
 
 # Manage React Server State
@@ -17,12 +17,13 @@ Separate decisions into three groups:
 
 ## Required workflow
 
-1. Read repository instructions and inspect manifests, aliases, neighboring features, API clients, QueryClient setup, auth integration, backend types/schemas, and validation commands.
-2. Classify the request as `create from scratch`, `create feature`, `add endpoint`, `refactor`, or `audit`.
-3. Build a short project profile: placement, file granularity, naming, transport, contract source, runtime validation, auth, error handling, pagination, and cache conventions.
-4. Derive the endpoint contract from code, generated clients, documentation, examples, or the user. Never invent routes, fields, envelopes, page parameters, or auth requirements.
-5. Ask only questions whose answers cannot be inspected and would materially change the result. Combine related questions. If the user delegates the choice, use the project convention or the defaults in the references and state the choice.
-6. Read only the references needed for the task:
+1. Collect the endpoint information, documentation, raw request/response JSON, cURL, or sanitized HAR evidence the user provides.
+2. Read repository instructions and inspect manifests, aliases, neighboring features, API clients, QueryClient setup, auth integration, backend types/schemas, API specifications, collections, and validation commands.
+3. Classify the request as `create from scratch`, `create feature`, `add endpoint`, `refactor`, or `audit`.
+4. Build a short project profile: placement, file granularity, naming, transport, contract source, runtime validation, auth, error handling, pagination, and cache conventions.
+5. Resolve the endpoint contract from user-provided evidence and repository facts. Ask for missing documentation or representative payloads before runtime inspection. Observe existing local application traffic only when those sources are insufficient; send a direct discovery request only as the final safe fallback. Never invent routes, fields, envelopes, page parameters, or auth requirements.
+6. Ask only questions whose answers cannot be established and would materially change the result. Combine related questions. If the user delegates the choice, use the project convention or the defaults in the references and state the choice.
+7. Read only the references needed for the task:
    - [architecture.md](references/architecture.md) for placement, dependency direction, and adapting file structure.
    - [naming.md](references/naming.md) for the project vocabulary and migration rules.
    - [backend-contracts.md](references/backend-contracts.md) for contract intake, validation, errors, or pagination.
@@ -30,9 +31,9 @@ Separate decisions into three groups:
    - [mutations-cache.md](references/mutations-cache.md) for mutations, optimistic updates, and cache effects.
    - [workflows.md](references/workflows.md) for questions and task-specific procedures.
    - [examples.md](references/examples.md) before creating a new architecture or when a concrete pattern would help.
-7. Implement the smallest coherent change. Do not migrate unrelated code during an endpoint task.
-8. Run the repository's existing formatting, lint, typecheck, test, and build commands in proportion to risk. Do not introduce a test framework unless requested.
-9. Report files changed, commands run, decisions made, backend assumptions, and unresolved contract gaps.
+8. Implement the smallest coherent change. Do not migrate unrelated code during an endpoint task.
+9. Run the repository's existing formatting, lint, typecheck, test, and build commands in proportion to risk. Do not introduce a test framework unless requested.
+10. Report files changed, commands run, decisions made, contract evidence used, backend assumptions, and unresolved gaps.
 
 ## Defaults, not mandates
 

@@ -10,7 +10,7 @@ Record this project profile from repository evidence:
 | Ownership model | neighboring API/query/mutation files |
 | File granularity | feature folders, layer folders, naming conventions |
 | Transport | Axios/fetch wrapper, generated SDK, server actions |
-| Contract source | Zod, generated types, OpenAPI, handwritten types |
+| Contract source | User documentation/JSON, API specifications or collections, generated types, backend schemas, existing consumers |
 | Auth and errors | existing hooks, interceptors, error classes |
 | Query policy | QueryClient defaults, existing key/options factories |
 

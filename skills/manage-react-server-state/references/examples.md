@@ -25,24 +25,72 @@ Expected agent behavior:
 4. Ask only for missing cache/business behavior that cannot be inferred.
 5. Add the feature and validate its public imports.
 
-## Example: missing backend information
+## Example: endpoint with documentation
 
 User request:
 
 ```text
 Create server state for bookmarks.
+
+GET /api/bookmarks?limit=20
+OpenAPI: ./docs/openapi.json
 ```
 
-If no backend contract exists in the repository, ask one combined question:
+Expected agent behavior:
+
+1. Read the supplied OpenAPI operation and any referenced schemas.
+2. Inspect the existing frontend transport, auth, QueryClient, and neighboring feature.
+3. Ask only for facts missing from both sources, such as mutation cache effects.
+4. Do not call the endpoint merely to confirm documentation that is already sufficient.
+
+## Example: endpoint with raw JSON
+
+User request:
 
 ```text
-Please provide the bookmark endpoints (method + route), request fields,
-successful response examples, error shape, authentication requirement, and
-pagination rule if lists are paginated. I can then derive the schemas/types and
-cache behavior without guessing your backend.
+Add the bookmarks list query.
+
+GET /api/bookmarks?limit=20
+
+Example 200 response:
+{
+  "data": [
+    {
+      "id": "bookmark_1",
+      "url": "https://example.com/article",
+      "title": "Example article"
+    }
+  ],
+  "meta": {
+    "nextCursor": null
+  }
+}
 ```
 
-Do not ask about values already present in API documentation or generated code.
+Treat the literal JSON as observed serialized data. Do not convert `id` into a UUID, make `url` a special branded type, or infer optional fields and error shapes that the sample does not prove.
+
+## Example: endpoint without a contract
+
+User request:
+
+```text
+Create server state for bookmarks.
+
+GET http://localhost:4000/api/bookmarks?limit=20
+```
+
+Expected agent behavior:
+
+1. Inspect the repository for specifications, generated clients, collections, backend schemas, fixtures, and existing consumers.
+2. If the contract is still missing, ask for documentation, a redacted cURL/HAR entry, or representative request and response JSON.
+3. If the user cannot provide them, observe the request through the local application's normal flow when possible.
+4. Send a direct request only after those options fail and only when it satisfies the runtime safety rules.
+
+Do not immediately call the endpoint just because a URL is available.
+
+## Example: undocumented mutation
+
+For an undocumented `POST`, `PATCH`, or `DELETE`, inspect documentation, source, existing application calls, and user-provided payloads. Do not execute it solely to discover its request or response shape. Ask for the contract or observe a user-approved development flow with safe test data.
 
 ## Example: adapt placement
 
