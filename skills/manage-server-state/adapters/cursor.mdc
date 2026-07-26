@@ -1,0 +1,10 @@
+---
+description: Create or adapt type-safe React server-state code to this project's existing structure, backend contracts, transport, validation, authentication, naming, and cache behavior.
+globs:
+  - "**/server-state/**/*.{ts,tsx}"
+  - "**/*query*.{ts,tsx}"
+  - "**/*mutation*.{ts,tsx}"
+alwaysApply: false
+---
+
+Read and follow `@.agents/skills/manage-server-state/SKILL.md` before changing remote-state code. Prioritize user-provided API documentation and raw JSON, then inspect repository evidence. Ask for missing contract evidence before runtime inspection, and treat direct discovery requests as the final fallback. Adapt the semantic responsibilities to the project's existing structure and treat bundled examples as references, never automatic templates.

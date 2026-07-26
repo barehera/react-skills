@@ -1,4 +1,4 @@
-# Manage React Server State
+# Manage Server State
 
 [← React Skills catalog](../../README.md)
 
@@ -9,13 +9,13 @@ The skill guides an AI coding agent through TanStack Query keys, option factorie
 ## Install
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-react-server-state
+npx shadcn@latest add barehera/react-skills/manage-server-state
 ```
 
 The canonical instructions are installed at:
 
 ```text
-.agents/skills/manage-react-server-state/SKILL.md
+.agents/skills/manage-server-state/SKILL.md
 ```
 
 ## Use
@@ -23,7 +23,7 @@ The canonical instructions are installed at:
 Give the agent the task and the best backend evidence available:
 
 ```text
-Use $manage-react-server-state to create the Products server state.
+Use $manage-server-state to create the Products server state.
 
 Inspect this repository first and preserve its architecture.
 
@@ -52,17 +52,17 @@ The agent checks supplied evidence and repository facts first. It asks for missi
 ## Common requests
 
 ```text
-Use $manage-react-server-state to add a cursor-paginated Orders query.
+Use $manage-server-state to add a cursor-paginated Orders query.
 Follow the existing Orders structure and preserve the backend response shape.
 ```
 
 ```text
-Use $manage-react-server-state to add an authenticated Related Products query.
+Use $manage-server-state to add an authenticated Related Products query.
 Do not send the request while logged out and preserve caller query options.
 ```
 
 ```text
-Use $manage-react-server-state to audit the existing server-state code.
+Use $manage-server-state to audit the existing server-state code.
 Do not edit files. Report contract, cache, authentication, pagination, and
 type-safety problems.
 ```
@@ -82,5 +82,5 @@ type-safety problems.
 ## Update
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-react-server-state --overwrite
+npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
 ```

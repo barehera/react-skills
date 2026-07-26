@@ -3,6 +3,6 @@
   "name": "react-skills",
   "homepage": "https://github.com/barehera/react-skills",
   "include": [
-    "skills/manage-react-server-state/registry.json"
+    "skills/manage-server-state/registry.json"
   ]
 }

@@ -28,6 +28,15 @@ Only create optional folders that the skill uses.
 - `references`, `examples`, `scripts`, and `assets` contain reusable skill resources.
 - `adapters` contains thin tool-specific entry points when native skill discovery is unavailable.
 
+## Name the skill
+
+Use a short, lowercase, verb-led name that describes the action:
+
+- Prefer `manage-server-state`, `audit-accessibility`, or `build-forms`.
+- Do not add `react` only as a namespace; the repository already provides that context.
+- Include `react` only when React itself is the subject of the workflow, such as `upgrade-react`.
+- Keep the folder name, `SKILL.md` frontmatter, registry item name, install path, and invocation name identical.
+
 ## Add the catalog entry
 
 Add the skill registry to the root `registry.json`:
@@ -35,7 +44,7 @@ Add the skill registry to the root `registry.json`:
 ```json
 {
   "include": [
-    "skills/manage-react-server-state/registry.json",
+    "skills/manage-server-state/registry.json",
     "skills/skill-name/registry.json"
   ]
 }

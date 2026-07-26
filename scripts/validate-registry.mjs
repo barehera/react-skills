@@ -243,7 +243,7 @@ for (const { item, registryPath } of resolvedItems) {
     throw new Error(`${item.name}/SKILL.md frontmatter is missing or invalid`);
   }
 
-  if (item.name === "manage-react-server-state") {
+  if (item.name === "manage-server-state") {
     for (const repositoryPath of itemFiles) {
       if (repositoryPath.toLowerCase().includes("stream")) {
         throw new Error(
@@ -253,7 +253,7 @@ for (const { item, registryPath } of resolvedItems) {
     }
 
     const featureExampleRoot =
-      "skills/manage-react-server-state/examples/feature-colocated/src/features/";
+      "skills/manage-server-state/examples/feature-colocated/src/features/";
 
     for (const repositoryPath of itemFiles) {
       if (

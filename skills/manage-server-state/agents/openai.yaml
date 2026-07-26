@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Server State"
+  short_description: "Adapt type-safe server state to any React project"
+  default_prompt: "Use $manage-server-state to create or adapt this project's server state from provided API documentation or raw JSON and repository evidence, using runtime requests only as a final fallback."

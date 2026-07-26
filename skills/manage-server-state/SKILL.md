@@ -1,9 +1,9 @@
 ---
-name: manage-react-server-state
+name: manage-server-state
 description: Create, extend, refactor, or audit type-safe React server-state code while adapting to the repository's existing architecture, backend contracts, transport, authentication, validation strategy, and naming. Discover contracts from user-provided documentation, raw JSON examples, generated clients, and repository evidence before using runtime inspection. Use for TanStack Query features, API operations, query keys and options, hooks, mutations, pagination, cache synchronization, authenticated requests, or establishing a server-state structure from scratch.
 ---
 
-# Manage React Server State
+# Manage Server State
 
 Build reliable backend integration that feels native to the project. Treat the bundled implementation as a reference, never as a directory template to copy blindly.
 
