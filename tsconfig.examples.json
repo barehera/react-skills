@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "paths": {
+      "@/*": [
+        "./skills/manage-react-server-state/examples/feature-colocated/src/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022"
+  },
+  "include": [
+    "skills/manage-react-server-state/examples/feature-colocated/src/**/*.ts",
+    "skills/manage-react-server-state/examples/feature-colocated/src/**/*.tsx"
+  ]
+}
