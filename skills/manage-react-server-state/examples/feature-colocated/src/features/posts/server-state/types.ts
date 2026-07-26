@@ -19,7 +19,7 @@ export interface NormalizedPostFilters {
 
 export interface NormalizePostFiltersInput {
   filters?: PostFilters;
-  defaultLimit?: number;
+  defaultLimit: number;
 }
 
 export interface NormalizePostRelatedLimitInput {
@@ -68,8 +68,9 @@ export interface PostUpdateInput extends PostUpdateRequest {
   postId: string;
 }
 
-export interface PostListInput extends PostListQueryInput {
-  pageParam?: PostCursor;
+export interface PostListInput {
+  filters: NormalizedPostFilters;
+  cursor?: PostCursor;
   signal?: AbortSignal;
 }
 
@@ -77,7 +78,9 @@ export interface PostDetailInput extends PostDetailQueryInput {
   signal?: AbortSignal;
 }
 
-export interface PostRelatedInput extends PostRelatedQueryInput {
+export interface PostRelatedInput
+  extends PostDetailQueryInput,
+    PostRelatedContextQueryInput {
   signal?: AbortSignal;
 }
 
