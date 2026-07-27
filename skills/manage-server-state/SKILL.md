@@ -7,6 +7,10 @@ description: Create, extend, refactor, or audit type-safe React server-state cod
 
 Build reliable backend integration that feels native to the project. Treat the bundled implementation as a reference, never as a directory template to copy blindly.
 
+## Version
+
+Read the adjacent `VERSION` file and include `manage-server-state v<version>` in the final handoff so the user can identify stale guidance. The release workflow maintains this value; do not edit it during normal skill changes.
+
 ## Operating rule
 
 Separate decisions into three groups:
@@ -44,6 +48,7 @@ When no project convention exists, prefer:
 - `detail` as the single-resource read name; `list`, `infiniteList`, `create`, `update`, and `delete` for common operations.
 - Object inputs for public operations so parameters can grow safely.
 - Query option factories as the source of `queryKey` and `queryFn`, with thin hooks as the component API.
+- Named cache operations returned by a pure feature factory that binds QueryClient once, plus a thin feature hook for React callers. Do not memoize the returned cache API without a measured need.
 - Runtime validation for untrusted serialized data, unless generated backend types are the established source of truth.
 - The project's existing Axios, fetch, or generated-client transport instead of adding another client.
 - `set`, `patch`, `invalidate`, and `remove` for cache actions; reserve `delete` for the backend mutation.
@@ -53,7 +58,7 @@ Do not force `src/features`, Zod, Axios, Query Key Factory, shared response enve
 
 ## Reference implementation
 
-The complete implementation is under [examples/feature-colocated](examples/feature-colocated). It demonstrates shared primitives, a Posts resource, finite and infinite queries, context keys, an authenticated-query factory, mutations, and cache actions.
+The complete implementation is under [examples/feature-colocated](examples/feature-colocated). It demonstrates shared primitives, a Posts resource, finite and infinite queries, context keys, an authenticated-query factory, mutations, and hook-bound cache actions.
 
 Use [placements.md](references/placements.md) to map that implementation into a server-state-rooted, compact, or established layer-oriented project. Do not duplicate the implementation only to change directories.
 

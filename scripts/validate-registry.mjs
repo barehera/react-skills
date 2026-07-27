@@ -119,6 +119,7 @@ if (JSON.stringify(actualIncludes) !== JSON.stringify(expectedIncludes)) {
 
 const resolvedItems = await loadRegistry(rootRegistryPath);
 const itemNames = new Set();
+const catalogVersions = new Set();
 const registeredFiles = new Set();
 
 for (const { item, registryPath } of resolvedItems) {
@@ -152,6 +153,12 @@ for (const { item, registryPath } of resolvedItems) {
   ) {
     throw new Error(`${item.name} requires complete registry metadata`);
   }
+
+  if (!/^\d+\.\d+\.\d+$/.test(item.meta?.version ?? "")) {
+    throw new Error(`${item.name} requires meta.version in x.y.z format`);
+  }
+
+  catalogVersions.add(item.meta.version);
 
   for (const field of dependencyFields) {
     for (const dependency of item[field] ?? []) {
@@ -243,6 +250,16 @@ for (const { item, registryPath } of resolvedItems) {
     throw new Error(`${item.name}/SKILL.md frontmatter is missing or invalid`);
   }
 
+  const installedVersion = (
+    await readFile(resolve(skillDirectory, "VERSION"), "utf8")
+  ).trim();
+
+  if (installedVersion !== item.meta.version) {
+    throw new Error(
+      `${item.name} VERSION and registry meta.version are out of sync`,
+    );
+  }
+
   if (item.name === "manage-server-state") {
     for (const repositoryPath of itemFiles) {
       if (repositoryPath.toLowerCase().includes("stream")) {
@@ -275,9 +292,21 @@ if (
   throw new Error("Every skill folder must publish exactly one matching item");
 }
 
+if (catalogVersions.size !== 1) {
+  throw new Error("Every skill must use the same React Skills release version");
+}
+
 await stat(resolve(root, ".github/workflows/release.yml"));
-await stat(resolve(root, "bin/react-skills.mjs"));
+const installer = await readFile(resolve(root, "bin/react-skills.mjs"), "utf8");
 await stat(resolve(root, "docs/adding-a-skill.md"));
+await stat(resolve(root, "scripts/sync-release-version.mjs"));
+
+if (
+  !installer.includes('type: "multiselect"') ||
+  !installer.includes("Space to select. A to toggle all. Enter to submit.")
+) {
+  throw new Error("The React Skills installer must expose a multi-select UI");
+}
 
 const packageJson = await readJson(resolve(root, "package.json"));
 
@@ -293,16 +322,48 @@ const githubReleasePlugin = releaseConfig.plugins?.find(
   (plugin) =>
     Array.isArray(plugin) && plugin[0] === "@semantic-release/github",
 );
+const execReleasePlugin = releaseConfig.plugins?.find(
+  (plugin) => Array.isArray(plugin) && plugin[0] === "@semantic-release/exec",
+);
+const gitReleasePlugin = releaseConfig.plugins?.find(
+  (plugin) => Array.isArray(plugin) && plugin[0] === "@semantic-release/git",
+);
 const githubReleaseOptions = githubReleasePlugin?.[1];
+const execReleaseOptions = execReleasePlugin?.[1];
+const gitReleaseOptions = gitReleasePlugin?.[1];
+const gitReleaseAssets = new Set(gitReleaseOptions?.assets ?? []);
+const execReleaseIndex = releaseConfig.plugins?.indexOf(execReleasePlugin);
+const gitReleaseIndex = releaseConfig.plugins?.indexOf(gitReleasePlugin);
+const githubReleaseIndex = releaseConfig.plugins?.indexOf(githubReleasePlugin);
 
 if (
   !releaseConfig.branches?.includes("main") ||
   releaseConfig.tagFormat !== "v${version}" ||
+  execReleaseIndex < 0 ||
+  gitReleaseIndex <= execReleaseIndex ||
+  githubReleaseIndex <= gitReleaseIndex ||
+  !execReleaseOptions?.prepareCmd?.includes(
+    "release:sync-version -- ${nextRelease.version}",
+  ) ||
+  !execReleaseOptions?.prepareCmd?.includes("npm run validate") ||
+  !gitReleaseAssets.has("skills/*/VERSION") ||
+  !gitReleaseAssets.has("skills/*/registry.json") ||
+  !gitReleaseOptions?.message?.includes("[skip ci]") ||
   githubReleaseOptions?.releaseNameTemplate !== "v<%= nextRelease.version %>" ||
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Changes") ||
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Choose and install")
 ) {
-  throw new Error("React Skills release naming or details are invalid");
+  throw new Error("React Skills release automation is incomplete or invalid");
+}
+
+for (const dependency of ["@semantic-release/exec", "@semantic-release/git"]) {
+  if (!packageJson.devDependencies?.[dependency]?.startsWith("^")) {
+    throw new Error(`${dependency} must be installed with a caret range`);
+  }
+}
+
+if (!packageJson.dependencies?.prompts?.startsWith("^")) {
+  throw new Error("prompts must be installed as a runtime caret dependency");
 }
 
 console.log(

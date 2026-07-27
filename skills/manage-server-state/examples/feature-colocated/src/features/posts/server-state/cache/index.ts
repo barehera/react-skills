@@ -1,14 +1,15 @@
-import { postsQueryKeys } from "./queries/keys";
-import { postsQueries } from "./queries/options";
+import type { QueryClient } from "@tanstack/react-query";
+
+import { postsQueryKeys } from "../queries/keys";
+import { postsQueries } from "../queries/options";
 import type {
   PostCacheDetailInput,
   PostCachePatchDetailInput,
   PostCacheSetDetailInput,
-  PostsCacheInput,
-} from "./types";
+} from "../types";
 
-export const postsCache = {
-  invalidateLists({ queryClient }: PostsCacheInput) {
+export function createPostsCache(queryClient: QueryClient) {
+  function invalidateLists() {
     return Promise.all([
       queryClient.invalidateQueries({
         queryKey: postsQueryKeys.list._def,
@@ -17,36 +18,33 @@ export const postsCache = {
         queryKey: postsQueryKeys.infiniteList._def,
       }),
     ]);
-  },
+  }
 
-  setDetail({
-    queryClient,
-    post,
-  }: PostCacheSetDetailInput) {
+  function setDetail({ post }: PostCacheSetDetailInput) {
     queryClient.setQueryData(
       postsQueries.detail({ postId: post.id }).queryKey,
       post,
     );
-  },
+  }
 
-  patchDetail({
-    queryClient,
-    postId,
-    patch,
-  }: PostCachePatchDetailInput) {
+  function patchDetail({ postId, patch }: PostCachePatchDetailInput) {
     queryClient.setQueryData(
       postsQueries.detail({ postId }).queryKey,
       (current) => (current ? { ...current, ...patch } : current),
     );
-  },
+  }
 
-  removeDetail({
-    queryClient,
-    postId,
-  }: PostCacheDetailInput) {
+  function removeDetail({ postId }: PostCacheDetailInput) {
     queryClient.removeQueries({
       queryKey: postsQueries.detail({ postId }).queryKey,
       exact: false,
     });
-  },
-} as const;
+  }
+
+  return {
+    invalidateLists,
+    setDetail,
+    patchDetail,
+    removeDetail,
+  } as const;
+}
