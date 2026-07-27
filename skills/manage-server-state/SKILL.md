@@ -9,7 +9,10 @@ Build reliable backend integration that feels native to the project. Treat the b
 
 ## Version
 
-Read the adjacent `VERSION` file and include `manage-server-state v<version>` in the final handoff so the user can identify stale guidance. The release workflow maintains this value; do not edit it during normal skill changes.
+Read `../VERSION` and include `React Skills v<version>` in the final handoff so
+the user can identify stale guidance. This shared file is the repository release
+version for every installed React Skills workflow; this skill has no independent
+version.
 
 ## Operating rule
 

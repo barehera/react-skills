@@ -9,6 +9,7 @@ import prompts from "prompts";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const registryPath = resolve(packageRoot, "registry.json");
+const versionPath = resolve(packageRoot, "VERSION");
 const repositoryAddress = "barehera/react-skills";
 
 async function readRegistry(path, visited = new Set()) {
@@ -57,13 +58,13 @@ Options:
 `);
 }
 
-function printCatalog(items) {
+function printCatalog(items, releaseVersion) {
   console.log("\nAvailable React Skills\n");
 
   items.forEach((item, index) => {
-    const version = item.meta?.version ? ` v${item.meta.version}` : "";
-
-    console.log(`${index + 1}. ${item.title ?? item.name}${version}`);
+    console.log(
+      `${index + 1}. ${item.title ?? item.name} v${releaseVersion}`,
+    );
     console.log(`   ${item.description ?? item.name}`);
     console.log(`   ${item.name}\n`);
   });
@@ -158,7 +159,7 @@ function resolveSelections(selection, items) {
   return [...new Map(selectedItems.map((item) => [item.name, item])).values()];
 }
 
-async function selectInteractively(items) {
+async function selectInteractively(items, releaseVersion) {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
     throw new Error(
       "Interactive selection needs a terminal. Pass a skill name, --all, or --list.",
@@ -174,9 +175,7 @@ async function selectInteractively(items) {
       hint: "Space to select. A to toggle all. Enter to submit.",
       instructions: false,
       choices: items.map((item) => ({
-        title: `${item.title ?? item.name}${
-          item.meta?.version ? ` v${item.meta.version}` : ""
-        }`,
+        title: `${item.title ?? item.name} v${releaseVersion}`,
         value: item.name,
       })),
     },
@@ -205,14 +204,18 @@ async function main() {
     return;
   }
 
-  const items = await readRegistry(registryPath);
+  const [registryItems, releaseVersion] = await Promise.all([
+    readRegistry(registryPath),
+    readFile(versionPath, "utf8").then((value) => value.trim()),
+  ]);
+  const items = registryItems.filter((item) => item.type === "registry:item");
 
   if (items.length === 0) {
     throw new Error("The React Skills catalog is empty.");
   }
 
   if (options.listOnly) {
-    printCatalog(items);
+    printCatalog(items, releaseVersion);
     return;
   }
 
@@ -223,7 +226,7 @@ async function main() {
   } else if (options.selectedNames.length > 0) {
     selectedItems = resolveSelections(options.selectedNames.join(","), items);
   } else {
-    selectedItems = await selectInteractively(items);
+    selectedItems = await selectInteractively(items, releaseVersion);
   }
 
   if (selectedItems === null) {

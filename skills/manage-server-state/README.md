@@ -4,8 +4,8 @@
 
 Build, extend, refactor, or review React server-state code that matches the project and its real backend contracts.
 
-The installed `VERSION` file identifies the React Skills release containing
-this skill.
+The shared `.agents/skills/VERSION` file records the single React Skills
+repository release that supplied the installed workflow.
 
 The skill guides an AI coding agent through TanStack Query keys, option factories, hooks, authentication, mutations, pagination, runtime validation, and deliberate cache synchronization. Its default cache factory binds QueryClient once, while a thin hook exposes domain-focused operations to React callers. It adapts to existing architecture instead of copying the bundled example.
 
@@ -103,5 +103,5 @@ npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
 Check the installed version:
 
 ```powershell
-Get-Content .agents\skills\manage-server-state\VERSION
+Get-Content .agents\skills\VERSION
 ```

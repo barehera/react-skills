@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillsRoot = resolve(root, "skills");
+const releaseVersionPath = resolve(root, "VERSION");
 const registrySchema = "https://ui.shadcn.com/schema/registry.json";
 const dependencyFields = ["dependencies", "devDependencies"];
 
@@ -93,8 +94,19 @@ if (
   throw new Error("The root registry metadata must identify React Skills");
 }
 
-if ((rootRegistry.items ?? []).length > 0) {
-  throw new Error("Define skill items in skill-local registries, not the root");
+const [releaseItem] = rootRegistry.items ?? [];
+const [releaseFile] = releaseItem?.files ?? [];
+
+if (
+  rootRegistry.items?.length !== 1 ||
+  releaseItem?.name !== "react-skills-version" ||
+  releaseItem?.type !== "registry:file" ||
+  releaseItem?.files?.length !== 1 ||
+  resolve(root, releaseFile?.path ?? "") !== releaseVersionPath ||
+  releaseFile?.type !== "registry:file" ||
+  releaseFile?.target !== "~/.agents/skills/VERSION"
+) {
+  throw new Error("The root registry must publish the shared release VERSION");
 }
 
 const skillDirectories = (await readdir(skillsRoot, { withFileTypes: true }))
@@ -118,11 +130,18 @@ if (JSON.stringify(actualIncludes) !== JSON.stringify(expectedIncludes)) {
 }
 
 const resolvedItems = await loadRegistry(rootRegistryPath);
+const resolvedSkillItems = resolvedItems.filter(
+  ({ registryPath }) => registryPath !== rootRegistryPath,
+);
+const releaseVersion = (await readFile(releaseVersionPath, "utf8")).trim();
 const itemNames = new Set();
-const catalogVersions = new Set();
 const registeredFiles = new Set();
 
-for (const { item, registryPath } of resolvedItems) {
+if (!/^\d+\.\d+\.\d+$/.test(releaseVersion)) {
+  throw new Error("The root VERSION must use x.y.z format");
+}
+
+for (const { item, registryPath } of resolvedSkillItems) {
   if (itemNames.has(item.name)) {
     throw new Error(`Duplicate registry item: ${item.name}`);
   }
@@ -139,6 +158,12 @@ for (const { item, registryPath } of resolvedItems) {
   const skillDirectory = resolve(skillsRoot, item.name);
   const expectedRegistryPath = resolve(skillDirectory, "registry.json");
 
+  if ((await readdir(skillDirectory)).includes("VERSION")) {
+    throw new Error(
+      `${item.name} must use the shared release version, not a skill-local VERSION`,
+    );
+  }
+
   if (registryPath !== expectedRegistryPath) {
     throw new Error(
       `${item.name} must be declared in skills/${item.name}/registry.json`,
@@ -154,11 +179,21 @@ for (const { item, registryPath } of resolvedItems) {
     throw new Error(`${item.name} requires complete registry metadata`);
   }
 
-  if (!/^\d+\.\d+\.\d+$/.test(item.meta?.version ?? "")) {
-    throw new Error(`${item.name} requires meta.version in x.y.z format`);
+  if (item.meta?.version !== undefined) {
+    throw new Error(
+      `${item.name} must use the root release version, not meta.version`,
+    );
   }
 
-  catalogVersions.add(item.meta.version);
+  if (
+    !item.registryDependencies?.includes(
+      "barehera/react-skills/react-skills-version",
+    )
+  ) {
+    throw new Error(
+      `${item.name} must depend on the shared React Skills version item`,
+    );
+  }
 
   for (const field of dependencyFields) {
     for (const dependency of item[field] ?? []) {
@@ -250,16 +285,6 @@ for (const { item, registryPath } of resolvedItems) {
     throw new Error(`${item.name}/SKILL.md frontmatter is missing or invalid`);
   }
 
-  const installedVersion = (
-    await readFile(resolve(skillDirectory, "VERSION"), "utf8")
-  ).trim();
-
-  if (installedVersion !== item.meta.version) {
-    throw new Error(
-      `${item.name} VERSION and registry meta.version are out of sync`,
-    );
-  }
-
   if (item.name === "manage-server-state") {
     for (const repositoryPath of itemFiles) {
       if (repositoryPath.toLowerCase().includes("stream")) {
@@ -292,10 +317,6 @@ if (
   throw new Error("Every skill folder must publish exactly one matching item");
 }
 
-if (catalogVersions.size !== 1) {
-  throw new Error("Every skill must use the same React Skills release version");
-}
-
 await stat(resolve(root, ".github/workflows/release.yml"));
 const installer = await readFile(resolve(root, "bin/react-skills.mjs"), "utf8");
 await stat(resolve(root, "docs/adding-a-skill.md"));
@@ -309,12 +330,19 @@ if (
 }
 
 const packageJson = await readJson(resolve(root, "package.json"));
+const packageLock = await readJson(resolve(root, "package-lock.json"));
 
 if (
   packageJson.name !== "react-skills" ||
-  packageJson.bin?.["react-skills"] !== "./bin/react-skills.mjs"
+  packageJson.bin?.["react-skills"] !== "./bin/react-skills.mjs" ||
+  !packageJson.files?.includes("VERSION") ||
+  packageJson.version !== releaseVersion ||
+  packageLock.version !== releaseVersion ||
+  packageLock.packages?.[""]?.version !== releaseVersion
 ) {
-  throw new Error("package.json must expose the React Skills selector");
+  throw new Error(
+    "VERSION, package.json, and package-lock.json must match the release",
+  );
 }
 
 const releaseConfig = await readJson(resolve(root, ".releaserc.json"));
@@ -346,8 +374,9 @@ if (
     "release:sync-version -- ${nextRelease.version}",
   ) ||
   !execReleaseOptions?.prepareCmd?.includes("npm run validate") ||
-  !gitReleaseAssets.has("skills/*/VERSION") ||
-  !gitReleaseAssets.has("skills/*/registry.json") ||
+  !gitReleaseAssets.has("VERSION") ||
+  !gitReleaseAssets.has("package.json") ||
+  !gitReleaseAssets.has("package-lock.json") ||
   !gitReleaseOptions?.message?.includes("[skip ci]") ||
   githubReleaseOptions?.releaseNameTemplate !== "v<%= nextRelease.version %>" ||
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Changes") ||

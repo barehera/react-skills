@@ -74,8 +74,9 @@
       "@semantic-release/git",
       {
         "assets": [
-          "skills/*/VERSION",
-          "skills/*/registry.json"
+          "VERSION",
+          "package.json",
+          "package-lock.json"
         ],
         "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }

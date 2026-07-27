@@ -14,7 +14,9 @@
 React Skills gives repository-aware AI coding agents focused workflows for building clean, consistent React applications.
 
 Each skill is independently documented and installable, while the catalog is
-released as one versioned unit. Skills teach an agent how to inspect and adapt a
+released as one versioned unit. The GitHub `v*` release is canonical; root
+`VERSION`, package metadata, the selector, and installed skills are synchronized
+copies of that release number. Skills teach an agent how to inspect and adapt a
 project; they do not force a starter template or install application runtime
 dependencies.
 
@@ -56,9 +58,9 @@ To inspect the catalog without installing:
 npx --yes github:barehera/react-skills --list
 ```
 
-The catalog lists the React Skills release containing each skill. After
-installation, the same value is available in
-`.agents/skills/<skill-name>/VERSION`.
+The catalog displays the one React Skills release version. Installing any skill
+also installs `.agents/skills/VERSION`, so agents can report which repository
+release supplied every installed React Skills workflow.
 
 Review a skill before applying it:
 
