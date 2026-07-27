@@ -78,7 +78,7 @@ Report evidence with file and line locations. Do not implement fixes unless auth
 - Contract facts distinguish verified, observed, inferred, and unresolved evidence.
 - Runtime requests were not used when documentation or repository evidence was sufficient.
 - Runtime validation or generated-type trust is deliberate.
-- Failed runtime response validation cannot fall back to an asserted raw payload.
+- Failed runtime response validation reports schema drift without rejecting the query.
 - Query keys include every discriminating input.
 - Finite and infinite data shapes do not share an identity.
 - Cancellation and auth gating prevent unintended requests.

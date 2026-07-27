@@ -308,12 +308,13 @@ for (const { item, registryPath } of resolvedSkillItems) {
     if (
       parseApiPayloadStart < 0 ||
       parseApiPayloadEnd < 0 ||
-      !parseApiPayloadExample.includes("throw new ApiRequestError") ||
-      parseApiPayloadExample.includes("return value as") ||
-      parseApiPayloadExample.includes("console.warn")
+      !parseApiPayloadExample.includes("new ApiRequestError") ||
+      !parseApiPayloadExample.includes("return value as TOutput") ||
+      !parseApiPayloadExample.includes("console.warn") ||
+      parseApiPayloadExample.includes("throw new ApiRequestError")
     ) {
       throw new Error(
-        `${item.name} must reject invalid API payloads without an asserted fallback`,
+        `${item.name} must report schema drift without rejecting the query`,
       );
     }
 
