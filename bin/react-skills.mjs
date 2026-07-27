@@ -11,6 +11,13 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const registryPath = resolve(packageRoot, "registry.json");
 const versionPath = resolve(packageRoot, "VERSION");
 const repositoryAddress = "barehera/react-skills";
+const terminalReset = "\u001B[0m\u001B[?25h";
+
+function restoreTerminal() {
+  if (process.stdout.isTTY) {
+    process.stdout.write(terminalReset);
+  }
+}
 
 async function readRegistry(path, visited = new Set()) {
   const resolvedPath = resolve(path);
@@ -254,16 +261,19 @@ async function main() {
     ...itemAddresses,
     ...options.shadcnArguments,
   ];
+  // shadcn writes successful progress updates to stderr. Forward both visible
+  // streams normally so PowerShell does not render a successful install in red.
+  const installationStdio = ["inherit", "inherit", process.stdout];
   const result =
     process.platform === "win32"
       ? spawnSync(["npx", ...commandArguments].join(" "), {
           cwd: options.cwd,
           shell: true,
-          stdio: "inherit",
+          stdio: installationStdio,
         })
       : spawnSync("npx", commandArguments, {
           cwd: options.cwd,
-          stdio: "inherit",
+          stdio: installationStdio,
         });
 
   if (result.error) {
@@ -273,7 +283,9 @@ async function main() {
   process.exitCode = result.status ?? 1;
 }
 
-main().catch((error) => {
-  console.error(`\nReact Skills: ${error.message}`);
-  process.exitCode = 1;
-});
+main()
+  .catch((error) => {
+    console.error(`\nReact Skills: ${error.message}`);
+    process.exitCode = 1;
+  })
+  .finally(restoreTerminal);
