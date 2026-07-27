@@ -84,10 +84,25 @@ Choose the strategy already used by the project:
 
 Do not invent a universal `{ data }`, pagination, or error envelope. Shared builders are project-specific and must match the actual backend.
 
+### Runtime validation failures
+
+If a response schema is the boundary that produces the function's TypeScript
+return type, failed validation must throw or return an explicit failure type.
+Never warn and return the raw value with `as TOutput`; that converts untrusted,
+invalid data into a false type guarantee and lets failures surface later in
+unrelated UI code.
+
+Make schemas tolerant of changes the application can safely ignore instead of
+bypassing validation. Zod objects ignore additive unknown keys by default.
+Choose `.passthrough()` only when consumers must retain those keys. Missing
+required fields, incompatible types, and invalid known values should reject the
+query through the project's normalized error path.
+
 ## Transport operations
 
 - Reuse the existing Axios, fetch, GraphQL, RPC, server-action, or generated-client abstraction.
 - Treat network responses as untrusted when runtime parsing establishes the type. With Axios this commonly means `<unknown>` before parsing.
+- When runtime parsing fails, throw the normalized invalid-response error; do not return the raw payload as the parsed type.
 - Let parsing infer the return type instead of restating a redundant Promise type.
 - Return the validated backend shape unchanged unless the project intentionally maps distinct models.
 - Encode dynamic URL segments and forward cancellation through `AbortSignal` when the transport supports it.

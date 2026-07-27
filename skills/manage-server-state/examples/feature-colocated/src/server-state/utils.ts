@@ -69,6 +69,10 @@ export function normalizeApiError(error: unknown): ApiRequestError {
   });
 }
 
+/**
+ * Returns only schema-validated data. Invalid responses reject the request
+ * instead of being cast to the expected output type.
+ */
 export function parseApiPayload<TOutput>(
   schema: z.ZodType<TOutput>,
   value: unknown,

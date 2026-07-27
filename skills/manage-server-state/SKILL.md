@@ -22,6 +22,11 @@ Separate decisions into three groups:
 2. Enforce correctness: stable cache identity, complete query keys, cancellation, safe auth gating, accurate pagination, deliberate cache effects, and one consistent vocabulary.
 3. Apply defaults only when the project has no convention. State important defaults before creating a new architecture.
 
+When runtime response validation is enabled, treat successful parsing as the
+type-safety boundary. A failed parse must reject the request with a normalized
+error. Never log the failure and return the unvalidated payload with a type
+assertion.
+
 ## Required workflow
 
 1. Collect the endpoint information, documentation, raw request/response JSON, cURL, or sanitized HAR evidence the user provides.
