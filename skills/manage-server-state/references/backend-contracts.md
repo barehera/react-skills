@@ -84,10 +84,23 @@ Choose the strategy already used by the project:
 
 Do not invent a universal `{ data }`, pagination, or error envelope. Shared builders are project-specific and must match the actual backend.
 
+### Non-blocking schema drift
+
+Treat response parsing as validation plus schema-drift reporting, not a reason
+to fail an otherwise successful request. If parsing fails, create the normalized
+invalid-response error for diagnostics, warn with its issues, and return the raw
+payload as the expected output. This intentionally favors application
+continuity over a strict runtime guarantee.
+
+Keep schemas tolerant of changes the application can safely ignore. Zod objects
+ignore additive unknown keys by default. Choose `.passthrough()` only when
+consumers must retain those keys.
+
 ## Transport operations
 
 - Reuse the existing Axios, fetch, GraphQL, RPC, server-action, or generated-client abstraction.
 - Treat network responses as untrusted when runtime parsing establishes the type. With Axios this commonly means `<unknown>` before parsing.
+- When runtime parsing fails, warn with the normalized invalid-response details and preserve the raw backend payload so the query remains successful.
 - Let parsing infer the return type instead of restating a redundant Promise type.
 - Return the validated backend shape unchanged unless the project intentionally maps distinct models.
 - Encode dynamic URL segments and forward cancellation through `AbortSignal` when the transport supports it.

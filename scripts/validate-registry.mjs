@@ -286,6 +286,38 @@ for (const { item, registryPath } of resolvedSkillItems) {
   }
 
   if (item.name === "manage-server-state") {
+    const exampleUtils = await readFile(
+      resolve(
+        skillDirectory,
+        "examples/feature-colocated/src/server-state/utils.ts",
+      ),
+      "utf8",
+    );
+    const parseApiPayloadStart = exampleUtils.indexOf(
+      "export function parseApiPayload",
+    );
+    const parseApiPayloadEnd = exampleUtils.indexOf(
+      "export function mergeQueryOptions",
+      parseApiPayloadStart,
+    );
+    const parseApiPayloadExample = exampleUtils.slice(
+      parseApiPayloadStart,
+      parseApiPayloadEnd,
+    );
+
+    if (
+      parseApiPayloadStart < 0 ||
+      parseApiPayloadEnd < 0 ||
+      !parseApiPayloadExample.includes("new ApiRequestError") ||
+      !parseApiPayloadExample.includes("return value as TOutput") ||
+      !parseApiPayloadExample.includes("console.warn") ||
+      parseApiPayloadExample.includes("throw new ApiRequestError")
+    ) {
+      throw new Error(
+        `${item.name} must report schema drift without rejecting the query`,
+      );
+    }
+
     for (const repositoryPath of itemFiles) {
       if (repositoryPath.toLowerCase().includes("stream")) {
         throw new Error(

@@ -9,6 +9,12 @@ Read [../examples/feature-colocated](../examples/feature-colocated) when impleme
 
 This is one tested composition. Do not copy its paths, Axios client, Zod envelopes, authenticated-query policy, Posts fields, pagination, or defaults without verifying they match the target project. The example does not assume Posts writes affect the `related` query; verify that relationship and add a targeted cache effect when the real backend requires one.
 
+Its `parseApiPayload` helper reports schema drift without rejecting the query.
+Preserve that non-blocking behavior when adapting it: warn with the normalized
+validation details, then return the raw response as the expected output. To
+retain additive backend fields in successfully parsed data, adjust the object
+schema policy.
+
 ## Example: create a feature in an established project
 
 User request:

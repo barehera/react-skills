@@ -22,6 +22,11 @@ Separate decisions into three groups:
 2. Enforce correctness: stable cache identity, complete query keys, cancellation, safe auth gating, accurate pagination, deliberate cache effects, and one consistent vocabulary.
 3. Apply defaults only when the project has no convention. State important defaults before creating a new architecture.
 
+Use response schemas to validate and infer the expected shape without making
+schema drift take down the query. When parsing fails, report the mismatch and
+return the raw payload as the expected output so the application can degrade
+gracefully. Do not throw solely because a server response failed schema parsing.
+
 ## Required workflow
 
 1. Collect the endpoint information, documentation, raw request/response JSON, cURL, or sanitized HAR evidence the user provides.

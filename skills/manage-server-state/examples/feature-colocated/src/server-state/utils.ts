@@ -69,6 +69,10 @@ export function normalizeApiError(error: unknown): ApiRequestError {
   });
 }
 
+/**
+ * Returns validated data when possible. Schema drift is reported without
+ * rejecting an otherwise successful request.
+ */
 export function parseApiPayload<TOutput>(
   schema: z.ZodType<TOutput>,
   value: unknown,
@@ -76,12 +80,16 @@ export function parseApiPayload<TOutput>(
   const result = schema.safeParse(value);
 
   if (!result.success) {
-    throw new ApiRequestError({
+    const error = new ApiRequestError({
       message: "Server response did not match the expected schema",
       code: "invalid_response",
       details: result.error.issues,
       cause: result.error,
     });
+
+    console.warn(error.message, result.error.issues);
+
+    return value as TOutput;
   }
 
   return result.data;
