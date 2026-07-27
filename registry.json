@@ -2,6 +2,21 @@
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "react-skills",
   "homepage": "https://github.com/barehera/react-skills",
+  "items": [
+    {
+      "name": "react-skills-version",
+      "type": "registry:file",
+      "title": "React Skills Version",
+      "description": "Installs the shared React Skills repository release version.",
+      "files": [
+        {
+          "path": "VERSION",
+          "type": "registry:file",
+          "target": "~/.agents/skills/VERSION"
+        }
+      ]
+    }
+  ],
   "include": [
     "skills/manage-server-state/registry.json"
   ]

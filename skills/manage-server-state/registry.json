@@ -6,15 +6,10 @@
       "type": "registry:item",
       "title": "Manage Server State",
       "description": "Create, extend, refactor, and audit type-safe React server state from documented, observed, or conservatively inferred backend contracts.",
-      "meta": {
-        "version": "1.3.0"
-      },
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
       "files": [
-        {
-          "path": "VERSION",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/VERSION"
-        },
         {
           "path": "SKILL.md",
           "type": "registry:file",

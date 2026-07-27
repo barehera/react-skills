@@ -5,10 +5,10 @@ Each skill is a self-contained registry item. Keep skill-specific decisions insi
 ## Structure
 
 ```text
+VERSION
 skills/
   skill-name/
     SKILL.md
-    VERSION
     README.md
     registry.json
     agents/
@@ -22,8 +22,9 @@ skills/
 
 Only create optional folders that the skill uses.
 
+- Root `VERSION` is the generated machine-readable copy of the canonical GitHub
+  release version. Do not edit it manually.
 - `SKILL.md` contains concise agent instructions and links directly to focused references.
-- `VERSION` contains the React Skills release that last synchronized the catalog. Do not edit it manually.
 - `README.md` is human-facing documentation linked from the root catalog.
 - `registry.json` declares one installable item named exactly like the folder.
 - `agents/openai.yaml` contains UI metadata for agents that support it.
@@ -52,20 +53,27 @@ Add the skill registry to the root `registry.json`:
 }
 ```
 
-Paths inside the skill registry are relative to that skill's folder. Publish every skill resource that the agent needs, but do not publish its human-facing `README.md` or local `registry.json`.
+Paths inside the skill registry are relative to that skill's folder. Publish
+every skill resource that the agent needs, but do not publish its human-facing
+`README.md` or local `registry.json`. Every skill must depend on the internal
+catalog item that installs the shared release version:
+
+```json
+{
+  "registryDependencies": [
+    "barehera/react-skills/react-skills-version"
+  ]
+}
+```
 
 Add the skill to the **Available skills** table in the root README.
 
-Set `meta.version` and `VERSION` by running:
-
-```bash
-npm run release:sync-version
-```
-
-Without an explicit argument, the command uses the latest repository `v*` tag.
-The release workflow reruns it with semantic-release's next version and commits
-the synchronized skill metadata automatically. Skills use the catalog release
-version; they are not versioned independently.
+Do not add `meta.version` or a skill-local `VERSION`. The selector reads the
+shared release version for every skill, and the internal dependency installs it
+once at `.agents/skills/VERSION`. Semantic-release determines the next GitHub
+release version, then synchronizes root `VERSION`, `package.json`, and
+`package-lock.json` before publishing and commits those generated copies
+automatically.
 
 ## Validate
 
