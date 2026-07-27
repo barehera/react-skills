@@ -1,18 +1,18 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { postsApi } from "../api";
-import { postsCache } from "../cache";
+import { usePostsCache } from "../cache/use-cache";
 
 export function useDeletePostMutation() {
-  const queryClient = useQueryClient();
+  const postsCache = usePostsCache();
 
   return useMutation({
     mutationFn: postsApi.delete,
     onSuccess: (_, { postId }) => {
-      postsCache.removeDetail({ queryClient, postId });
-      return postsCache.invalidateLists({ queryClient });
+      postsCache.removeDetail({ postId });
+      return postsCache.invalidateLists();
     },
   });
 }

@@ -13,7 +13,10 @@
 
 React Skills gives repository-aware AI coding agents focused workflows for building clean, consistent React applications.
 
-Each skill is independently documented, installable, and versioned through this repository. Skills teach an agent how to inspect and adapt a project; they do not force a starter template or install application runtime dependencies.
+Each skill is independently documented and installable, while the catalog is
+released as one versioned unit. Skills teach an agent how to inspect and adapt a
+project; they do not force a starter template or install application runtime
+dependencies.
 
 ## Available skills
 
@@ -31,7 +34,15 @@ Run the interactive installer from your project root:
 npx --yes github:barehera/react-skills
 ```
 
-It reads the catalog, shows every available skill, and lets you select one or more. shadcn performs the installation after your selection.
+The selector uses the same terminal interaction style as shadcn:
+
+- `↑` / `↓` moves between skills.
+- `Space` selects or clears a skill.
+- `a` toggles all skills.
+- `Enter` installs the selection.
+
+Press `Ctrl+C` to cancel. shadcn performs the installation after your
+selection.
 
 To install a known skill directly:
 
@@ -44,6 +55,10 @@ To inspect the catalog without installing:
 ```bash
 npx --yes github:barehera/react-skills --list
 ```
+
+The catalog lists the React Skills release containing each skill. After
+installation, the same value is available in
+`.agents/skills/<skill-name>/VERSION`.
 
 Review a skill before applying it:
 

@@ -65,6 +65,22 @@
       }
     ],
     [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "npm run release:sync-version -- ${nextRelease.version} && npm run validate"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "skills/*/VERSION",
+          "skills/*/registry.json"
+        ],
+        "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    [
       "@semantic-release/github",
       {
         "releaseNameTemplate": "v<%= nextRelease.version %>",

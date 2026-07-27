@@ -61,13 +61,14 @@ contracts/types/names/defaults
              v
            hooks
 
-keys or typed option keys ---> cache actions <--- mutations
+keys or typed option keys ---> cache factory ---> cache hook ---> mutations
 ```
 
 - Transport must not depend on React hooks.
 - Query keys must not depend on option factories.
 - Components should normally consume the project's public query/mutation API rather than recreate network policy.
 - Cache helpers should build identities through the same key source used by queries.
+- Bind QueryClient once in a pure cache factory and expose it to React through a thin feature hook. Define named operations before returning them; do not pass QueryClient into every operation or memoize the returned API without a measured need.
 - A cache helper may use an option factory's typed `queryKey` when it improves cached-data inference. Keep that dependency acyclic: option factories must not import cache helpers.
 
 ## Shared versus feature-owned code

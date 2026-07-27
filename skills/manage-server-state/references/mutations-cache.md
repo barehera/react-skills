@@ -2,9 +2,41 @@
 
 ## Mutation ownership
 
-Follow the project's public API style. A mutation hook normally owns `useMutation`, calls the transport operation, obtains the QueryClient, and applies the endpoint's actual cache effects. Separate reusable cache actions when more than one mutation or workflow needs them; keep a simple one-off update local when extraction adds no clarity.
+Follow the project's public API style. A mutation hook normally owns `useMutation`, calls the transport operation, obtains a feature cache API, and applies the endpoint's actual cache effects. Separate reusable cache actions when more than one mutation or workflow needs them; keep a simple one-off update local when extraction adds no clarity.
 
-Keep cache invariants and shared side effects inside the hook. For component-specific reactions, use the mutation call's supported callbacks, such as `mutate(input, { onSuccess, onError })`. Do not add generic hook arguments that merely forward mutation options.
+Bind QueryClient once in a pure cache factory. Define named operations, then return the public cache API:
+
+```ts
+export function createPostsCache(queryClient: QueryClient) {
+  function setDetail({ post }: PostCacheSetDetailInput) {
+    queryClient.setQueryData(
+      postsQueries.detail({ postId: post.id }).queryKey,
+      post,
+    );
+  }
+
+  function invalidateLists() {
+    return queryClient.invalidateQueries({
+      queryKey: postsQueryKeys.list._def,
+    });
+  }
+
+  return {
+    setDetail,
+    invalidateLists,
+  } as const;
+}
+
+export function usePostsCache() {
+  return createPostsCache(useQueryClient());
+}
+```
+
+Consumers call `usePostsCache()` once and invoke operations with domain inputs only. Do not include QueryClient in every cache action input.
+
+Keep the factory in `cache/index.ts` and the React adapter in `cache/use-cache.ts`. The index file contains the implementation; it is not a barrel. Do not add `useMemo` or `useCallback` without a measured referential-stability need.
+
+Keep cache invariants and shared side effects inside the cache operations. For component-specific reactions, use the mutation call's supported callbacks, such as `mutate(input, { onSuccess, onError })`. Do not add generic hook arguments that merely forward mutation options.
 
 Use the backend result and mutation variables. Do not broadly invalidate every resource by habit.
 

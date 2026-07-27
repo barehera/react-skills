@@ -4,9 +4,23 @@
 
 Build, extend, refactor, or review React server-state code that matches the project and its real backend contracts.
 
-The skill guides an AI coding agent through TanStack Query keys, option factories, hooks, authentication, mutations, pagination, runtime validation, and deliberate cache synchronization. It adapts to existing architecture instead of copying the bundled example.
+The installed `VERSION` file identifies the React Skills release containing
+this skill.
+
+The skill guides an AI coding agent through TanStack Query keys, option factories, hooks, authentication, mutations, pagination, runtime validation, and deliberate cache synchronization. Its default cache factory binds QueryClient once, while a thin hook exposes domain-focused operations to React callers. It adapts to existing architecture instead of copying the bundled example.
 
 ## Install
+
+Choose it from the interactive React Skills catalog:
+
+```bash
+npx --yes github:barehera/react-skills
+```
+
+Use the arrow keys to move, `Space` to select, `a` to toggle all, and `Enter`
+to install.
+
+Or install it directly:
 
 ```bash
 npx shadcn@latest add barehera/react-skills/manage-server-state
@@ -84,4 +98,10 @@ type-safety problems.
 
 ```bash
 npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
+```
+
+Check the installed version:
+
+```powershell
+Get-Content .agents\skills\manage-server-state\VERSION
 ```

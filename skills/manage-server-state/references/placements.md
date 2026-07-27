@@ -17,7 +17,9 @@ src/
     └── posts/
         └── server-state/
             ├── api.ts
-            ├── cache.ts
+            ├── cache/
+            │   ├── index.ts
+            │   └── use-cache.ts
             ├── schemas.ts
             ├── types.ts
             ├── queries/
@@ -43,7 +45,9 @@ src/
     │   └── utils.ts
     ├── posts/
     │   ├── api.ts
-    │   ├── cache.ts
+    │   ├── cache/
+    │   │   ├── index.ts
+    │   │   └── use-cache.ts
     │   ├── constants.ts
     │   ├── names.ts
     │   ├── schemas.ts

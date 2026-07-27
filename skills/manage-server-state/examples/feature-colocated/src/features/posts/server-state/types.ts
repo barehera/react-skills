@@ -1,5 +1,3 @@
-import type { QueryClient } from "@tanstack/react-query";
-
 import type {
   Post,
   PostCreateRequest,
@@ -46,15 +44,11 @@ export interface PostRelatedContextQueryInput {
   limit: number;
 }
 
-export interface PostsCacheInput {
-  queryClient: QueryClient;
-}
-
-export interface PostCacheDetailInput extends PostsCacheInput {
+export interface PostCacheDetailInput {
   postId: string;
 }
 
-export interface PostCacheSetDetailInput extends PostsCacheInput {
+export interface PostCacheSetDetailInput {
   post: Post;
 }
 

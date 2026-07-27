@@ -8,6 +8,7 @@ Each skill is a self-contained registry item. Keep skill-specific decisions insi
 skills/
   skill-name/
     SKILL.md
+    VERSION
     README.md
     registry.json
     agents/
@@ -22,6 +23,7 @@ skills/
 Only create optional folders that the skill uses.
 
 - `SKILL.md` contains concise agent instructions and links directly to focused references.
+- `VERSION` contains the React Skills release that last synchronized the catalog. Do not edit it manually.
 - `README.md` is human-facing documentation linked from the root catalog.
 - `registry.json` declares one installable item named exactly like the folder.
 - `agents/openai.yaml` contains UI metadata for agents that support it.
@@ -54,6 +56,17 @@ Paths inside the skill registry are relative to that skill's folder. Publish eve
 
 Add the skill to the **Available skills** table in the root README.
 
+Set `meta.version` and `VERSION` by running:
+
+```bash
+npm run release:sync-version
+```
+
+Without an explicit argument, the command uses the latest repository `v*` tag.
+The release workflow reruns it with semantic-release's next version and commits
+the synchronized skill metadata automatically. Skills use the catalog release
+version; they are not versioned independently.
+
 ## Validate
 
 Run:
@@ -64,4 +77,6 @@ npm run validate
 
 Validation checks the composed catalog, unique names, complete skill files, install targets, metadata, examples, interactive catalog listing, TypeScript examples, and built registry output.
 
-The release workflow versions the complete React Skills catalog after changes merge to `main`.
+The release workflow versions the complete React Skills catalog after changes
+merge to `main`, rebuilds the registry, and commits the generated version
+metadata with a skipped-CI release commit.

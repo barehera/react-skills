@@ -35,7 +35,9 @@ For a `Post` entity in a `posts` domain:
 | Transport namespace | `postsApi` |
 | Query keys | `postsQueryKeys` |
 | Query options | `postsQueries` |
-| Cache actions | `postsCache` |
+| Cache factory | `createPostsCache` |
+| Cache hook | `usePostsCache` |
+| Bound cache instance | `postsCache` |
 | Collection hook | `usePostsListQuery` |
 | Single-resource hook | `usePostDetailQuery` |
 | Mutation hook | `useCreatePostMutation` |
@@ -48,6 +50,7 @@ At call sites, derive the result name from the hook by removing `use` and lowerc
 ```ts
 const postsListQuery = usePostsListQuery({ filters });
 const postDetailQuery = usePostDetailQuery({ postId });
+const postsCache = usePostsCache();
 const createPostMutation = useCreatePostMutation();
 ```
 

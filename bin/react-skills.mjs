@@ -3,8 +3,9 @@
 import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
+
+import prompts from "prompts";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const registryPath = resolve(packageRoot, "registry.json");
@@ -35,8 +36,14 @@ function printHelp() {
 Select and install Agent Skills from ${repositoryAddress}.
 
 Usage:
-  npx --yes github:${repositoryAddress}
+  npx --yes github:${repositoryAddress}          Open the skill selector
   npx --yes github:${repositoryAddress} <skill...> [options]
+
+Selector:
+  Arrow keys         Move between skills
+  Space              Select or clear a skill
+  A                  Toggle every skill
+  Enter              Install selected skills
 
 Options:
   --list             List available skills without installing
@@ -54,7 +61,9 @@ function printCatalog(items) {
   console.log("\nAvailable React Skills\n");
 
   items.forEach((item, index) => {
-    console.log(`${index + 1}. ${item.title ?? item.name}`);
+    const version = item.meta?.version ? ` v${item.meta.version}` : "";
+
+    console.log(`${index + 1}. ${item.title ?? item.name}${version}`);
     console.log(`   ${item.description ?? item.name}`);
     console.log(`   ${item.name}\n`);
   });
@@ -156,22 +165,36 @@ async function selectInteractively(items) {
     );
   }
 
-  printCatalog(items);
+  let cancelled = false;
+  const { selectedNames = [] } = await prompts(
+    {
+      type: "multiselect",
+      name: "selectedNames",
+      message: "Which skills would you like to install?",
+      hint: "Space to select. A to toggle all. Enter to submit.",
+      instructions: false,
+      choices: items.map((item) => ({
+        title: `${item.title ?? item.name}${
+          item.meta?.version ? ` v${item.meta.version}` : ""
+        }`,
+        value: item.name,
+      })),
+    },
+    {
+      onCancel() {
+        cancelled = true;
+        return false;
+      },
+    },
+  );
 
-  const prompt = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  try {
-    const answer = await prompt.question(
-      'Select one or more skills (comma-separated numbers or "all"): ',
-    );
-
-    return resolveSelections(answer, items);
-  } finally {
-    prompt.close();
+  if (cancelled) {
+    return null;
   }
+
+  return selectedNames.map((name) =>
+    items.find((item) => item.name === name),
+  );
 }
 
 async function main() {
@@ -203,8 +226,14 @@ async function main() {
     selectedItems = await selectInteractively(items);
   }
 
+  if (selectedItems === null) {
+    console.log("\nInstallation cancelled.\n");
+    return;
+  }
+
   if (selectedItems.length === 0) {
-    throw new Error("No skills selected.");
+    console.log("\nNo skills selected. Exiting.\n");
+    return;
   }
 
   const itemAddresses = selectedItems.map(

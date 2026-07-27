@@ -6,7 +6,15 @@
       "type": "registry:item",
       "title": "Manage Server State",
       "description": "Create, extend, refactor, and audit type-safe React server state from documented, observed, or conservatively inferred backend contracts.",
+      "meta": {
+        "version": "1.2.2"
+      },
       "files": [
+        {
+          "path": "VERSION",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/VERSION"
+        },
         {
           "path": "SKILL.md",
           "type": "registry:file",
@@ -98,9 +106,14 @@
           "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/api.ts"
         },
         {
-          "path": "examples/feature-colocated/src/features/posts/server-state/cache.ts",
+          "path": "examples/feature-colocated/src/features/posts/server-state/cache/index.ts",
           "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache.ts"
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache/index.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/cache/use-cache.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache/use-cache.ts"
         },
         {
           "path": "examples/feature-colocated/src/features/posts/server-state/constants.ts",
