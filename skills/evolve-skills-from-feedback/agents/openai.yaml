@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evolve Skills from Feedback"
+  short_description: "Turn project evidence into durable skill improvements"
+  default_prompt: "Use $evolve-skills-from-feedback to capture evidence from this project or turn an existing feedback report into a validated skill improvement plan."
