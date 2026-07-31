@@ -18,6 +18,7 @@
     }
   ],
   "include": [
-    "skills/manage-server-state/registry.json"
+    "skills/manage-server-state/registry.json",
+    "skills/build-composable-components/registry.json"
   ]
 }
