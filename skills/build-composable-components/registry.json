@@ -1,0 +1,57 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "build-composable-components",
+      "type": "registry:item",
+      "title": "Build Composable Components",
+      "description": "Design and refactor maintainable React component families with preserved base contracts, root-owned variants, scoped state, and correct async boundaries.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/agents/openai.yaml"
+        },
+        {
+          "path": "references/architecture-and-api.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/architecture-and-api.md"
+        },
+        {
+          "path": "references/variants-and-styling.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/variants-and-styling.md"
+        },
+        {
+          "path": "references/state-and-lifecycles.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/state-and-lifecycles.md"
+        },
+        {
+          "path": "references/async-and-adapters.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/async-and-adapters.md"
+        },
+        {
+          "path": "references/review-and-testing.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/review-and-testing.md"
+        },
+        {
+          "path": "references/examples.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/examples.md"
+        }
+      ],
+      "docs": "Installs the Agent Skill plus focused architecture, styling, state, async, review, and worked-example references. It does not install runtime dependencies or write application source files."
+    }
+  ]
+}

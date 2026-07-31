@@ -25,8 +25,16 @@ dependencies.
 | Skill | Purpose |
 | --- | --- |
 | [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
+| [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, inherited variants, scoped state, and correct async boundaries. |
 
 More skills can be added without changing the installation workflow.
+
+The composable-component skill covers the cases that usually break down as a
+design system grows: extending shadcn and Radix contracts, root-owned size and
+variant propagation, render-callback collections with consumer-owned item
+anatomy, controlled optional values, per-root Zustand stores, persistent
+overlays, and optimistic server-state boundaries. Its worked examples progress
+from ordinary props to advanced and expert compound families.
 
 ## Choose and install
 
@@ -50,6 +58,7 @@ To install a known skill directly:
 
 ```bash
 npx shadcn@latest add barehera/react-skills/manage-server-state
+npx shadcn@latest add barehera/react-skills/build-composable-components
 ```
 
 To inspect the catalog without installing:
@@ -76,6 +85,12 @@ Name the skill in your request:
 ```text
 Use $manage-server-state to add the Products server state.
 Inspect this repository and its API documentation before writing code.
+```
+
+```text
+Use $build-composable-components to refactor this task action family.
+Preserve its shadcn contracts, inherit size from the root, keep optional
+overlays explicit, and expose collection item anatomy through render callbacks.
 ```
 
 If your agent does not discover skills automatically:
