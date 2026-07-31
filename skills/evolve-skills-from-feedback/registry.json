@@ -1,0 +1,57 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "evolve-skills-from-feedback",
+      "type": "registry:item",
+      "title": "Evolve Skills from Feedback",
+      "description": "Capture evidence from real projects and turn it into validated, durable Agent Skill improvements.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/agents/openai.yaml"
+        },
+        {
+          "path": "references/feedback-format.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/references/feedback-format.md"
+        },
+        {
+          "path": "references/evaluation-and-integration.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/references/evaluation-and-integration.md"
+        },
+        {
+          "path": "references/worked-example.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/references/worked-example.md"
+        },
+        {
+          "path": "assets/skill-feedback-template.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/assets/skill-feedback-template.md"
+        },
+        {
+          "path": "examples/composable-component-feedback.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/examples/composable-component-feedback.md"
+        },
+        {
+          "path": "scripts/validate-feedback.mjs",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs"
+        }
+      ],
+      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, and deterministic report validator. It does not modify application source or source skills unless the user requests those changes."
+    }
+  ]
+}
