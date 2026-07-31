@@ -54,6 +54,11 @@ repository instead of imposing a starter architecture.
   padding, font-size, or icon-size classes.
 - Keep consumer layout in `className`; promote repeated semantic appearance to
   a typed variant.
+- When a Tailwind class list spans several concerns, pass ordered, concern-based
+  strings to `cn(...)`: base layout, interaction states, each semantic variant,
+  and finally the consumer `className`. Keep related utilities together and
+  preserve conflict order; do not leave unrelated state and variant selectors
+  in one difficult-to-scan string.
 - Reuse the repository primitive that already owns a visual role. Build cards
   with `Card`, failures with `Alert`, empty/loading surfaces with `Empty`, and
   list rows with `Item` when those primitives exist. If a repeated semantic

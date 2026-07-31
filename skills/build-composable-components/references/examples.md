@@ -244,7 +244,10 @@ function Tabs({ size = "default", variant = "default", ...props }: TabsProps) {
     <TabsPrimitive.Root
       data-size={size}
       data-variant={variant}
-      className="group/tabs [--tabs-trigger-height:--spacing(8)] data-[size=lg]:[--tabs-trigger-height:--spacing(10)]"
+      className={cn(
+        "group/tabs [--tabs-trigger-height:--spacing(8)]",
+        "data-[size=lg]:[--tabs-trigger-height:--spacing(10)]"
+      )}
       {...props}
     />
   )

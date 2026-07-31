@@ -9,6 +9,7 @@ Use this reference whenever a component family extends styled primitives.
 - [Preserve base styles and defaults](#preserve-base-styles-and-defaults)
 - [Model a family variant matrix](#model-a-family-variant-matrix)
 - [Promote semantics, keep layout local](#promote-semantics-keep-layout-local)
+- [Structure long class lists](#structure-long-class-lists)
 - [Avoid leaf sizing patches](#avoid-leaf-sizing-patches)
 - [Root defaults and child overrides](#root-defaults-and-child-overrides)
 - [Extend the base or the family](#extend-the-base-or-the-family)
@@ -128,6 +129,56 @@ Keep `className` at the consumer when a difference:
 
 `className="w-full md:w-auto"` is usually consumer layout.
 `size="lg"` is family semantics.
+
+## Structure long class lists
+
+Keep a short class list as one string. When a component mixes base layout,
+interaction states, descendant selectors, themes, or several semantic
+variants, split the list into ordered strings passed to the repository's class
+merge utility. Group by responsibility, not by an arbitrary line length:
+
+```tsx
+<CardFooter
+  className={cn(
+    "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)",
+    "group-data-[variant=primary]/card:border-primary-foreground/20 group-data-[variant=primary]/card:bg-primary-foreground/10",
+    "group-data-[variant=destructive]/card:border-destructive/20 group-data-[variant=destructive]/card:bg-destructive/10",
+    className
+  )}
+/>
+```
+
+For an interaction-heavy primitive, use stable concern groups such as:
+
+```tsx
+className={cn(
+  "inline-flex items-center rounded-lg text-sm transition-colors outline-none",
+  "hover:bg-muted active:bg-muted/80",
+  "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+  "disabled:pointer-events-none disabled:opacity-50",
+  "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
+  className
+)}
+```
+
+Apply these rules:
+
+- keep the base layout and default appearance first;
+- group selectors for one state or semantic variant together;
+- separate unrelated concerns such as hover, focus, disabled, invalid, dark,
+  responsive, and named family variants when the combined string becomes hard
+  to scan;
+- keep conflict-sensitive groups in their intended precedence order because
+  `cn` and Tailwind merge utilities resolve later conflicting classes last;
+- keep the consumer `className` last so the documented extension surface is
+  preserved;
+- do not split every utility into its own string or extract one-use class
+  groups into distant constants—the grouping should reveal the style model at
+  the call site.
+
+Use the equivalent array form only when the repository's CVA or class utility
+accepts the same class-value input. Prefer the local convention and verify that
+formatting or class sorting does not recombine the concern groups.
 
 ## Avoid leaf sizing patches
 

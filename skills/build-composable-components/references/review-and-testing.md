@@ -36,6 +36,9 @@ visible broken class.
 - React Compiler projects contain no routine manual memoization hooks unless an
   exception documents a semantic identity requirement.
 - Consumer layout classes remain possible.
+- Long Tailwind class lists are grouped by concern in ordered `cn(...)`
+  arguments; base styles remain first, conflict precedence is intentional, and
+  the consumer `className` remains last.
 - Shared domain inputs are supplied once.
 - Each domain item has one focused responsibility.
 - Independently optional fields, actions, statuses, separators, and layout
