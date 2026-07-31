@@ -26,6 +26,7 @@ dependencies.
 | --- | --- |
 | [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
 | [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, inherited variants, scoped state, and correct async boundaries. |
+| [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |
 
 More skills can be added without changing the installation workflow.
 
@@ -59,6 +60,7 @@ To install a known skill directly:
 ```bash
 npx shadcn@latest add barehera/react-skills/manage-server-state
 npx shadcn@latest add barehera/react-skills/build-composable-components
+npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
 ```
 
 To inspect the catalog without installing:
@@ -91,6 +93,12 @@ Inspect this repository and its API documentation before writing code.
 Use $build-composable-components to refactor this task action family.
 Preserve its shadcn contracts, inherit size from the root, keep optional
 overlays explicit, and expose collection item anatomy through render callbacks.
+```
+
+```text
+Use $evolve-skills-from-feedback to review this completed implementation and
+create an evidence-backed feedback report for the skill we used. I will bring
+that report back to the skills repository for planning or implementation.
 ```
 
 If your agent does not discover skills automatically:
