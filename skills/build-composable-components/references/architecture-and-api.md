@@ -10,6 +10,7 @@ Use this reference to design the component family before writing JSX.
 - [Design complete composition boundaries](#design-complete-composition-boundaries)
 - [Supply item identity once](#supply-item-identity-once)
 - [Pass shared inputs once](#pass-shared-inputs-once)
+- [Give each part its own props](#give-each-part-its-own-props)
 - [Preserve substitution](#preserve-substitution)
 - [Prefer composition to switches](#prefer-composition-to-switches)
 - [File boundaries](#file-boundaries)
@@ -244,6 +245,43 @@ Prefer:
 Avoid passing `resourceId`, `projectId`, `projectName`, `source`, and `disabled`
 through every child. Use a smaller object type only when the family intentionally
 supports multiple domain models.
+
+## Give each part its own props
+
+Map every public part to one primitive or clear DOM responsibility, and let that
+part accept the compatible props directly:
+
+```tsx
+<ResourcePickerRoot resource={resource}>
+  <ResourcePickerLabel className="sr-only">Resource</ResourcePickerLabel>
+  <ResourcePickerTrigger variant="outline" size="sm">
+    <ResourcePickerValue placeholder="Choose a resource" />
+  </ResourcePickerTrigger>
+  <ResourcePickerContent align="start" sideOffset={6}>
+    <ResourcePickerItem value="one">One</ResourcePickerItem>
+  </ResourcePickerContent>
+</ResourcePickerRoot>
+```
+
+Avoid moving those contracts onto the root:
+
+```tsx
+<ResourcePickerRoot
+  triggerProps={{ variant: "outline", size: "sm" }}
+  contentProps={{ align: "start", sideOffset: 6 }}
+  itemProps={{ className: "..." }}
+/>
+```
+
+Prop bags hide the actual composition boundary, make types harder to discover,
+and force the parent to proxy every future primitive prop. If a child needs
+independent styling, events, ARIA, positioning, or polymorphism, expose that
+child as a slot. Reserve root props for shared identity, state, policy-neutral
+configuration, and callbacks that apply to the whole family.
+
+A convenience component may compose the slots for the common case. Keep it
+secondary to the open family and implement it from the same slots so behavior,
+accessibility, and defaults cannot drift.
 
 ## Preserve substitution
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Build Composable Components"
   short_description: "Build maintainable compound React component families"
-  default_prompt: "Use $build-composable-components to design or refactor this React component family with preserved primitive contracts, root-owned variants, render-callback collections, scoped state, and composable persistent overlays."
+  default_prompt: "Use $build-composable-components to design or refactor this React component family with preserved primitive contracts, slot-owned props, root-owned shared inputs, render-callback collections, scoped state, and composable persistent overlays."

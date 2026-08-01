@@ -1,0 +1,102 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "build-forms",
+      "type": "registry:item",
+      "title": "Build Forms",
+      "description": "Design and refactor composable, accessible React form systems with slot-owned props, typed feature hooks, reusable field bindings, and independent workflow orchestration.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/agents/openai.yaml"
+        },
+        {
+          "path": "references/architecture.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/architecture.md"
+        },
+        {
+          "path": "references/field-contracts.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/field-contracts.md"
+        },
+        {
+          "path": "references/browser-and-ux.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/browser-and-ux.md"
+        },
+        {
+          "path": "references/workflows-and-submission.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/workflows-and-submission.md"
+        },
+        {
+          "path": "references/review-and-testing.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/review-and-testing.md"
+        },
+        {
+          "path": "references/examples.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/examples.md"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/components/form.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/form.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/components/input-field.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/input-field.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/components/select-field.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/select-field.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/utils/index.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/utils/index.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/proposal-form.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-form.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/components/proposal-preview.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-preview.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/components/proposal-submit.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-submit.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/proposal-screen.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-screen.tsx"
+        }
+      ],
+      "docs": "Installs the form-building Agent Skill, focused references, and a non-runtime typed feature-form example. It does not install runtime dependencies or write application source files."
+    }
+  ]
+}

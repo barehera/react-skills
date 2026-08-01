@@ -19,6 +19,12 @@ components keep their own logic. Collection item identity is supplied once at
 the item boundary, so nested controls derive the current item and position
 without repeated `id` or `index` props.
 
+Each exported part accepts the props of the primitive it renders. Trigger,
+content, item, label, and control customization stays on those slots instead of
+being tunneled through root-level `triggerProps`, `contentProps`, or similar
+prop bags. Compact convenience components remain thin compositions of the same
+open slots.
+
 Collections follow one rule: if the family root receives the collection, its
 `Collection`, `Items`, `Rows`, or `Results` component enumerates it through a
 render callback. The family owns enumeration and state gating; the consumer
