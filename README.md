@@ -24,8 +24,9 @@ dependencies.
 
 | Skill | Purpose |
 | --- | --- |
+| [Build Forms](skills/build-forms/README.md) | Build composable, accessible React forms with slot-owned props and independent workflow orchestration. |
 | [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
-| [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, inherited variants, scoped state, and correct async boundaries. |
+| [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, slot-owned props, scoped state, and correct async boundaries. |
 | [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |
 
 More skills can be added without changing the installation workflow.
@@ -59,6 +60,7 @@ To install a known skill directly:
 
 ```bash
 npx shadcn@latest add barehera/react-skills/manage-server-state
+npx shadcn@latest add barehera/react-skills/build-forms
 npx shadcn@latest add barehera/react-skills/build-composable-components
 npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
 ```
@@ -87,6 +89,12 @@ Name the skill in your request:
 ```text
 Use $manage-server-state to add the Products server state.
 Inspect this repository and its API documentation before writing code.
+```
+
+```text
+Use $build-forms to create a multi-step onboarding form with composable shadcn
+field slots. Keep Form and Stepper independent, and recommend the server-state
+skill if the submission requires API and cache work.
 ```
 
 ```text

@@ -50,6 +50,13 @@ repository instead of imposing a starter architecture.
 - Spread compatible consumer props without letting them overwrite required
   internal bindings. Compose observational handlers, then apply the family's
   authoritative `value`, `open`, `disabled`, IDs, and behavior props.
+- Give every public part the props of the primitive or DOM role it renders.
+  Treat parent-level bags such as `triggerProps`, `contentProps`, `labelProps`,
+  or `itemProps` as evidence that the child needs an explicit slot. Keep the
+  root focused on shared family inputs instead of proxying unrelated leaf props.
+- Offer a compact convenience component only as a thin composition of the open
+  slots. It may provide a common default anatomy, but it must not be the only
+  API or require prop bags to customize independently addressable parts.
 - Do not encode reusable semantic sizing with ad hoc leaf `height`, `min-height`,
   padding, font-size, or icon-size classes.
 - Keep consumer layout in `className`; promote repeated semantic appearance to

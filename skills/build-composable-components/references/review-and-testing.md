@@ -31,6 +31,10 @@ visible broken class.
 - Root semantic inputs reach every connected slot.
 - The default branch still matches the base primitive.
 - Child overrides are explicit and do not become required repetition.
+- Every public part receives its own compatible primitive props directly; the
+  root does not proxy leaf customization through `*Props` bags.
+- Any compact convenience component is implemented from the open slots and does
+  not become the only customization path.
 - Semantic cards, alerts, empty states, fields, and items reuse repository
   primitives instead of duplicating their visual contracts on raw elements.
 - React Compiler projects contain no routine manual memoization hooks unless an

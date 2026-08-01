@@ -1,0 +1,47 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "build-forms",
+      "type": "registry:item",
+      "title": "Build Forms",
+      "description": "Design and refactor composable, accessible React form systems with slot-owned props, reusable field bindings, and independent workflow orchestration.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/agents/openai.yaml"
+        },
+        {
+          "path": "references/architecture.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/architecture.md"
+        },
+        {
+          "path": "references/field-contracts.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/field-contracts.md"
+        },
+        {
+          "path": "references/workflows-and-submission.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/workflows-and-submission.md"
+        },
+        {
+          "path": "references/review-and-testing.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/review-and-testing.md"
+        }
+      ],
+      "docs": "Installs the form-building Agent Skill and focused architecture, field-contract, workflow, submission, and review references. It does not install runtime dependencies or write application source files."
+    }
+  ]
+}

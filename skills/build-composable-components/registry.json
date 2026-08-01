@@ -5,7 +5,7 @@
       "name": "build-composable-components",
       "type": "registry:item",
       "title": "Build Composable Components",
-      "description": "Design and refactor maintainable React component families with preserved base contracts, root-owned variants, scoped state, and correct async boundaries.",
+      "description": "Design and refactor maintainable React component families with preserved base contracts, slot-owned props, root-owned shared inputs, scoped state, and correct async boundaries.",
       "registryDependencies": [
         "barehera/react-skills/react-skills-version"
       ],
