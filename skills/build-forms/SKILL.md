@@ -84,6 +84,14 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
   directly to that root, and let descendants call the typed hook instead of
   creating another form instance or receiving `UseFormReturn` props. Keep the
   factory generic: the consuming feature still chooses those options.
+- When external, non-field properties are needed across several form
+  descendants, bind an optional second properties type in `createForm` and pass
+  one `properties` object to the root. Create one scoped vanilla Zustand store
+  per mounted root and expose a typed selector hook. Keep React Hook Form values
+  in React Hook Form, carry only the stable Zustand `StoreApi` through the
+  provider, and never use a module-global store or the removed
+  `zustand/context` API. Keep React Hook Form's resolver `context` option
+  separate from these form-wide properties.
 - Use stable field-array identity from the form library. Never use array index
   as the React key or repeat positional identity through nested field parts.
 - Keep conditional values deliberately: unregister only when product semantics
@@ -146,6 +154,9 @@ Use these only when the repository has no established convention:
   folders merely to hold one form's small private artifacts.
 - React Hook Form as the state/controller boundary and Zod as the schema source
   only when already installed or explicitly requested.
+- Scoped Zustand for optional externally supplied form-wide properties only
+  when the repository already uses Zustand or the user requests it. Create one
+  vanilla store per form root and expose selector-based consumption.
 - One shared compound-field context for stable IDs and controller bindings;
   control-specific contexts only for item identity such as radio options.
 - Compound families as the primary API and compact fields as optional secondary

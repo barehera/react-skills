@@ -1,5 +1,13 @@
 # Examples and adaptation
 
+## Contents
+
+- [Complete typed feature-form example](#complete-typed-feature-form-example)
+- [Refactor a large form component](#example-refactor-a-large-form-component)
+- [Inject typed form-wide properties](#example-inject-typed-form-wide-properties)
+- [Keep form configuration explicit](#example-keep-form-configuration-explicit)
+- [Preserve Form and Stepper independence](#example-preserve-form-and-stepper-independence)
+
 ## Complete typed feature-form example
 
 Read [../examples/typed-feature-form](../examples/typed-feature-form) before
@@ -8,8 +16,9 @@ sections. It demonstrates:
 
 - a Form root that accepts React Hook Form configuration props and creates the
   form instance once;
-- `createForm<T>()`, which binds a feature-specific Form root and typed hook
-  without hard-coding Zod, defaults, mode, or submission policy;
+- `createForm<T, TProperties>()`, which binds a feature-specific Form root,
+  typed form hook, and optional typed properties selector without hard-coding
+  Zod, defaults, mode, or submission policy;
 - one `components/form.tsx` module for the generic Form/provider factory and
   the compound-field controller/accessibility foundation they share;
 - compound Input and Select fields that wrap existing shadcn primitives and
@@ -21,16 +30,19 @@ sections. It demonstrates:
 - direct component-module imports without barrel exports;
 - one cohesive `proposal-form.ts` containing schema, inferred values, defaults,
   option metadata, a `ProposalForm` value type, the `ProposalFormRoot`/typed
-  hook pair, and its small local submit example;
+  hooks, and its small local submit example;
 - descendant components that call `useProposalForm()` instead of receiving a
   repeated `form` prop;
 - a submit component that reads `isSubmitting` from `useProposalForm()` inside
-  the root instead of requiring a second `useForm` call at the screen.
+  the root instead of requiring a second `useForm` call at the screen;
+- optional external form-wide properties supplied once at the root and consumed
+  through typed Zustand selectors in separate descendants.
 
 This is a non-runtime reference. It expects the target app's existing shadcn
 Field, Input, Select, and Button primitives. Adapt its paths, validation library,
 styling, and product model to the repository; do not reinstall or rewrite those
-primitives as part of the form abstraction.
+primitives as part of the form abstraction. The scoped properties example also
+expects the current Zustand vanilla-store and `useStore` APIs.
 
 ## Example: refactor a large form component
 
@@ -53,6 +65,53 @@ Expected behavior:
    to infer and restrict the field path.
 6. Extract only helpers shared by multiple field families, such as ref
    composition, from the individual field files into `utils/index.ts`.
+7. If form-wide external properties are needed, bind their type as the second
+   `createForm` generic, pass them once through the root's `properties` prop,
+   and select narrow slices with the returned `useProperties` hook.
+
+## Example: inject typed form-wide properties
+
+Use the optional properties channel for external dependencies or UI policy
+needed by several descendants but not represented in submitted values:
+
+```tsx
+type ApplicationFormProperties = {
+  reviewGroupName: string
+  submissionDisabled: boolean
+}
+
+const {
+  Form: ApplicationFormRoot,
+  useForm: useApplicationForm,
+  useProperties: useApplicationFormProperties,
+} = createForm<ApplicationForm, ApplicationFormProperties>()
+```
+
+The root requires the declared properties:
+
+```tsx
+<ApplicationFormRoot
+  properties={{ reviewGroupName, submissionDisabled }}
+  defaultValues={APPLICATION_DEFAULT_VALUES}
+  onSubmit={submitApplication}
+>
+  <ApplicationDetails />
+  <ApplicationSubmit />
+</ApplicationFormRoot>
+```
+
+Consume a narrow Zustand slice instead of prop drilling or reading the whole
+object:
+
+```tsx
+const submissionDisabled = useApplicationFormProperties(
+  (properties) => properties.submissionDisabled
+)
+```
+
+Do not put submitted values, Stepper state, cached server records, or unrelated
+screen state into this store. React Hook Form, Stepper, and the server-state
+layer retain those responsibilities.
 
 ## Example: keep form configuration explicit
 

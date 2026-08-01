@@ -5,7 +5,7 @@ import {
   FormProvider,
   useController,
   useForm,
-  useFormContext,
+  useFormContext as useReactHookFormContext,
   type FieldPath,
   type FieldValues,
   type SubmitErrorHandler,
@@ -14,6 +14,8 @@ import {
   type UseFormProps,
   type UseFormReturn,
 } from "react-hook-form"
+import { useStore, type StoreApi } from "zustand"
+import { createStore } from "zustand/vanilla"
 
 import {
   Field,
@@ -24,20 +26,20 @@ import {
 
 export type FormProps<
   TFieldValues extends FieldValues,
-  TContext = unknown,
+  TResolverContext = unknown,
   TTransformedValues = TFieldValues,
 > = Omit<
   React.ComponentProps<"form">,
   "onError" | "onInvalid" | "onSubmit"
 > &
-  UseFormProps<TFieldValues, TContext, TTransformedValues> & {
+  UseFormProps<TFieldValues, TResolverContext, TTransformedValues> & {
     onSubmit: SubmitHandler<TTransformedValues>
     onInvalid?: SubmitErrorHandler<TFieldValues>
   }
 
 export function Form<
   TFieldValues extends FieldValues,
-  TContext = unknown,
+  TResolverContext = unknown,
   TTransformedValues = TFieldValues,
 >({
   context,
@@ -61,8 +63,8 @@ export function Form<
   validate,
   values,
   ...props
-}: FormProps<TFieldValues, TContext, TTransformedValues>) {
-  const form = useForm<TFieldValues, TContext, TTransformedValues>({
+}: FormProps<TFieldValues, TResolverContext, TTransformedValues>) {
+  const form = useForm<TFieldValues, TResolverContext, TTransformedValues>({
     context,
     criteriaMode,
     defaultValues,
@@ -93,39 +95,90 @@ export function Form<
   )
 }
 
+type EmptyFormProperties = Record<never, never>
+
+type FormPropertiesProp<TProperties extends object> =
+  keyof TProperties extends never
+    ? { properties?: TProperties }
+    : { properties: TProperties }
+
+type TypedFormProps<
+  TFieldValues extends FieldValues,
+  TProperties extends object,
+  TResolverContext,
+  TTransformedValues,
+> = FormProps<TFieldValues, TResolverContext, TTransformedValues> &
+  FormPropertiesProp<TProperties>
+
 export function createForm<
   TFieldValues extends FieldValues,
-  TContext = unknown,
+  TProperties extends object = EmptyFormProperties,
+  TResolverContext = unknown,
   TTransformedValues = TFieldValues,
 >() {
-  const TypedFormScope = React.createContext(false)
+  const TypedFormPropertiesContext =
+    React.createContext<StoreApi<TProperties> | null>(null)
 
-  function TypedForm(
-    props: FormProps<TFieldValues, TContext, TTransformedValues>
-  ) {
+  function TypedForm({
+    properties = {} as TProperties,
+    ...props
+  }: TypedFormProps<
+    TFieldValues,
+    TProperties,
+    TResolverContext,
+    TTransformedValues
+  >) {
+    const [propertiesStore] = React.useState(() =>
+      createStore<TProperties>()(() => properties)
+    )
+
+    React.useLayoutEffect(() => {
+      propertiesStore.setState(properties, true)
+    }, [properties, propertiesStore])
+
     return (
-      <TypedFormScope.Provider value>
+      <TypedFormPropertiesContext.Provider value={propertiesStore}>
         <Form {...props} />
-      </TypedFormScope.Provider>
+      </TypedFormPropertiesContext.Provider>
     )
   }
 
   function useTypedForm() {
-    const isInsideTypedForm = React.useContext(TypedFormScope)
-    const form = useFormContext<
+    const propertiesStore = React.useContext(TypedFormPropertiesContext)
+    const form = useReactHookFormContext<
       TFieldValues,
-      TContext,
+      TResolverContext,
       TTransformedValues
-    >() as UseFormReturn<TFieldValues, TContext, TTransformedValues> | null
+    >() as UseFormReturn<
+      TFieldValues,
+      TResolverContext,
+      TTransformedValues
+    > | null
 
-    if (!isInsideTypedForm || !form) {
+    if (!propertiesStore || !form) {
       throw new Error("useForm must be called inside its typed Form")
     }
 
     return form
   }
 
-  return { Form: TypedForm, useForm: useTypedForm } as const
+  function useTypedFormProperties<TSelected>(
+    selector: (properties: TProperties) => TSelected
+  ) {
+    const store = React.useContext(TypedFormPropertiesContext)
+
+    if (!store) {
+      throw new Error("useProperties must be called inside its typed Form")
+    }
+
+    return useStore(store, selector)
+  }
+
+  return {
+    Form: TypedForm,
+    useForm: useTypedForm,
+    useProperties: useTypedFormProperties,
+  } as const
 }
 
 type CompoundFieldContextValue = {

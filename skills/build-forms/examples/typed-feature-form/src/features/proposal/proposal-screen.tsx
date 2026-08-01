@@ -15,6 +15,10 @@ import {
 export function ProposalScreen() {
   return (
     <ProposalFormRoot
+      properties={{
+        reviewGroupName: "Launch council",
+        submissionDisabled: false,
+      }}
       resolver={zodResolver(proposalSchema)}
       defaultValues={PROPOSAL_DEFAULT_VALUES}
       mode="onBlur"

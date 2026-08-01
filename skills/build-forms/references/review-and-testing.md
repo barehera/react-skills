@@ -44,9 +44,15 @@
 - The typed Form root calls `useForm` exactly once and accepts resolver,
   defaults, mode, and other `UseFormProps` directly. The feature chooses those
   options; descendants consume the typed hook without another form instance.
+- Optional form-wide properties use one scoped vanilla Zustand store per root;
+  the root prop and selector hooks preserve their declared feature type.
+- React context carries only the stable Zustand `StoreApi`; no raw mutable
+  properties object, removed `zustand/context` API, or module-global store is
+  used. Changing one property rerenders only selectors whose result changed.
 - Form actions reuse the repository's Button primitive and preserve explicit
   submit or non-submit `type` semantics.
 - Two mounted forms have isolated values and unique IDs.
+- Two mounted forms also isolate their custom properties stores.
 
 ## Extension tests
 

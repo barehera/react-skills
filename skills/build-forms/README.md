@@ -25,6 +25,10 @@ helpers remain in `features/form`. Feature components consume the typed form
 hook instead of threading a React Hook Form instance through every section prop.
 The typed root accepts `resolver`, `defaultValues`, `mode`, and the remaining
 React Hook Form options directly, then creates the form instance once.
+When descendants also need non-field values supplied by the feature screen,
+the factory can bind a second properties type and provide those values through
+one scoped Zustand store per mounted form. Descendants select only the property
+they need; form values remain owned by React Hook Form.
 
 When a form crosses into API contracts, mutations, authentication, or cache
 synchronization, the skill checks for `manage-server-state` and recommends

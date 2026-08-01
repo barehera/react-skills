@@ -126,10 +126,16 @@ When several descendants need form methods, bind the feature's value type once:
 ```tsx
 export type ProposalForm = z.infer<typeof proposalSchema>
 
+export type ProposalFormProperties = {
+  reviewGroupName: string
+  submissionDisabled: boolean
+}
+
 export const {
   Form: ProposalFormRoot,
   useForm: useProposalForm,
-} = createForm<ProposalForm>()
+  useProperties: useProposalFormProperties,
+} = createForm<ProposalForm, ProposalFormProperties>()
 ```
 
 Pass form configuration directly to the typed root:
@@ -137,6 +143,10 @@ Pass form configuration directly to the typed root:
 ```tsx
 return (
   <ProposalFormRoot
+    properties={{
+      reviewGroupName: "Launch council",
+      submissionDisabled: false,
+    }}
     resolver={zodResolver(proposalSchema)}
     defaultValues={PROPOSAL_DEFAULT_VALUES}
     mode="onBlur"
@@ -155,8 +165,22 @@ instantiates `useForm` once. The consuming feature still chooses the resolver,
 defaults, mode, and other options; the factory must not hard-code product
 configuration or absorb unrelated product context.
 
-Use a separate feature context for non-form dependencies. Do not turn the form
-scope into a general dependency container.
+When multiple descendants also need external non-field properties, bind a
+second type and pass one `properties` object to the root. The factory creates
+one vanilla Zustand store per mounted form and returns a typed selector hook:
+
+```tsx
+const reviewGroupName = useProposalFormProperties(
+  (properties) => properties.reviewGroupName
+)
+```
+
+The current scoped Zustand pattern uses React context only to transport the
+stable `StoreApi`; values and subscriptions belong to Zustand. Do not use the
+removed `zustand/context` API or a module-global store. Keep this channel for
+dependencies and UI policy that meaningfully apply across the form, not remote
+records or arbitrary screen state. The `properties` name deliberately avoids a
+collision with React Hook Form's resolver `context` option.
 
 ## Keep the feature form contract cohesive
 
@@ -174,10 +198,11 @@ features/proposal/
 ```
 
 `proposal-form.ts` may own the schema, inferred values, defaults, option
-metadata, typed Form/hook pair, and a small local submit example. Focused
-components own rendering and call the typed hook. The screen chooses the
-resolver/options and owns composition; the typed root owns the single `useForm`
-call.
+metadata, optional form-wide properties type, typed Form/hooks, and a small
+local submit example. Focused components own rendering and call the typed hooks.
+The screen chooses the resolver/options, supplies external properties, and owns
+composition; the typed root owns the single `useForm` call and isolated Zustand
+store.
 
 Split schema, types, constants, or submission into dedicated modules only when
 they become independently reusable, acquire substantial logic, or follow a
