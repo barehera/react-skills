@@ -9,11 +9,16 @@ sections. It demonstrates:
 - an ordinary controlled `Form` that receives a React Hook Form instance;
 - `createForm<T>()`, which binds a feature-specific Form and typed hook without
   owning `useForm`, Zod, defaults, or submission policy;
+- one `components/form.tsx` module for the generic Form/provider factory and
+  the compound-field controller/accessibility foundation they share;
 - compound Input and Select fields that wrap existing shadcn primitives and
   expose slot-owned props;
-- a shared `composeRefs` helper outside either field module;
+- a shared `utils/compose-refs.ts` helper outside either field module, exposed
+  through the form feature's focused `utils/index.ts`;
+- intentional `components/index.ts` and `utils/index.ts` public surfaces;
 - one cohesive `proposal-form.ts` containing schema, inferred values, defaults,
-  option metadata, typed Form/hook, and its small local submit example;
+  option metadata, a `ProposalForm` value type, the `ProposalFormRoot`/typed
+  hook pair, and its small local submit example;
 - descendant components that call `useProposalForm()` instead of receiving a
   repeated `form` prop.
 
@@ -40,7 +45,8 @@ Expected behavior:
 5. Continue passing `form.control` at each compound field root when it is needed
    to infer and restrict the field path.
 6. Extract only helpers shared by multiple field families, such as ref
-   composition, from the individual field files.
+   composition, from the individual field files into the shared `utils`
+   surface.
 
 ## Example: do not hide form creation
 

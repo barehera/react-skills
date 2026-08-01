@@ -117,24 +117,26 @@ relationship.
 When several descendants need form methods, bind the feature's value type once:
 
 ```tsx
+export type ProposalForm = z.infer<typeof proposalSchema>
+
 export const {
-  Form: ProposalForm,
+  Form: ProposalFormRoot,
   useForm: useProposalForm,
-} = createForm<ProposalValues>()
+} = createForm<ProposalForm>()
 ```
 
 Keep state creation explicit at the feature entry:
 
 ```tsx
-const form = useForm<ProposalValues>({
+const form = useForm<ProposalForm>({
   resolver: zodResolver(proposalSchema),
   defaultValues: PROPOSAL_DEFAULT_VALUES,
 })
 
 return (
-  <ProposalForm form={form} onSubmit={submitProposal}>
+  <ProposalFormRoot form={form} onSubmit={submitProposal}>
     <ProposalDetails />
-  </ProposalForm>
+  </ProposalFormRoot>
 )
 ```
 
@@ -178,14 +180,18 @@ scratch, a useful boundary is:
 
 ```text
 features/form/
-  compose-refs.ts
   components/
     form.tsx
-    compound-field.tsx
     input-field.tsx
     select-field.tsx
+    index.ts
+  utils/
+    compose-refs.ts
+    index.ts
 ```
 
-Keep each cohesive public family in one file. Split the shared foundation and
-cross-family helpers because several families depend on them. Keep product form
-contracts and feature copy in the consuming feature.
+Keep each cohesive public family in one file. `components/form.tsx` may own the
+generic Form/provider factory and compound-field context/controller foundation
+when they are one reusable form boundary. Put non-visual helpers shared across
+families under `utils`. Use the local indexes as intentional public surfaces,
+and keep product form contracts and feature copy in the consuming feature.

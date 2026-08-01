@@ -26,7 +26,12 @@
 - Product-specific contracts remain in the consuming feature rather than
   leaking into shared `features/form` code or unnecessary one-file folders.
 - Shared mechanics such as ref composition live outside individual Input or
-  Select field modules.
+  Select field modules and are exported through the shared form utility
+  surface.
+- The shared Form/provider and compound-field foundation stay together when
+  they represent one reusable context/controller boundary.
+- Shared `components` and `utils` indexes expose only their intended local
+  public APIs and do not introduce circular imports.
 - Descendant sections obtain the typed form through a feature hook instead of
   receiving the same `UseFormReturn` prop repeatedly.
 - The typed form factory binds provider and hook types only; the feature entry

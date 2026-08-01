@@ -7,26 +7,26 @@ import { ProposalDetails } from "./components/proposal-details"
 import { ProposalPreview } from "./components/proposal-preview"
 import {
   PROPOSAL_DEFAULT_VALUES,
-  ProposalForm,
+  ProposalFormRoot,
   proposalSchema,
   submitProposal,
-  type ProposalValues,
+  type ProposalForm,
 } from "./proposal-form"
 
 export function ProposalScreen() {
-  const form = useForm<ProposalValues>({
+  const form = useForm<ProposalForm>({
     resolver: zodResolver(proposalSchema),
     defaultValues: PROPOSAL_DEFAULT_VALUES,
     mode: "onBlur",
   })
 
   return (
-    <ProposalForm form={form} onSubmit={submitProposal}>
+    <ProposalFormRoot form={form} onSubmit={submitProposal}>
       <ProposalDetails />
       <ProposalPreview />
       <button type="submit" disabled={form.formState.isSubmitting}>
         Submit proposal
       </button>
-    </ProposalForm>
+    </ProposalFormRoot>
   )
 }

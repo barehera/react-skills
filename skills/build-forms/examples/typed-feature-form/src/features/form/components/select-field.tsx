@@ -20,7 +20,7 @@ import {
   type CompoundFieldErrorProps,
   type CompoundFieldLabelProps,
   type CompoundFieldRootProps,
-} from "./compound-field"
+} from "./form"
 
 export type SelectFieldRootProps<
   TFieldValues extends FieldValues,

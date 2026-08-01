@@ -4,7 +4,7 @@ import * as React from "react"
 import { type FieldPathByValue, type FieldValues } from "react-hook-form"
 
 import { Input } from "@/components/ui/input"
-import { composeRefs } from "../compose-refs"
+import { composeRefs } from "../utils"
 import {
   CompoundFieldDescription,
   CompoundFieldError,
@@ -15,7 +15,7 @@ import {
   type CompoundFieldErrorProps,
   type CompoundFieldLabelProps,
   type CompoundFieldRootProps,
-} from "./compound-field"
+} from "./form"
 
 export type InputFieldRootProps<
   TFieldValues extends FieldValues,

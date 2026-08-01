@@ -1,6 +1,6 @@
 import * as z from "zod"
 
-import { createForm } from "../form/components/form"
+import { createForm } from "../form/components"
 
 export const proposalSchema = z.object({
   title: z.string().min(3, "Use a recognizable title."),
@@ -8,9 +8,9 @@ export const proposalSchema = z.object({
   surface: z.enum(["web", "mobile", "embedded"]),
 })
 
-export type ProposalValues = z.infer<typeof proposalSchema>
+export type ProposalForm = z.infer<typeof proposalSchema>
 
-export const PROPOSAL_DEFAULT_VALUES: ProposalValues = {
+export const PROPOSAL_DEFAULT_VALUES: ProposalForm = {
   title: "",
   owner: "",
   surface: "web",
@@ -21,16 +21,16 @@ export const PROPOSAL_SURFACES = [
   { value: "mobile", label: "Mobile application" },
   { value: "embedded", label: "Embedded experience" },
 ] as const satisfies ReadonlyArray<{
-  value: ProposalValues["surface"]
+  value: ProposalForm["surface"]
   label: string
 }>
 
 export const {
-  Form: ProposalForm,
+  Form: ProposalFormRoot,
   useForm: useProposalForm,
-} = createForm<ProposalValues>()
+} = createForm<ProposalForm>()
 
-export async function submitProposal(values: ProposalValues) {
+export async function submitProposal(values: ProposalForm) {
   // Replace this development example with the feature's mutation hook.
   return values
 }

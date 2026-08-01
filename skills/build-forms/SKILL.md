@@ -118,8 +118,10 @@ crosses the form boundary.
 
 Use these only when the repository has no established convention:
 
-- Shared field families under `features/form/components`, with cross-family
-  helpers such as `compose-refs.ts` outside any individual field module.
+- Shared field families under `features/form/components`, with the generic Form
+  and shared compound-field foundation together in `components/form.tsx` when
+  they form one reusable boundary. Keep cross-family helpers such as ref
+  composition under `features/form/utils`.
 - A cohesive `<feature>-form.ts` for the consuming feature's schema, inferred
   values, defaults/options, and typed Form/hook, plus `components` for distinct
   rendered sections. Do not create `schemas`, `types`, `constants`, or `logic`
@@ -130,8 +132,9 @@ Use these only when the repository has no established convention:
   control-specific contexts only for item identity such as radio options.
 - Compound families as the primary API and compact fields as optional secondary
   compositions.
-- Direct imports instead of a new barrel unless the repository already exposes
-  stable feature barrels.
+- Local `components/index.ts` and `utils/index.ts` public surfaces for a shared
+  form feature when they match repository conventions. Keep their exports
+  intentional and avoid a feature-wide barrel that mixes product artifacts.
 
 Do not force React Hook Form, Zod, a feature folder, multi-step navigation, or
 compound components onto a simpler coherent repository.
