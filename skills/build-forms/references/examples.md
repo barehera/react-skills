@@ -28,7 +28,7 @@ sections. It demonstrates:
   the root instead of requiring a second `useForm` call at the screen.
 
 This is a non-runtime reference. It expects the target app's existing shadcn
-Field, Input, and Select primitives. Adapt its paths, validation library,
+Field, Input, Select, and Button primitives. Adapt its paths, validation library,
 styling, and product model to the repository; do not reinstall or rewrite those
 primitives as part of the form abstraction.
 

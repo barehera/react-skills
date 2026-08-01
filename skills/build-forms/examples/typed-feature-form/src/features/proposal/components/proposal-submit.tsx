@@ -1,13 +1,15 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+
 import { useProposalForm } from "../proposal-form"
 
 export function ProposalSubmit() {
   const form = useProposalForm()
 
   return (
-    <button type="submit" disabled={form.formState.isSubmitting}>
+    <Button type="submit" disabled={form.formState.isSubmitting}>
       Submit proposal
-    </button>
+    </Button>
   )
 }

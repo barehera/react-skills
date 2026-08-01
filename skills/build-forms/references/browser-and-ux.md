@@ -74,7 +74,8 @@ the user to type it again.
 ## Preserve browser behavior
 
 - Render a real `<form>` and a real submit button so Enter submission, browser
-  autofill, password managers, and form ownership continue to work.
+  autofill, password managers, and form ownership continue to work. Use the
+  repository's Button primitive when it preserves native `<button>` semantics.
 - Give every non-submit button inside a form `type="button"`.
 - Keep labels visible; placeholders are examples, not label replacements.
 - Do not block paste or password managers.

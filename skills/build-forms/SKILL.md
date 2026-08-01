@@ -89,7 +89,9 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 - Keep conditional values deliberately: unregister only when product semantics
   say a hidden field must be removed from the submitted model.
 - Reuse repository-native `Field`, `Label`, `Input`, `Select`, `Textarea`,
-  `RadioGroup`, `Checkbox`, and error primitives rather than restyling raw DOM.
+  `RadioGroup`, `Checkbox`, `Button`, and error primitives rather than
+  restyling raw DOM controls. Preserve semantic elements such as `form`,
+  `fieldset`, `section`, and headings when no UI primitive replaces them.
 
 ## Companion skill routing
 

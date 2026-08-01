@@ -1,6 +1,14 @@
 // Typecheck-only contracts for shadcn primitives expected in the target app.
 // This declaration is validation infrastructure, not a published skill file.
 
+declare module "@/components/ui/button" {
+  import type * as React from "react"
+
+  export function Button(
+    props: React.ComponentPropsWithRef<"button">
+  ): React.ReactElement
+}
+
 declare module "@/components/ui/field" {
   import type * as React from "react"
 

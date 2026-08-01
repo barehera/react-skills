@@ -44,6 +44,8 @@
 - The typed Form root calls `useForm` exactly once and accepts resolver,
   defaults, mode, and other `UseFormProps` directly. The feature chooses those
   options; descendants consume the typed hook without another form instance.
+- Form actions reuse the repository's Button primitive and preserve explicit
+  submit or non-submit `type` semantics.
 - Two mounted forms have isolated values and unique IDs.
 
 ## Extension tests
