@@ -132,16 +132,16 @@ export const {
 } = createForm<ProposalForm>()
 ```
 
-Keep state creation explicit at the feature entry:
+Pass form configuration directly to the typed root:
 
 ```tsx
-const form = useForm<ProposalForm>({
-  resolver: zodResolver(proposalSchema),
-  defaultValues: PROPOSAL_DEFAULT_VALUES,
-})
-
 return (
-  <ProposalFormRoot form={form} onSubmit={submitProposal}>
+  <ProposalFormRoot
+    resolver={zodResolver(proposalSchema)}
+    defaultValues={PROPOSAL_DEFAULT_VALUES}
+    mode="onBlur"
+    onSubmit={submitProposal}
+  >
     <ProposalDetails />
   </ProposalFormRoot>
 )
@@ -149,9 +149,11 @@ return (
 
 Descendants call `useProposalForm()` and pass `form.control` to individual field
 roots, preserving typed field-path inference without receiving the entire form
-as a prop. The generic `createForm` factory should only bind `Form` and
-`useFormContext` types. It must not instantiate React Hook Form, select a schema
-resolver, own defaults, or absorb unrelated product context.
+as a prop. The generic `createForm` factory binds the value type to a Form root
+and hook. The root accepts React Hook Form's configuration props directly and
+instantiates `useForm` once. The consuming feature still chooses the resolver,
+defaults, mode, and other options; the factory must not hard-code product
+configuration or absorb unrelated product context.
 
 Use a separate feature context for non-form dependencies. Do not turn the form
 scope into a general dependency container.
@@ -166,14 +168,16 @@ features/proposal/
   components/
     proposal-details.tsx
     proposal-preview.tsx
+    proposal-submit.tsx
   proposal-form.ts
   proposal-screen.tsx
 ```
 
 `proposal-form.ts` may own the schema, inferred values, defaults, option
 metadata, typed Form/hook pair, and a small local submit example. Focused
-components own rendering and call the typed hook. The screen owns `useForm`,
-resolver selection, and composition.
+components own rendering and call the typed hook. The screen chooses the
+resolver/options and owns composition; the typed root owns the single `useForm`
+call.
 
 Split schema, types, constants, or submission into dedicated modules only when
 they become independently reusable, acquire substantial logic, or follow a

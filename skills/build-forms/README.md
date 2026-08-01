@@ -23,6 +23,8 @@ typed Form/hook together in a cohesive `<feature>-form.ts` module by default.
 Distinct UI sections stay in `components`, while reusable bindings and shared
 helpers remain in `features/form`. Feature components consume the typed form
 hook instead of threading a React Hook Form instance through every section prop.
+The typed root accepts `resolver`, `defaultValues`, `mode`, and the remaining
+React Hook Form options directly, then creates the form instance once.
 
 When a form crosses into API contracts, mutations, authentication, or cache
 synchronization, the skill checks for `manage-server-state` and recommends

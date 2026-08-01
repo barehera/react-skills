@@ -86,6 +86,11 @@
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-preview.tsx"
         },
         {
+          "path": "examples/typed-feature-form/src/features/proposal/components/proposal-submit.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-submit.tsx"
+        },
+        {
           "path": "examples/typed-feature-form/src/features/proposal/proposal-screen.tsx",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-screen.tsx"

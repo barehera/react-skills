@@ -41,8 +41,9 @@
   dependencies or introduces circular imports.
 - Descendant sections obtain the typed form through a feature hook instead of
   receiving the same `UseFormReturn` prop repeatedly.
-- The typed form factory binds provider and hook types only; the feature entry
-  still owns `useForm`, resolver selection, defaults, and submission policy.
+- The typed Form root calls `useForm` exactly once and accepts resolver,
+  defaults, mode, and other `UseFormProps` directly. The feature chooses those
+  options; descendants consume the typed hook without another form instance.
 - Two mounted forms have isolated values and unique IDs.
 
 ## Extension tests

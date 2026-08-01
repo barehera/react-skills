@@ -79,10 +79,11 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
   independently reusable or the module stops being cohesive. Keep product
   artifacts out of the shared `features/form` foundation.
 - For a form with several descendant sections, create a feature-typed Form and
-  hook once. Keep React Hook Form's `useForm` call at the feature entry, pass
-  that instance to the typed Form once, and let descendants call the typed hook
-  instead of receiving `UseFormReturn` props. Keep resolver and defaults out of
-  the generic factory.
+  hook once. Let the typed Form root call React Hook Form's `useForm` exactly
+  once. Pass `resolver`, `defaultValues`, `mode`, and other `UseFormProps`
+  directly to that root, and let descendants call the typed hook instead of
+  creating another form instance or receiving `UseFormReturn` props. Keep the
+  factory generic: the consuming feature still chooses those options.
 - Use stable field-array identity from the form library. Never use array index
   as the React key or repeat positional identity through nested field parts.
 - Keep conditional values deliberately: unregister only when product semantics

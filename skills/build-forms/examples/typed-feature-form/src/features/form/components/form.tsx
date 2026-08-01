@@ -4,12 +4,14 @@ import * as React from "react"
 import {
   FormProvider,
   useController,
+  useForm,
   useFormContext,
   type FieldPath,
   type FieldValues,
   type SubmitErrorHandler,
   type SubmitHandler,
   type UseControllerProps,
+  type UseFormProps,
   type UseFormReturn,
 } from "react-hook-form"
 
@@ -23,27 +25,63 @@ import {
 export type FormProps<
   TFieldValues extends FieldValues,
   TContext = unknown,
-  TTransformedValues extends FieldValues = TFieldValues,
+  TTransformedValues = TFieldValues,
 > = Omit<
   React.ComponentProps<"form">,
   "onError" | "onInvalid" | "onSubmit"
-> & {
-  form: UseFormReturn<TFieldValues, TContext, TTransformedValues>
-  onSubmit: SubmitHandler<TTransformedValues>
-  onInvalid?: SubmitErrorHandler<TFieldValues>
-}
+> &
+  UseFormProps<TFieldValues, TContext, TTransformedValues> & {
+    onSubmit: SubmitHandler<TTransformedValues>
+    onInvalid?: SubmitErrorHandler<TFieldValues>
+  }
 
 export function Form<
   TFieldValues extends FieldValues,
   TContext = unknown,
-  TTransformedValues extends FieldValues = TFieldValues,
+  TTransformedValues = TFieldValues,
 >({
-  form,
+  context,
+  criteriaMode,
+  defaultValues,
+  delayError,
+  disabled,
+  errors,
+  formControl,
+  mode,
   onSubmit,
   onInvalid,
   noValidate = true,
+  progressive,
+  resetOptions,
+  resolver,
+  reValidateMode,
+  shouldFocusError,
+  shouldUnregister,
+  shouldUseNativeValidation,
+  validate,
+  values,
   ...props
 }: FormProps<TFieldValues, TContext, TTransformedValues>) {
+  const form = useForm<TFieldValues, TContext, TTransformedValues>({
+    context,
+    criteriaMode,
+    defaultValues,
+    delayError,
+    disabled,
+    errors,
+    formControl,
+    mode,
+    progressive,
+    resetOptions,
+    resolver,
+    reValidateMode,
+    shouldFocusError,
+    shouldUnregister,
+    shouldUseNativeValidation,
+    validate,
+    values,
+  })
+
   return (
     <FormProvider {...form}>
       <form
@@ -58,7 +96,7 @@ export function Form<
 export function createForm<
   TFieldValues extends FieldValues,
   TContext = unknown,
-  TTransformedValues extends FieldValues = TFieldValues,
+  TTransformedValues = TFieldValues,
 >() {
   const TypedFormScope = React.createContext(false)
 
