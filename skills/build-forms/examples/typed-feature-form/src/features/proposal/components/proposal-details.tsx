@@ -7,7 +7,21 @@ import {
   InputFieldLabel,
   InputFieldRoot,
 } from "../../form/components/input-field"
-import { useProposalForm } from "../proposal-form"
+import {
+  SelectFieldContent,
+  SelectFieldControl,
+  SelectFieldDescription,
+  SelectFieldError,
+  SelectFieldItem,
+  SelectFieldLabel,
+  SelectFieldRoot,
+  SelectFieldTrigger,
+  SelectFieldValue,
+} from "../../form/components/select-field"
+import {
+  PROPOSAL_SURFACES,
+  useProposalForm,
+} from "../proposal-form"
 
 export function ProposalDetails() {
   const form = useProposalForm()
@@ -30,6 +44,26 @@ export function ProposalDetails() {
         <InputFieldControl autoComplete="name" />
         <InputFieldError />
       </InputFieldRoot>
+
+      <SelectFieldRoot control={form.control} name="surface">
+        <SelectFieldLabel>Primary surface</SelectFieldLabel>
+        <SelectFieldControl>
+          <SelectFieldTrigger>
+            <SelectFieldValue placeholder="Choose a surface" />
+          </SelectFieldTrigger>
+          <SelectFieldContent align="start">
+            {PROPOSAL_SURFACES.map((surface) => (
+              <SelectFieldItem key={surface.value} value={surface.value}>
+                {surface.label}
+              </SelectFieldItem>
+            ))}
+          </SelectFieldContent>
+        </SelectFieldControl>
+        <SelectFieldDescription>
+          Choose where customers will encounter the proposal.
+        </SelectFieldDescription>
+        <SelectFieldError />
+      </SelectFieldRoot>
     </section>
   )
 }

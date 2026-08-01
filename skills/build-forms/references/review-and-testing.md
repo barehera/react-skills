@@ -20,11 +20,13 @@
 - Conditional fields retain or unregister values deliberately.
 - Schema, product policy, submission, API, cache, routing, and notifications
   stay outside visual field slots.
-- A non-trivial consuming form separates schemas, inferred types, constants,
-  non-visual logic, and focused UI components instead of accumulating them in
-  one entry file.
-- Product-specific schemas, defaults, steps, labels, and submit logic remain in
-  the consuming feature rather than leaking into shared `features/form` code.
+- A consuming feature keeps a cohesive schema, inferred values, defaults,
+  options, and typed Form/hook together unless one artifact has earned an
+  independent module.
+- Product-specific contracts remain in the consuming feature rather than
+  leaking into shared `features/form` code or unnecessary one-file folders.
+- Shared mechanics such as ref composition live outside individual Input or
+  Select field modules.
 - Descendant sections obtain the typed form through a feature hook instead of
   receiving the same `UseFormReturn` prop repeatedly.
 - The typed form factory binds provider and hook types only; the feature entry

@@ -7,7 +7,7 @@
 - [Slot-owned props](#slot-owned-props)
 - [Accessibility relationships](#accessibility-relationships)
 - [Create a typed feature form scope](#create-a-typed-feature-form-scope)
-- [Separate feature artifacts](#separate-feature-artifacts)
+- [Keep the feature form contract cohesive](#keep-the-feature-form-contract-cohesive)
 - [Placement and file boundaries](#placement-and-file-boundaries)
 
 ## Responsibility map
@@ -147,37 +147,29 @@ resolver, own defaults, or absorb unrelated product context.
 Use a separate feature context for non-form dependencies. Do not turn the form
 scope into a general dependency container.
 
-## Separate feature artifacts
+## Keep the feature form contract cohesive
 
 Keep the shared form feature limited to reusable bindings and field families.
-For a non-trivial consuming form, split product artifacts by responsibility:
+Keep one feature's closely related form contract together by default:
 
 ```text
-features/launch-brief/
+features/proposal/
   components/
-    concept-step.tsx
-    delivery-step.tsx
-    launch-brief-actions.tsx
-  constants/
-    launch-brief.ts
-  logic/
-    find-invalid-step.ts
-    submit-launch-brief.ts
-  schemas/
-    launch-brief-schema.ts
-  types/
-    launch-brief.ts
-  launch-brief-form.tsx
+    proposal-details.tsx
+    proposal-preview.tsx
+  proposal-form.ts
+  proposal-screen.tsx
 ```
 
-The entry component owns composition and local orchestration. Schema files own
-validation rules, types expose inferred public contracts, constants own
-defaults/options/step metadata, logic modules own non-visual operations, and
-focused components own rendering. Do not keep these in one large form module or
-move them into `features/form` merely because they participate in a form.
+`proposal-form.ts` may own the schema, inferred values, defaults, option
+metadata, typed Form/hook pair, and a small local submit example. Focused
+components own rendering and call the typed hook. The screen owns `useForm`,
+resolver selection, and composition.
 
-Adapt folder names to repository conventions and keep a genuinely small form
-colocated. Separation should clarify ownership, not create one-line files.
+Split schema, types, constants, or submission into dedicated modules only when
+they become independently reusable, acquire substantial logic, or follow a
+strong repository convention. Do not create folders whose only purpose is to
+hold one tiny private file.
 
 ## Placement and file boundaries
 
@@ -186,18 +178,14 @@ scratch, a useful boundary is:
 
 ```text
 features/form/
+  compose-refs.ts
   components/
     form.tsx
     compound-field.tsx
     input-field.tsx
     select-field.tsx
-  logic/
-    compose-refs.ts
-    get-field-control-props.ts
-  constants/
-    field.ts
 ```
 
 Keep each cohesive public family in one file. Split the shared foundation and
-generic logic because several families depend on them. Keep schemas, defaults,
-step definitions, submit mutations, and feature copy in the consuming feature.
+cross-family helpers because several families depend on them. Keep product form
+contracts and feature copy in the consuming feature.

@@ -21,6 +21,7 @@
     "skills/manage-server-state/examples/feature-colocated/src/**/*.ts",
     "skills/manage-server-state/examples/feature-colocated/src/**/*.tsx",
     "skills/build-forms/examples/typed-feature-form/src/**/*.ts",
-    "skills/build-forms/examples/typed-feature-form/src/**/*.tsx"
+    "skills/build-forms/examples/typed-feature-form/src/**/*.tsx",
+    "typecheck/build-forms-shadcn.d.ts"
   ]
 }

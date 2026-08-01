@@ -18,6 +18,8 @@ Compose the consumer ref with the form-library ref. Compose observational
 handlers first, respect `event.defaultPrevented` when the event supports it,
 then apply the authoritative form update. Apply internal `id`, `name`, `value`,
 `checked`, `disabled`, and accessibility bindings after consumer props.
+Keep cross-family mechanics such as `composeRefs` in the shared form feature,
+not embedded in one control-family module.
 
 Restrict field paths by value type when the form library supports it:
 

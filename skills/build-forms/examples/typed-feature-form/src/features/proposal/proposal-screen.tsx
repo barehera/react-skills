@@ -5,11 +5,13 @@ import { useForm } from "react-hook-form"
 
 import { ProposalDetails } from "./components/proposal-details"
 import { ProposalPreview } from "./components/proposal-preview"
-import { PROPOSAL_DEFAULT_VALUES } from "./constants/proposal"
-import { submitProposal } from "./logic/submit-proposal"
-import { ProposalForm } from "./proposal-form"
-import { proposalSchema } from "./schemas/proposal-schema"
-import type { ProposalValues } from "./types/proposal"
+import {
+  PROPOSAL_DEFAULT_VALUES,
+  ProposalForm,
+  proposalSchema,
+  submitProposal,
+  type ProposalValues,
+} from "./proposal-form"
 
 export function ProposalScreen() {
   const form = useForm<ProposalValues>({

@@ -16,11 +16,11 @@ The skill keeps Form and Stepper separate. A feature adapter may validate the
 active step and advance navigation, but neither generic family imports or owns
 the other.
 
-For non-trivial forms, the consuming feature separates schemas, inferred types,
-constants, non-visual logic, and focused step components. Its entry component
-stays a composition boundary, while reusable bindings remain in `features/form`.
-Feature components consume a generated typed form hook instead of threading a
-React Hook Form instance through every section prop.
+Each consuming feature keeps its schema, inferred values, defaults/options, and
+typed Form/hook together in a cohesive `<feature>-form.ts` module by default.
+Distinct UI sections stay in `components`, while reusable bindings and shared
+helpers remain in `features/form`. Feature components consume the typed form
+hook instead of threading a React Hook Form instance through every section prop.
 
 When a form crosses into API contracts, mutations, authentication, or cache
 synchronization, the skill checks for `manage-server-state` and recommends

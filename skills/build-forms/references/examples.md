@@ -9,15 +9,18 @@ sections. It demonstrates:
 - an ordinary controlled `Form` that receives a React Hook Form instance;
 - `createForm<T>()`, which binds a feature-specific Form and typed hook without
   owning `useForm`, Zod, defaults, or submission policy;
-- a compound `InputField` whose slots own their natural primitive props;
-- separated schema, inferred type, defaults, submission logic, and components;
+- compound Input and Select fields that wrap existing shadcn primitives and
+  expose slot-owned props;
+- a shared `composeRefs` helper outside either field module;
+- one cohesive `proposal-form.ts` containing schema, inferred values, defaults,
+  option metadata, typed Form/hook, and its small local submit example;
 - descendant components that call `useProposalForm()` instead of receiving a
   repeated `form` prop.
 
-This is a non-runtime reference. Adapt its paths, validation library, field
-primitives, styling, and product model to the repository. Reuse existing shadcn
-Field and Input primitives rather than copying the example's native elements
-when the target project provides them.
+This is a non-runtime reference. It expects the target app's existing shadcn
+Field, Input, and Select primitives. Adapt its paths, validation library,
+styling, and product model to the repository; do not reinstall or rewrite those
+primitives as part of the form abstraction.
 
 ## Example: refactor a large form component
 
@@ -29,13 +32,15 @@ Split this account application form and remove form prop drilling.
 
 Expected behavior:
 
-1. Keep the schema, inferred values, defaults/options, non-visual logic, and
-   focused UI sections in separate feature modules.
+1. Keep the schema, inferred values, defaults/options, typed Form/hook, and
+   small private form helpers together in `<feature>-form.ts`.
 2. Keep the React Hook Form `useForm` call in the feature entry.
 3. Create one typed Form/hook pair for the feature.
 4. Replace repeated `form: UseFormReturn<...>` section props with the typed hook.
 5. Continue passing `form.control` at each compound field root when it is needed
    to infer and restrict the field path.
+6. Extract only helpers shared by multiple field families, such as ref
+   composition, from the individual field files.
 
 ## Example: do not hide form creation
 

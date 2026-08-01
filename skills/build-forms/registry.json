@@ -51,29 +51,24 @@
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/form.tsx"
         },
         {
+          "path": "examples/typed-feature-form/src/features/form/compose-refs.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/compose-refs.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/components/compound-field.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/compound-field.tsx"
+        },
+        {
           "path": "examples/typed-feature-form/src/features/form/components/input-field.tsx",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/input-field.tsx"
         },
         {
-          "path": "examples/typed-feature-form/src/features/proposal/schemas/proposal-schema.ts",
+          "path": "examples/typed-feature-form/src/features/form/components/select-field.tsx",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/schemas/proposal-schema.ts"
-        },
-        {
-          "path": "examples/typed-feature-form/src/features/proposal/types/proposal.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/types/proposal.ts"
-        },
-        {
-          "path": "examples/typed-feature-form/src/features/proposal/constants/proposal.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/constants/proposal.ts"
-        },
-        {
-          "path": "examples/typed-feature-form/src/features/proposal/logic/submit-proposal.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/logic/submit-proposal.ts"
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/select-field.tsx"
         },
         {
           "path": "examples/typed-feature-form/src/features/proposal/proposal-form.ts",

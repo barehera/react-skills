@@ -48,7 +48,8 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
   of tunneling their contracts through `triggerProps`, `contentProps`,
   `labelProps`, or other parent prop bags.
 - Preserve consumer refs by composing them with the form-library ref. Compose
-  observational handlers before applying authoritative bindings.
+  observational handlers before applying authoritative bindings. Keep helpers
+  shared by multiple field families outside any one Input or Select module.
 - Keep control-specific primitive providers around only the slots that require
   them. Field label, description, and error slots stay outside a Radix Select
   provider; trigger, value, content, and items stay inside an explicit
@@ -60,10 +61,11 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
   implemented from the same open slots.
 - Keep schema definitions, cross-field business validation, submit mutations,
   notifications, routing, and cache synchronization outside visual field slots.
-- Keep a non-trivial consuming form's entry component focused on composition.
-  Place schemas, inferred types, defaults and option metadata, step definitions,
-  and non-visual helpers in dedicated modules inside that feature. Do not move
-  product-specific artifacts into the shared `features/form` foundation.
+- Keep a consuming feature's form contract cohesive. Co-locate its schema,
+  inferred values, defaults, option metadata, and typed Form/hook in a focused
+  `<feature>-form.ts` module by default. Split an artifact only when it becomes
+  independently reusable or the module stops being cohesive. Keep product
+  artifacts out of the shared `features/form` foundation.
 - For a form with several descendant sections, create a feature-typed Form and
   hook once. Keep React Hook Form's `useForm` call at the feature entry, pass
   that instance to the typed Form once, and let descendants call the typed hook
@@ -116,11 +118,12 @@ crosses the form boundary.
 
 Use these only when the repository has no established convention:
 
-- Feature-scoped shared form infrastructure under `features/form`, with
-  `components`, `logic`, and `constants` separated by responsibility.
-- For a non-trivial consuming form, sibling `components`, `schemas`, `types`,
-  `constants`, and `logic` boundaries inside its feature. Collapse them only
-  when the form is genuinely small and the separation would add no clarity.
+- Shared field families under `features/form/components`, with cross-family
+  helpers such as `compose-refs.ts` outside any individual field module.
+- A cohesive `<feature>-form.ts` for the consuming feature's schema, inferred
+  values, defaults/options, and typed Form/hook, plus `components` for distinct
+  rendered sections. Do not create `schemas`, `types`, `constants`, or `logic`
+  folders merely to hold one form's small private artifacts.
 - React Hook Form as the state/controller boundary and Zod as the schema source
   only when already installed or explicitly requested.
 - One shared compound-field context for stable IDs and controller bindings;
