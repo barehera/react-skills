@@ -5,7 +5,7 @@
       "name": "build-forms",
       "type": "registry:item",
       "title": "Build Forms",
-      "description": "Design and refactor composable, accessible React form systems with slot-owned props, reusable field bindings, and independent workflow orchestration.",
+      "description": "Design and refactor composable, accessible React form systems with slot-owned props, typed feature hooks, reusable field bindings, and independent workflow orchestration.",
       "registryDependencies": [
         "barehera/react-skills/react-skills-version"
       ],
@@ -39,9 +39,64 @@
           "path": "references/review-and-testing.md",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/references/review-and-testing.md"
+        },
+        {
+          "path": "references/examples.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/examples.md"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/components/form.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/form.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/form/components/input-field.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/input-field.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/schemas/proposal-schema.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/schemas/proposal-schema.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/types/proposal.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/types/proposal.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/constants/proposal.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/constants/proposal.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/logic/submit-proposal.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/logic/submit-proposal.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/proposal-form.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-form.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/components/proposal-preview.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-preview.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/proposal-screen.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-screen.tsx"
         }
       ],
-      "docs": "Installs the form-building Agent Skill and focused architecture, field-contract, workflow, submission, and review references. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the form-building Agent Skill, focused references, and a non-runtime typed feature-form example. It does not install runtime dependencies or write application source files."
     }
   ]
 }

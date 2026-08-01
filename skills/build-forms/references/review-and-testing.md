@@ -25,6 +25,10 @@
   one entry file.
 - Product-specific schemas, defaults, steps, labels, and submit logic remain in
   the consuming feature rather than leaking into shared `features/form` code.
+- Descendant sections obtain the typed form through a feature hook instead of
+  receiving the same `UseFormReturn` prop repeatedly.
+- The typed form factory binds provider and hook types only; the feature entry
+  still owns `useForm`, resolver selection, defaults, and submission policy.
 - Two mounted forms have isolated values and unique IDs.
 
 ## Extension tests

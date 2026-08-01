@@ -24,7 +24,7 @@ dependencies.
 
 | Skill | Purpose |
 | --- | --- |
-| [Build Forms](skills/build-forms/README.md) | Build composable, accessible React forms with slot-owned props and independent workflow orchestration. |
+| [Build Forms](skills/build-forms/README.md) | Build composable, accessible React forms with slot-owned props, typed feature hooks, and independent workflow orchestration. |
 | [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
 | [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, slot-owned props, scoped state, and correct async boundaries. |
 | [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |

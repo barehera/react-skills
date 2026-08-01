@@ -64,6 +64,11 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
   Place schemas, inferred types, defaults and option metadata, step definitions,
   and non-visual helpers in dedicated modules inside that feature. Do not move
   product-specific artifacts into the shared `features/form` foundation.
+- For a form with several descendant sections, create a feature-typed Form and
+  hook once. Keep React Hook Form's `useForm` call at the feature entry, pass
+  that instance to the typed Form once, and let descendants call the typed hook
+  instead of receiving `UseFormReturn` props. Keep resolver and defaults out of
+  the generic factory.
 - Use stable field-array identity from the form library. Never use array index
   as the React key or repeat positional identity through nested field parts.
 - Keep conditional values deliberately: unregister only when product semantics
@@ -103,6 +108,9 @@ crosses the form boundary.
   skill routing.
 - Read [review-and-testing.md](references/review-and-testing.md) for audits,
   refactors, accessibility review, extension tests, and final verification.
+- Read [examples.md](references/examples.md) before creating a new form
+  foundation or typed feature form, and adapt the bundled implementation rather
+  than copying its domain model or paths blindly.
 
 ## Decision defaults
 

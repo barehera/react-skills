@@ -19,6 +19,8 @@ the other.
 For non-trivial forms, the consuming feature separates schemas, inferred types,
 constants, non-visual logic, and focused step components. Its entry component
 stays a composition boundary, while reusable bindings remain in `features/form`.
+Feature components consume a generated typed form hook instead of threading a
+React Hook Form instance through every section prop.
 
 When a form crosses into API contracts, mutations, authentication, or cache
 synchronization, the skill checks for `manage-server-state` and recommends
@@ -59,6 +61,8 @@ active step before navigation.
 - [Field contracts](references/field-contracts.md)
 - [Workflows and submission](references/workflows-and-submission.md)
 - [Review and testing](references/review-and-testing.md)
+- [Examples and adaptation](references/examples.md)
+- [Complete typed feature-form example](examples/typed-feature-form)
 
 The shared `.agents/skills/VERSION` file records the React Skills release that
 supplied the installed workflow.

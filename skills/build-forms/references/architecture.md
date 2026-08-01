@@ -6,6 +6,7 @@
 - [Shared field foundation](#shared-field-foundation)
 - [Slot-owned props](#slot-owned-props)
 - [Accessibility relationships](#accessibility-relationships)
+- [Create a typed feature form scope](#create-a-typed-feature-form-scope)
 - [Separate feature artifacts](#separate-feature-artifacts)
 - [Placement and file boundaries](#placement-and-file-boundaries)
 
@@ -110,6 +111,41 @@ it. The root supplies required bindings; consumers do not repeat them.
 Reserve internally authoritative IDs and ARIA props from leaf prop types. Allow
 compatible consumer ARIA such as `aria-label` when it does not break the field
 relationship.
+
+## Create a typed feature form scope
+
+When several descendants need form methods, bind the feature's value type once:
+
+```tsx
+export const {
+  Form: ProposalForm,
+  useForm: useProposalForm,
+} = createForm<ProposalValues>()
+```
+
+Keep state creation explicit at the feature entry:
+
+```tsx
+const form = useForm<ProposalValues>({
+  resolver: zodResolver(proposalSchema),
+  defaultValues: PROPOSAL_DEFAULT_VALUES,
+})
+
+return (
+  <ProposalForm form={form} onSubmit={submitProposal}>
+    <ProposalDetails />
+  </ProposalForm>
+)
+```
+
+Descendants call `useProposalForm()` and pass `form.control` to individual field
+roots, preserving typed field-path inference without receiving the entire form
+as a prop. The generic `createForm` factory should only bind `Form` and
+`useFormContext` types. It must not instantiate React Hook Form, select a schema
+resolver, own defaults, or absorb unrelated product context.
+
+Use a separate feature context for non-form dependencies. Do not turn the form
+scope into a general dependency container.
 
 ## Separate feature artifacts
 

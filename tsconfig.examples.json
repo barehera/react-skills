@@ -9,7 +9,8 @@
     "noEmit": true,
     "paths": {
       "@/*": [
-        "./skills/manage-server-state/examples/feature-colocated/src/*"
+        "./skills/manage-server-state/examples/feature-colocated/src/*",
+        "./skills/build-forms/examples/typed-feature-form/src/*"
       ]
     },
     "skipLibCheck": true,
@@ -18,6 +19,8 @@
   },
   "include": [
     "skills/manage-server-state/examples/feature-colocated/src/**/*.ts",
-    "skills/manage-server-state/examples/feature-colocated/src/**/*.tsx"
+    "skills/manage-server-state/examples/feature-colocated/src/**/*.tsx",
+    "skills/build-forms/examples/typed-feature-form/src/**/*.ts",
+    "skills/build-forms/examples/typed-feature-form/src/**/*.tsx"
   ]
 }
