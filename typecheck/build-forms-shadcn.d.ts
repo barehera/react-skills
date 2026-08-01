@@ -39,6 +39,7 @@ declare module "@/components/ui/select" {
     disabled?: boolean
     name?: string
     onValueChange?: (value: string) => void
+    required?: boolean
     value?: string
   }): React.ReactElement
 

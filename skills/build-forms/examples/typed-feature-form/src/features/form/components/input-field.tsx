@@ -40,7 +40,9 @@ export type InputFieldErrorProps = CompoundFieldErrorProps
 export type InputFieldControlProps = Omit<
   React.ComponentProps<typeof Input>,
   | "aria-describedby"
+  | "aria-errormessage"
   | "aria-invalid"
+  | "aria-required"
   | "defaultValue"
   | "disabled"
   | "id"
@@ -52,6 +54,7 @@ export function InputFieldControl({
   onBlur,
   onChange,
   ref,
+  required,
   ...props
 }: InputFieldControlProps) {
   const field = useCompoundField("InputFieldControl")
@@ -64,8 +67,11 @@ export function InputFieldControl({
       name={field.controlName}
       value={String(field.controlValue ?? "")}
       disabled={field.controlDisabled}
+      required={required}
       aria-describedby={field.describedBy}
+      aria-errormessage={field.errorMessageId}
       aria-invalid={field.invalid || undefined}
+      aria-required={required || undefined}
       onBlur={(event) => {
         onBlur?.(event)
         if (!event.defaultPrevented) field.controlOnBlur()

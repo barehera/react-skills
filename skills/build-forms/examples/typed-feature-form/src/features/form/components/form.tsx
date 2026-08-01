@@ -100,6 +100,7 @@ type CompoundFieldContextValue = {
   controlValue: unknown
   describedBy: string | undefined
   error: { message?: string } | undefined
+  errorMessageId: string | undefined
   invalid: boolean
 }
 
@@ -168,13 +169,14 @@ export function CompoundFieldRoot<
     rules,
     shouldUnregister,
   })
+  const hasError =
+    containsSlot(children, CompoundFieldError) && controller.fieldState.invalid
+  const errorMessageId = hasError ? errorId : undefined
   const describedBy = [
     containsSlot(children, CompoundFieldDescription)
       ? descriptionId
       : undefined,
-    containsSlot(children, CompoundFieldError) && controller.fieldState.invalid
-      ? errorId
-      : undefined,
+    errorMessageId,
   ]
     .filter(Boolean)
     .join(" ") || undefined
@@ -191,6 +193,7 @@ export function CompoundFieldRoot<
         controlValue: controller.field.value,
         describedBy,
         error: controller.fieldState.error,
+        errorMessageId,
         invalid: controller.fieldState.invalid,
       }}
     >

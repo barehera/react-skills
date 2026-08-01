@@ -108,6 +108,9 @@ it. The root supplies required bindings; consumers do not repeat them.
 - Control receives `aria-invalid` only while invalid.
 - `aria-describedby` includes a description ID only when that slot exists.
 - It includes an error ID only while invalid and when an error slot exists.
+- `aria-errormessage` references that visible error slot only while invalid.
+- Native required controls keep `required` and reflect `aria-required`; custom
+  controls propagate the same required state to their interactive element.
 - Radio groups use a semantic FieldSet/Legend or an explicit labelled-by link.
 - Checkbox labels encompass or target the interactive control without hiding
   layout inside the label slot.

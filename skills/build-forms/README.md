@@ -4,7 +4,8 @@
 
 Design, implement, refactor, or audit accessible React form systems with
 shadcn-style compound fields, repository-native form and validation libraries,
-dynamic collections, and independent workflow orchestration.
+browser autofill/mobile input behavior, dynamic collections, and independent
+workflow orchestration.
 
 Every visible part owns its natural primitive props. Consumers configure
 `SelectFieldTrigger`, `SelectFieldContent`, `CheckboxFieldLayout`, and other
@@ -60,6 +61,7 @@ active step before navigation.
 - [Canonical skill instructions](SKILL.md)
 - [Form architecture](references/architecture.md)
 - [Field contracts](references/field-contracts.md)
+- [Browser and form UX](references/browser-and-ux.md)
 - [Workflows and submission](references/workflows-and-submission.md)
 - [Review and testing](references/review-and-testing.md)
 - [Examples and adaptation](references/examples.md)

@@ -35,7 +35,14 @@ Restrict field paths by value type when the form library supports it:
 
 Expose `Root`, `Label`, `Control`, `Description`, and `Error`. The Control owns
 native Input or Textarea props directly. Preserve autocomplete, input mode,
-placeholder, type, constraints, and consumer events.
+enter-key hint, capitalization, spellcheck, placeholder, type, constraints,
+required state, and consumer events. When `required` is passed, keep the native
+attribute and derive `aria-required` rather than asking the consumer for both.
+
+Choose semantic values at the feature: use accurate input types and valid
+autocomplete tokens, prefer semantic type over `inputMode`, and ensure an
+`enterKeyHint` matches the actual Enter-key behavior. Never disable autocomplete
+or correction globally from a generic field family.
 
 Implement Date as a semantic composition of the Input family when the native
 date input is the repository convention. Normalize its value at the control
@@ -48,8 +55,11 @@ Expose `Root`, `Label`, `Control`, `Trigger`, `Value`, `Content`, `Item`,
 
 - Root binds the field and outer Field layout.
 - Control owns the Select primitive root, value, disabled state, name, and
-  value-change composition.
+  value-change composition. It also owns the primitive's native `required`
+  contract.
 - Trigger owns trigger props and the field control ID/ARIA.
+- Trigger reflects the Control's required state with `aria-required` without a
+  repeated consumer prop.
 - Trigger composes the form-library ref and blur binding so error focus,
   touched state, and on-blur validation reach the interactive element.
 - Content owns portal, positioning, collision, and content props.

@@ -15,6 +15,11 @@
 - Authoritative IDs, values, checked state, disabled state, and ARIA cannot be
   accidentally replaced by prop spreading.
 - Description and error ID references exist only when their slots render.
+- `aria-errormessage` exists only while invalid and points to the visible error;
+  required controls expose native or equivalent required semantics once.
+- Semantic type, autocomplete, mobile keyboard, capitalization, spellcheck,
+  and constraint props remain available on the natural Control slot and are
+  selected from field meaning rather than generic defaults.
 - Select provider boundaries contain only Select-dependent slots.
 - Radio option identity is supplied once.
 - Checkbox layout is explicit and configurable.
@@ -44,12 +49,15 @@
 
 For each relevant family:
 
-1. Omit Description and Error and inspect `aria-describedby`.
+1. Omit Description and Error and inspect `aria-describedby` and
+   `aria-errormessage`.
 2. Reorder Label, Control, Description, and Error where semantics permit.
 3. Insert a consumer-owned layout wrapper or separator.
 4. Pass a primitive-specific prop and consumer ref to each slot.
 5. Render two roots with the same field name in separate forms.
 6. Trigger validation, focus the invalid control, correct it, reset, and submit.
+7. Exercise required state, browser autofill, mobile keyboard hints, Enter
+   submission, and non-submit buttons for the form's supported environments.
 
 For Select, open by pointer and keyboard, select an item, inspect portal content,
 verify focus return, trigger blur validation, and focus the trigger after an

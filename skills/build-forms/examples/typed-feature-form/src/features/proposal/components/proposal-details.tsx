@@ -31,8 +31,11 @@ export function ProposalDetails() {
       <h2 id="proposal-details-title">Proposal details</h2>
 
       <InputFieldRoot control={form.control} name="title">
-        <InputFieldLabel>Title</InputFieldLabel>
-        <InputFieldControl placeholder="Returns automation pilot" />
+        <InputFieldLabel>Title (required)</InputFieldLabel>
+        <InputFieldControl
+          required
+          placeholder="Returns automation pilot"
+        />
         <InputFieldDescription>
           Use the name collaborators will see in planning.
         </InputFieldDescription>
@@ -40,14 +43,18 @@ export function ProposalDetails() {
       </InputFieldRoot>
 
       <InputFieldRoot control={form.control} name="owner">
-        <InputFieldLabel>Owner</InputFieldLabel>
-        <InputFieldControl autoComplete="name" />
+        <InputFieldLabel>Owner (required)</InputFieldLabel>
+        <InputFieldControl
+          required
+          autoCapitalize="words"
+          autoComplete="name"
+        />
         <InputFieldError />
       </InputFieldRoot>
 
       <SelectFieldRoot control={form.control} name="surface">
-        <SelectFieldLabel>Primary surface</SelectFieldLabel>
-        <SelectFieldControl>
+        <SelectFieldLabel>Primary surface (required)</SelectFieldLabel>
+        <SelectFieldControl required>
           <SelectFieldTrigger>
             <SelectFieldValue placeholder="Choose a surface" />
           </SelectFieldTrigger>

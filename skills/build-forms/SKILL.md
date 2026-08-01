@@ -1,6 +1,6 @@
 ---
 name: build-forms
-description: Design, implement, refactor, or audit composable and accessible React form systems that adapt to repository-native shadcn or Radix primitives, form libraries, schema validators, and feature structure. Use for reusable compound field families, React Hook Form controllers, Zod validation, input/select/textarea/radio/checkbox/date adapters, dynamic field arrays, conditional fields, multi-step forms, submission workflows, error focus, and separating form state from steppers or other navigation.
+description: Design, implement, refactor, or audit composable, accessible, and browser-friendly React form systems that adapt to repository-native shadcn or Radix primitives, form libraries, schema validators, and feature structure. Use for reusable compound field families, React Hook Form controllers, Zod validation, input/select/textarea/radio/checkbox/date adapters, autofill and mobile input UX, dynamic field arrays, conditional fields, multi-step forms, submission workflows, error focus, and separating form state from steppers or other navigation.
 ---
 
 # Build Forms
@@ -28,7 +28,8 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
    - surrounding Card, Dialog, Sheet, or other container owner;
    - submission and remote-state owner.
 5. Audit each wrapped primitive's props, ref, events, value contract, disabled
-   behavior, ARIA, focus, keyboard behavior, defaults, and portal boundaries.
+   behavior, ARIA, focus, keyboard behavior, semantic input type, autocomplete,
+   mobile input hints, constraints, defaults, and portal boundaries.
 6. Implement a shared field foundation, then compose control-specific families
    from it. Keep each cohesive family discoverable from one module.
 7. Exercise omission, reordering, custom layout, conditional slots, two form
@@ -61,7 +62,12 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
   provider; trigger, value, content, and items stay inside an explicit
   `SelectFieldControl` boundary.
 - Include description and error IDs in `aria-describedby` only when the
-  corresponding slot exists. Keep label association and error focus correct.
+  corresponding slot exists. While invalid, also bind `aria-errormessage` only
+  to a visible error slot. Keep label association and error focus correct.
+- Preserve native `required` and reflect required state on custom interactive
+  controls. Keep semantic `type`, valid `autocomplete`, `inputMode`,
+  `enterKeyHint`, capitalization, spellcheck, and native constraint props on
+  the Control slot; never guess one universal value for unrelated fields.
 - Let consumers omit, reorder, wrap, and conditionally render slots. An
   optional compact field component may provide common anatomy only when it is
   implemented from the same open slots.
@@ -111,6 +117,8 @@ crosses the form boundary.
   foundation, public slots, file boundaries, or placement.
 - Read [field-contracts.md](references/field-contracts.md) when implementing or
   reviewing input, textarea, select, radio, checkbox, or date families.
+- Read [browser-and-ux.md](references/browser-and-ux.md) when choosing reusable
+  browser bindings, autofill/mobile hints, error feedback, or submit behavior.
 - Read [workflows-and-submission.md](references/workflows-and-submission.md) for
   multi-step forms, field arrays, conditional fields, submission, and companion
   skill routing.

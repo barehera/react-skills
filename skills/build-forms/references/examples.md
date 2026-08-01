@@ -13,6 +13,8 @@ sections. It demonstrates:
   the compound-field controller/accessibility foundation they share;
 - compound Input and Select fields that wrap existing shadcn primitives and
   expose slot-owned props;
+- shared invalid, error-message, and required-state ARIA bindings without
+  repeated consumer props, while semantic browser hints remain Control props;
 - a shared `composeRefs` implementation defined directly in `utils/index.ts`,
   outside either field module;
 - direct component-module imports without barrel exports;
