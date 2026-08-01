@@ -56,7 +56,9 @@ file evidence without a separate schema tool.
    editing a skill. Do not require the user to rewrite their feedback.
 2. Locate the current source skill and read its `SKILL.md`, routed references,
    examples, scripts, registry item, repository instructions, and validation
-   workflow. Compare the report's version with the current source.
+   workflow. When the source repository provides skill-authoring or technology
+   guides, read them before evaluating a finding or creating a new skill.
+   Compare the report's version with the current source.
 3. Verify each claim against available project evidence. Mark absent evidence
    as an assumption; do not present it as confirmed behavior.
 4. Deduplicate findings against current rules and recent changes. A report may

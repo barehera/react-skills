@@ -46,3 +46,23 @@ accepted improvements with tests.
 The skill distinguishes universal contracts from conditional references,
 worked examples, automated validation, project-local conventions, and findings
 that need more evidence.
+
+## Open a React Skills pull request
+
+1. Preserve the validated report at
+   `.agents/feedback/<target-skill>/<YYYY-MM-DD>-<topic>.md` or link it when the
+   consuming project cannot be published.
+2. In the React Skills repository, read `docs/technology-stack.md` and
+   `docs/adding-a-skill.md` before proposing source changes.
+3. Run this skill in ingest mode. Require one decision per finding and apply
+   only accepted or adapted improvements.
+4. Update the target skill's instructions, focused references, canonical
+   examples, registry files, README, and checks wherever the decision reaches.
+5. Run the report validator and `npm run validate`.
+6. Complete `.github/pull_request_template.md` with the report path, target
+   version, decision ledger, stack alignment, test results, and unresolved
+   assumptions.
+
+The canonical report format is the contribution contract. A contributor may
+open a feedback-only pull request without implementing the source change when
+the evidence is complete and safely redacted.

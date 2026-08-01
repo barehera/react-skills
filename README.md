@@ -16,9 +16,15 @@ React Skills gives repository-aware AI coding agents focused workflows for build
 Each skill is independently documented and installable, while the catalog is
 released as one versioned unit. The GitHub `v*` release is canonical; root
 `VERSION`, package metadata, the selector, and installed skills are synchronized
-copies of that release number. Skills teach an agent how to inspect and adapt a
-project; they do not force a starter template or install application runtime
-dependencies.
+copies of that release number.
+
+The catalog is intentionally opinionated. Its canonical skeleton uses React,
+TypeScript, shadcn/Radix primitives, compound components, React Hook Form, Zod,
+scoped Zustand stores, TanStack Query, Axios, and focused feature ownership.
+Skills inspect a consuming repository before changing it, but source skills and
+examples do not become framework-neutral menus of interchangeable packages.
+See the [technology contract](docs/technology-stack.md) for the shared stack and
+responsibility boundaries.
 
 ## Available skills
 
@@ -116,6 +122,60 @@ Read .agents/skills/manage-server-state/SKILL.md completely and follow it
 for this task.
 ```
 
+## Contribute through feedback
+
+Use the feedback skill to turn a real product-project correction into a reviewable
+React Skills pull request.
+
+1. Install both the skill being tested and the feedback skill in the product
+   repository:
+
+   ```bash
+   npx shadcn@latest add barehera/react-skills/build-forms
+   npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
+   ```
+
+2. Complete a real task with the target skill. Keep the accepted implementation,
+   user corrections, relevant diff, and test output available.
+3. Ask the agent to capture the evidence:
+
+   ```text
+   Use $evolve-skills-from-feedback in capture mode for $build-forms.
+   Record my corrections, the accepted implementation, exact file evidence,
+   generalization boundaries, and observable acceptance criteria.
+   ```
+
+4. Review the report at
+   `.agents/feedback/<target-skill>/<YYYY-MM-DD>-<topic>.md`. It must follow the
+   [feedback format](skills/evolve-skills-from-feedback/references/feedback-format.md)
+   and start from the
+   [report template](skills/evolve-skills-from-feedback/assets/skill-feedback-template.md).
+5. Validate it in the product repository:
+
+   ```bash
+   node .agents/skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs \
+     .agents/feedback/<target-skill>/<YYYY-MM-DD>-<topic>.md
+   ```
+
+6. Open a focused branch in this repository, preserve the report as evidence or
+   link it when the source cannot be published, and ask the agent to ingest it:
+
+   ```text
+   Use $evolve-skills-from-feedback in ingest mode for this report.
+   Compare every finding with the current source skill, produce a decision
+   ledger, implement accepted changes, and run the repository validation.
+   ```
+
+7. Run `npm run validate`, then open the pull request using the repository
+   template. Include the target skill/version, report path, finding decisions,
+   stack alignment, validation results, and unresolved assumptions.
+
+Feedback-only pull requests are welcome when the evidence is ready but the
+source change is not. Redact secrets, private endpoints, customer identifiers,
+and unnecessary proprietary code. See
+[Adding or improving a skill](docs/adding-a-skill.md) for the full authoring and
+pull-request workflow.
+
 ## Update
 
 Open the selector again or update one skill directly:
@@ -129,4 +189,5 @@ npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
 
 Every skill owns its instructions, references, examples, adapters, documentation, and registry item under `skills/<skill-name>`. The root registry composes those independent items into one catalog.
 
-See [Adding a skill](docs/adding-a-skill.md) for the required structure and validation workflow.
+See [Adding or improving a skill](docs/adding-a-skill.md) for the required
+structure, preferred stack, feedback loop, and validation workflow.

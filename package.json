@@ -22,7 +22,8 @@
     "release": "semantic-release",
     "skills:list": "node bin/react-skills.mjs --list",
     "typecheck:examples": "tsc --project tsconfig.examples.json",
-    "validate": "node scripts/validate-registry.mjs && npm run skills:list && npm run typecheck:examples && npm run registry:build"
+    "validate:feedback-example": "node skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs skills/evolve-skills-from-feedback/examples/composable-component-feedback.md",
+    "validate": "node scripts/validate-registry.mjs && npm run validate:feedback-example && npm run skills:list && npm run typecheck:examples && npm run registry:build"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.5.7",
