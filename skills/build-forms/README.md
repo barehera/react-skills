@@ -16,6 +16,10 @@ The skill keeps Form and Stepper separate. A feature adapter may validate the
 active step and advance navigation, but neither generic family imports or owns
 the other.
 
+For non-trivial forms, the consuming feature separates schemas, inferred types,
+constants, non-visual logic, and focused step components. Its entry component
+stays a composition boundary, while reusable bindings remain in `features/form`.
+
 When a form crosses into API contracts, mutations, authentication, or cache
 synchronization, the skill checks for `manage-server-state` and recommends
 installing it when absent. The companion remains optional and is installed only

@@ -20,6 +20,11 @@
 - Conditional fields retain or unregister values deliberately.
 - Schema, product policy, submission, API, cache, routing, and notifications
   stay outside visual field slots.
+- A non-trivial consuming form separates schemas, inferred types, constants,
+  non-visual logic, and focused UI components instead of accumulating them in
+  one entry file.
+- Product-specific schemas, defaults, steps, labels, and submit logic remain in
+  the consuming feature rather than leaking into shared `features/form` code.
 - Two mounted forms have isolated values and unique IDs.
 
 ## Extension tests

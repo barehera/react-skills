@@ -6,6 +6,7 @@
 - [Shared field foundation](#shared-field-foundation)
 - [Slot-owned props](#slot-owned-props)
 - [Accessibility relationships](#accessibility-relationships)
+- [Separate feature artifacts](#separate-feature-artifacts)
 - [Placement and file boundaries](#placement-and-file-boundaries)
 
 ## Responsibility map
@@ -109,6 +110,38 @@ it. The root supplies required bindings; consumers do not repeat them.
 Reserve internally authoritative IDs and ARIA props from leaf prop types. Allow
 compatible consumer ARIA such as `aria-label` when it does not break the field
 relationship.
+
+## Separate feature artifacts
+
+Keep the shared form feature limited to reusable bindings and field families.
+For a non-trivial consuming form, split product artifacts by responsibility:
+
+```text
+features/launch-brief/
+  components/
+    concept-step.tsx
+    delivery-step.tsx
+    launch-brief-actions.tsx
+  constants/
+    launch-brief.ts
+  logic/
+    find-invalid-step.ts
+    submit-launch-brief.ts
+  schemas/
+    launch-brief-schema.ts
+  types/
+    launch-brief.ts
+  launch-brief-form.tsx
+```
+
+The entry component owns composition and local orchestration. Schema files own
+validation rules, types expose inferred public contracts, constants own
+defaults/options/step metadata, logic modules own non-visual operations, and
+focused components own rendering. Do not keep these in one large form module or
+move them into `features/form` merely because they participate in a form.
+
+Adapt folder names to repository conventions and keep a genuinely small form
+colocated. Separation should clarify ownership, not create one-line files.
 
 ## Placement and file boundaries
 
