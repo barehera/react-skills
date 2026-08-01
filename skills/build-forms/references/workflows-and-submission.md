@@ -17,8 +17,14 @@ Form and Stepper are separate state machines:
 - A feature adapter coordinates them.
 
 Do not create a generic form wrapper that imports Stepper, or a Stepper that
-knows field names and schemas. A product-specific `CheckoutFormFlow` may compose
-both without changing either family.
+knows field names and schemas. Do not create a combined `StepperForm`,
+`FormStepper`, or product-specific wrapper that merges their props, state, or
+contexts. A feature screen may render both separate components, and a focused
+feature action may coordinate their independent hooks.
+
+Apply the same boundary to presentational owners. Keep Card, Dialog, Sheet, and
+Form as separate components even when nested. Avoid `CardForm`, `DialogForm`,
+and similar components that merge otherwise independent public contracts.
 
 ## Step-scoped validation
 

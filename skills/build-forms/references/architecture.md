@@ -25,12 +25,16 @@ feature submit action
 
 feature workflow adapter
   -> independent Form API + independent Stepper API
+
+feature screen composition
+  -> independent Card/Dialog/Sheet API + independent Form API
 ```
 
 The form root provides form context and submission. A field root binds one
 field and provides IDs, invalid state, disabled state, ref, value, and events.
 Leaf slots render repository primitives. Schema and product policy stay in the
-feature.
+feature. Surrounding layout and navigation components keep their own public
+contracts; nesting components does not justify merging their responsibilities.
 
 ## Shared field foundation
 
@@ -184,14 +188,14 @@ features/form/
     form.tsx
     input-field.tsx
     select-field.tsx
-    index.ts
   utils/
-    compose-refs.ts
     index.ts
 ```
 
 Keep each cohesive public family in one file. `components/form.tsx` may own the
 generic Form/provider factory and compound-field context/controller foundation
-when they are one reusable form boundary. Put non-visual helpers shared across
-families under `utils`. Use the local indexes as intentional public surfaces,
-and keep product form contracts and feature copy in the consuming feature.
+when they are one reusable boundary, while still exporting them as separate
+components. Put small non-visual helpers shared across families directly in
+`utils/index.ts`. Import component modules directly; do not add barrels whose
+only job is to re-export neighboring files. Keep product form contracts and
+feature copy in the consuming feature.

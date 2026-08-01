@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { composeRefs } from "../utils"
 import {
   CompoundFieldDescription,
   CompoundFieldError,
@@ -78,15 +79,24 @@ export type SelectFieldTriggerProps = Omit<
   "aria-describedby" | "aria-invalid" | "id"
 >
 
-export function SelectFieldTrigger(props: SelectFieldTriggerProps) {
+export function SelectFieldTrigger({
+  onBlur,
+  ref,
+  ...props
+}: SelectFieldTriggerProps) {
   const field = useCompoundField("SelectFieldTrigger")
 
   return (
     <SelectTrigger
       {...props}
+      ref={composeRefs(ref, field.controlRef as React.Ref<HTMLButtonElement>)}
       id={field.controlId}
       aria-describedby={field.describedBy}
       aria-invalid={field.invalid || undefined}
+      onBlur={(event) => {
+        onBlur?.(event)
+        if (!event.defaultPrevented) field.controlOnBlur()
+      }}
     />
   )
 }

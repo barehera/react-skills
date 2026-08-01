@@ -18,8 +18,11 @@ Compose the consumer ref with the form-library ref. Compose observational
 handlers first, respect `event.defaultPrevented` when the event supports it,
 then apply the authoritative form update. Apply internal `id`, `name`, `value`,
 `checked`, `disabled`, and accessibility bindings after consumer props.
-Keep cross-family mechanics such as `composeRefs` under the shared form
-feature's `utils` surface, not embedded in one control-family module.
+Ensure a composed React 19 ref runs callback cleanups and resets every ref that
+does not provide its own cleanup to `null` on unmount.
+Keep cross-family mechanics such as `composeRefs` directly in the shared form
+feature's `utils/index.ts`, not embedded in one control-family module or a
+re-export-only barrel.
 
 Restrict field paths by value type when the form library supports it:
 
@@ -47,6 +50,8 @@ Expose `Root`, `Label`, `Control`, `Trigger`, `Value`, `Content`, `Item`,
 - Control owns the Select primitive root, value, disabled state, name, and
   value-change composition.
 - Trigger owns trigger props and the field control ID/ARIA.
+- Trigger composes the form-library ref and blur binding so error focus,
+  touched state, and on-blur validation reach the interactive element.
 - Content owns portal, positioning, collision, and content props.
 - Item owns item value, disabled state, text, and item props.
 

@@ -1,6 +1,6 @@
 import * as z from "zod"
 
-import { createForm } from "../form/components"
+import { createForm } from "../form/components/form"
 
 export const proposalSchema = z.object({
   title: z.string().min(3, "Use a recognizable title."),

@@ -61,16 +61,6 @@
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/select-field.tsx"
         },
         {
-          "path": "examples/typed-feature-form/src/features/form/components/index.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/index.ts"
-        },
-        {
-          "path": "examples/typed-feature-form/src/features/form/utils/compose-refs.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/utils/compose-refs.ts"
-        },
-        {
           "path": "examples/typed-feature-form/src/features/form/utils/index.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/utils/index.ts"

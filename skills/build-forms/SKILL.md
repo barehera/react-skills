@@ -25,6 +25,7 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
    - control, label, description, error, content, and item slots;
    - conditional and repeated-field ownership;
    - workflow/navigation owner;
+   - surrounding Card, Dialog, Sheet, or other container owner;
    - submission and remote-state owner.
 5. Audit each wrapped primitive's props, ref, events, value contract, disabled
    behavior, ARIA, focus, keyboard behavior, defaults, and portal boundaries.
@@ -41,6 +42,11 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 - Keep form state separate from workflow navigation. A Stepper owns step value,
   ordering, and navigation. A Form owns values, validation, and submission. A
   feature adapter may validate the active step and then call `stepper.next()`.
+- Keep independently responsible components independent even when one renders
+  around another. Never create fused `StepperForm`, `FormStepper`, `CardForm`,
+  `DialogForm`, or similar APIs. Render the separate Stepper, Form, Card,
+  Dialog, or Sheet components in the feature composition; each retains its own
+  state, props, context, and behavior.
 - Put registration, generated IDs, invalid/disabled state, and accessibility
   relationships on the field root or shared field foundation.
 - Give every public part the compatible props of the primitive it renders.
@@ -120,8 +126,9 @@ Use these only when the repository has no established convention:
 
 - Shared field families under `features/form/components`, with the generic Form
   and shared compound-field foundation together in `components/form.tsx` when
-  they form one reusable boundary. Keep cross-family helpers such as ref
-  composition under `features/form/utils`.
+  they form one reusable boundary. They remain separate components even when
+  co-located. Keep small cross-family helpers such as ref composition directly
+  in `features/form/utils/index.ts`.
 - A cohesive `<feature>-form.ts` for the consuming feature's schema, inferred
   values, defaults/options, and typed Form/hook, plus `components` for distinct
   rendered sections. Do not create `schemas`, `types`, `constants`, or `logic`
@@ -132,9 +139,9 @@ Use these only when the repository has no established convention:
   control-specific contexts only for item identity such as radio options.
 - Compound families as the primary API and compact fields as optional secondary
   compositions.
-- Local `components/index.ts` and `utils/index.ts` public surfaces for a shared
-  form feature when they match repository conventions. Keep their exports
-  intentional and avoid a feature-wide barrel that mixes product artifacts.
+- Direct component imports instead of barrel exports. When the form feature has
+  a small `utils/index.ts`, define its shared helpers in that file directly;
+  do not create one-file re-export barrels.
 
 Do not force React Hook Form, Zod, a feature folder, multi-step navigation, or
 compound components onto a simpler coherent repository.

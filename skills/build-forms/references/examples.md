@@ -13,9 +13,9 @@ sections. It demonstrates:
   the compound-field controller/accessibility foundation they share;
 - compound Input and Select fields that wrap existing shadcn primitives and
   expose slot-owned props;
-- a shared `utils/compose-refs.ts` helper outside either field module, exposed
-  through the form feature's focused `utils/index.ts`;
-- intentional `components/index.ts` and `utils/index.ts` public surfaces;
+- a shared `composeRefs` implementation defined directly in `utils/index.ts`,
+  outside either field module;
+- direct component-module imports without barrel exports;
 - one cohesive `proposal-form.ts` containing schema, inferred values, defaults,
   option metadata, a `ProposalForm` value type, the `ProposalFormRoot`/typed
   hook pair, and its small local submit example;
@@ -45,8 +45,7 @@ Expected behavior:
 5. Continue passing `form.control` at each compound field root when it is needed
    to infer and restrict the field path.
 6. Extract only helpers shared by multiple field families, such as ref
-   composition, from the individual field files into the shared `utils`
-   surface.
+   composition, from the individual field files into `utils/index.ts`.
 
 ## Example: do not hide form creation
 
@@ -71,4 +70,18 @@ return <ApplicationForm form={form} onSubmit={submitApplication} />
 For a multi-step form, keep `useForm` and the typed Form scope independent from
 Stepper state. A feature action component may call `useApplicationForm()`,
 validate the active step's fields, and then call the separate Stepper API. Do
-not add step state or step definitions to `createForm`.
+not add step state or step definitions to `createForm`, and do not create a
+combined `StepperForm` component.
+
+The same rule applies to layout and overlay primitives. Compose separate
+components:
+
+```tsx
+<Card>
+  <CardContent>
+    <ApplicationFormRoot form={form} onSubmit={submitApplication} />
+  </CardContent>
+</Card>
+```
+
+Do not replace them with a `CardForm` that merges Card and Form props or logic.

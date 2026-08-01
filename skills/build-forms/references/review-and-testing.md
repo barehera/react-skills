@@ -2,13 +2,16 @@
 
 ## Review checklist
 
-- Form and workflow navigation have separate owners.
+- Form, Stepper, and surrounding Card/Dialog/Sheet primitives have separate
+  owners; no `StepperForm`, `CardForm`, `DialogForm`, or similar fused API
+  combines their state or prop contracts.
 - Root/controller bindings are supplied once.
 - Every slot receives its own compatible primitive props directly.
 - No root-level `triggerProps`, `contentProps`, `labelProps`, `fieldProps`, or
   similar bags proxy independently configurable children.
 - Compact components compose the open slots rather than duplicating behavior.
-- Consumer refs and observational handlers are composed, not overwritten.
+- Consumer refs and observational handlers are composed, not overwritten;
+  composed refs run callback cleanups and clear remaining refs on unmount.
 - Authoritative IDs, values, checked state, disabled state, and ARIA cannot be
   accidentally replaced by prop spreading.
 - Description and error ID references exist only when their slots render.
@@ -26,12 +29,11 @@
 - Product-specific contracts remain in the consuming feature rather than
   leaking into shared `features/form` code or unnecessary one-file folders.
 - Shared mechanics such as ref composition live outside individual Input or
-  Select field modules and are exported through the shared form utility
-  surface.
+  Select field modules and are implemented directly in `utils/index.ts`.
 - The shared Form/provider and compound-field foundation stay together when
   they represent one reusable context/controller boundary.
-- Shared `components` and `utils` indexes expose only their intended local
-  public APIs and do not introduce circular imports.
+- Component modules are imported directly; no re-export-only barrel obscures
+  dependencies or introduces circular imports.
 - Descendant sections obtain the typed form through a feature hook instead of
   receiving the same `UseFormReturn` prop repeatedly.
 - The typed form factory binds provider and hook types only; the feature entry
@@ -50,8 +52,9 @@ For each relevant family:
 6. Trigger validation, focus the invalid control, correct it, reset, and submit.
 
 For Select, open by pointer and keyboard, select an item, inspect portal content,
-and verify focus return. For Radio and Checkbox, verify accessible names and
-checked state. For field arrays, add, remove, and reorder without value drift.
+verify focus return, trigger blur validation, and focus the trigger after an
+invalid submit. For Radio and Checkbox, verify accessible names and checked
+state. For field arrays, add, remove, and reorder without value drift.
 For multi-step forms, test forward validation, backward state retention, first
 invalid-step routing, and final success/failure.
 

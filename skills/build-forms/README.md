@@ -12,9 +12,10 @@ slots directly instead of passing `triggerProps`, `contentProps`, or similar
 bags through a field root. Shared roots still own registration, IDs, invalid
 state, refs, and ARIA relationships once.
 
-The skill keeps Form and Stepper separate. A feature adapter may validate the
-active step and advance navigation, but neither generic family imports or owns
-the other.
+The skill keeps Form, Stepper, and surrounding Card, Dialog, or Sheet primitives
+separate. A feature adapter may validate the active step and advance navigation,
+but the skill does not create fused `StepperForm`, `CardForm`, or `DialogForm`
+APIs. Each component keeps its own props, state, and behavior.
 
 Each consuming feature keeps its schema, inferred values, defaults/options, and
 typed Form/hook together in a cohesive `<feature>-form.ts` module by default.
