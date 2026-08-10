@@ -1,0 +1,57 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "feature-sliced-design",
+      "type": "registry:item",
+      "title": "Feature-Sliced Design",
+      "description": "Design, migrate, and audit scalable React application structure around feature ownership, explicit runtime boundaries, and direct imports.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/agents/openai.yaml"
+        },
+        {
+          "path": "references/architecture-and-placement.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/references/architecture-and-placement.md"
+        },
+        {
+          "path": "references/slices-and-imports.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/references/slices-and-imports.md"
+        },
+        {
+          "path": "references/framework-and-runtime-boundaries.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/references/framework-and-runtime-boundaries.md"
+        },
+        {
+          "path": "references/migration-and-review.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/references/migration-and-review.md"
+        },
+        {
+          "path": "examples/next-app-router/README.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/feature-sliced-design/examples/next-app-router/README.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/feature-sliced-design.mdc"
+        }
+      ],
+      "docs": "Installs the Agent Skill, focused architecture references, canonical Next.js placement example, and a thin Cursor adapter. It does not move application files, install dependencies, or add runtime source code."
+    }
+  ]
+}
