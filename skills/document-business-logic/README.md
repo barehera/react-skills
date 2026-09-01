@@ -51,6 +51,12 @@ Use $document-business-logic to document this function. If the business
 purpose, product reason, or protected rule is missing, ask before writing it.
 ```
 
+## Guidance
+
+- [Canonical skill instructions](SKILL.md)
+- [Business comment contract](references/comment-contract.md)
+- [Typed wait-lock example](examples/wait-lock.tsx)
+
 The shared `.agents/skills/VERSION` file records the React Skills release that
 supplied the installed workflow.
 

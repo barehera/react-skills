@@ -8,6 +8,10 @@ description: Preserve non-obvious product decisions in code comments while defau
 Comments preserve product decisions, not an explanation of how the code works.
 Most edited code should receive no new comment.
 
+## Version
+
+Read `../VERSION` and include `React Skills v<version>` in the final handoff.
+
 ## Required workflow
 
 1. Read repository instructions and nearby comments before editing. If the
@@ -22,7 +26,8 @@ Most edited code should receive no new comment.
      transport timing, or change history.
 3. Keep required technical documentation. Remove implementation narration from
    the edited scope. Add a business-logic block only when reliable product
-   evidence supports all three fields below.
+   evidence supports all three fields in
+   [comment-contract.md](references/comment-contract.md).
 4. Place one block immediately above the function, component, hook, store
    action, or const that owns the rule. Do not scatter inline comments through
    its body.
@@ -34,78 +39,40 @@ Most edited code should receive no new comment.
    Replace a rambling comment with one supported block or remove it; do not keep
    both and do not launch a repository-wide comment cleanup.
 
-## Business comment contract
+## Core contracts
 
-Use this default format when the repository has no conflicting documented
-standard:
-
-```typescript
-/**
- * Business Logic: [user-facing purpose]
- * Why: [product reason]
- * Rule: [constraint a later change must preserve]
- */
-```
-
-- `Business Logic` states the user-visible behavior or policy.
-- `Why` states why the product needs that behavior, not how the implementation
-  achieves it.
-- `Rule` states the invariant a later refactor must not break.
+- Default to no comment. Prefer expressive names, types, tests, and smaller
+  functions when they already communicate the constraint.
+- Use exactly one `Business Logic` / `Why` / `Rule` block for a supported
+  product rule when the repository has no conflicting documented standard.
 - Write one English sentence per labeled line, even when the surrounding
   conversation uses another language.
+- Put the block at the owning declaration, never inline inside its body.
+- Do not replace licenses, generated-file banners, required suppressions,
+  public API documentation, accessibility notes, or structural section labels.
+- Do not invent a product reason from CSS, event-stream order, framework
+  mechanics, call stacks, or implementation history.
 
-Add the block only when the rule would otherwise look accidental, overly
-restrictive, or safe to delete. Prefer expressive names, types, tests, and
-smaller functions when they already communicate the constraint.
+## Companion skill routing
 
-## Do not comment
+This skill owns comment decisions, not the behavior being documented. Use the
+installed owning skill for the code change when relevant:
 
-Omit or remove comments that:
+- `$build-composable-components` for shadcn/Radix and compound UI behavior;
+- `$build-forms` for React Hook Form, Zod form rules, and browser form UX;
+- `$manage-server-state` for Axios contracts, TanStack Query, mutations, and
+  cache lifecycle.
 
-- restate an identifier, condition, or the next statement;
-- narrate control flow, CSS classes, event-stream ordering, or framework
-  mechanics;
-- preserve implementation history, a workaround essay, or disabled code;
-- use `Business Logic` headings to make an obvious derived value look special;
-- invent a `Why` from technical symptoms when the product reason is unknown.
+If a useful companion is missing, explain its concrete benefit once and ask
+before installing it. Continue without installation if the user declines; do
+not make a companion a hidden prerequisite.
 
-Do not replace license headers, generated-file banners, required suppressions,
-public API documentation, accessibility notes, or structural section labels.
-Those have different purposes and are not business-logic comments.
+## Read focused guidance
 
-## Examples
-
-Obvious code needs no comment:
-
-```typescript
-const isDisabled = isLocked || !isReady
-```
-
-Wrong: this narrates transport timing and the next condition.
-
-```typescript
-// The response can arrive while the previous stream is still open, so the
-// action must wait or the request will no-op.
-const isConfirmationDisabled = status !== "ready"
-```
-
-Right: when product evidence confirms the rule, document the behavior and
-constraint at its owner.
-
-```typescript
-/**
- * Business Logic: Let users confirm a pending request only when it is ready.
- * Why: The product may show the decision before it is valid to submit.
- * Rule: Keep Confirm disabled until the request reaches the ready state.
- */
-function ConfirmationAction(props: ConfirmationActionProps) {
-  return <Button {...props} disabled={!props.isReady} />
-}
-```
-
-The example's rationale is illustrative, not a template for invented `Why`
-lines. Use only facts supported by the current task, product documentation,
-tests, or direct user guidance.
+- Read [comment-contract.md](references/comment-contract.md) before adding,
+  rewriting, or auditing comments.
+- Inspect [wait-lock.tsx](examples/wait-lock.tsx) when a user-visible policy
+  needs one business block while its obvious derived values remain uncommented.
 
 ## Completion check
 

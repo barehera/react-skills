@@ -19,9 +19,19 @@
           "path": "agents/openai.yaml",
           "type": "registry:file",
           "target": "~/.agents/skills/document-business-logic/agents/openai.yaml"
+        },
+        {
+          "path": "references/comment-contract.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/document-business-logic/references/comment-contract.md"
+        },
+        {
+          "path": "examples/wait-lock.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/document-business-logic/examples/wait-lock.tsx"
         }
       ],
-      "docs": "Installs the business-logic comment skill and its UI metadata. It does not install runtime dependencies or change a consuming project's comment tooling."
+      "docs": "Installs the business-logic comment skill, focused contract reference, typed React example, and UI metadata. It does not install runtime dependencies or change a consuming project's comment tooling."
     }
   ]
 }
