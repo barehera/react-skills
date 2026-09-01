@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "document-business-logic",
+      "type": "registry:item",
+      "title": "Document Business Logic",
+      "description": "Preserve non-obvious product rules without inline implementation narration.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/document-business-logic/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/document-business-logic/agents/openai.yaml"
+        }
+      ],
+      "docs": "Installs the business-logic comment skill and its UI metadata. It does not install runtime dependencies or change a consuming project's comment tooling."
+    }
+  ]
+}
