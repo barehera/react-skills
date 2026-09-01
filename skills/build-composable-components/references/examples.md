@@ -5,6 +5,7 @@ libraries, and file placement to the repository.
 
 ## Contents
 
+- [Open composition and presentational collection](#open-composition-and-presentational-collection)
 - [Root-owned controlled collection](#root-owned-controlled-collection)
 - [Remote result collection](#remote-result-collection)
 - [Controlled optional value](#controlled-optional-value)
@@ -12,6 +13,56 @@ libraries, and file placement to the repository.
 - [Composable persistent overlay](#composable-persistent-overlay)
 - [Root-owned visual configuration](#root-owned-visual-configuration)
 - [Optimistic mutation boundary](#optimistic-mutation-boundary)
+
+## Open composition and presentational collection
+
+Keep slot copy and independently variable actions at the call site. When the
+consumer already owns a presentational array, map it inside a structural list
+slot rather than hoisting it to the root:
+
+```tsx
+<ResourceCard>
+  <ResourceCardHeader>
+    <ResourceCardTitle>{title}</ResourceCardTitle>
+    <ResourceCardDescription>{description}</ResourceCardDescription>
+  </ResourceCardHeader>
+
+  <ResourceCardContent>
+    <ResourceCardItemList>
+      {items.map((item) => (
+        <ResourceCardItemListItem key={item.id} status={item.status}>
+          <ResourceCardItemTitle>{item.title}</ResourceCardItemTitle>
+        </ResourceCardItemListItem>
+      ))}
+    </ResourceCardItemList>
+  </ResourceCardContent>
+
+  <ResourceCardFooter>
+    <ResourceCardCancel onClick={onCancel} />
+    <ResourceCardConfirm
+      disabled={confirmLocked}
+      isLoading={confirmPending}
+      onClick={onConfirm}
+    />
+  </ResourceCardFooter>
+</ResourceCard>
+```
+
+The root may still generate a title ID and share that wiring through context;
+it should not store `title`, `items`, or per-action props merely so the visible
+parts can be empty. A default label inside `Cancel` or `Confirm` is acceptable
+when custom `children` replace it.
+
+Do not teach closed mode wrappers as the only public API:
+
+```tsx
+// Wrong: consumers cannot recompose the underlying family.
+<ResourceCardReview {...rootProps} />
+<ResourceCardInProgress {...rootProps} />
+```
+
+Such wrappers may exist as secondary conveniences only when the exported root
+and slots remain directly composable.
 
 ## Root-owned controlled collection
 
@@ -23,14 +74,17 @@ accepted root snapshot. Each returned step keeps fully consumer-owned anatomy.
 <ApprovalWorkflowRoot
   steps={steps}
   onStepsChange={setSteps}
-  onSave={saveSteps}
   size="lg"
 >
   <ApprovalWorkflowToolbar>
     <ApprovalWorkflowUndoButton />
     <ApprovalWorkflowRedoButton />
     <ApprovalWorkflowAddButton />
-    <ApprovalWorkflowSaveButton className="ml-auto" />
+    <ApprovalWorkflowSaveButton
+      className="ml-auto"
+      disabled={!canSave}
+      onClick={saveSteps}
+    />
   </ApprovalWorkflowToolbar>
 
   <ApprovalWorkflowStepCollection>
@@ -39,9 +93,13 @@ accepted root snapshot. Each returned step keeps fully consumer-owned anatomy.
         <ApprovalWorkflowStepHeader>
           <ApprovalWorkflowStepTitle>
             <ApprovalWorkflowStepPosition />
-            <ApprovalWorkflowStepName />
+            <ApprovalWorkflowStepName>
+              {step.name}
+            </ApprovalWorkflowStepName>
           </ApprovalWorkflowStepTitle>
-          <ApprovalWorkflowStepDescription />
+          <ApprovalWorkflowStepDescription>
+            {step.description}
+          </ApprovalWorkflowStepDescription>
           <ApprovalWorkflowStepHeaderActions>
             <ApprovalWorkflowStepEditButton />
           </ApprovalWorkflowStepHeaderActions>
@@ -93,8 +151,12 @@ then exposes each valid reviewer without hardcoding presentation.
           <ReviewerPickerItem key={reviewer.id} reviewerId={reviewer.id}>
             <ReviewerPickerItemIndicator />
             <ReviewerPickerItemContent>
-              <ReviewerPickerItemName />
-              <ReviewerPickerItemDescription />
+              <ReviewerPickerItemName>
+                {reviewer.name}
+              </ReviewerPickerItemName>
+              <ReviewerPickerItemDescription>
+                {reviewer.description}
+              </ReviewerPickerItemDescription>
             </ReviewerPickerItemContent>
             <ReviewerPickerItemSelectionIndicator />
           </ReviewerPickerItem>
@@ -213,9 +275,7 @@ visible anatomy.
     <TaskActionsDeleteAlertDialog>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Delete “<TaskActionsTaskTitle />”?
-          </AlertDialogTitle>
+          <AlertDialogTitle>Delete “{task.title}”?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone.
           </AlertDialogDescription>
@@ -239,16 +299,22 @@ duplicating deletion logic.
 Use DOM propagation for connected non-portaled slots:
 
 ```tsx
-function Tabs({ size = "default", variant = "default", ...props }: TabsProps) {
+function Tabs({
+  className,
+  size = "default",
+  variant = "default",
+  ...props
+}: TabsProps) {
   return (
     <TabsPrimitive.Root
+      {...props}
       data-size={size}
       data-variant={variant}
       className={cn(
         "group/tabs [--tabs-trigger-height:--spacing(8)]",
-        "data-[size=lg]:[--tabs-trigger-height:--spacing(10)]"
+        "data-[size=lg]:[--tabs-trigger-height:--spacing(10)]",
+        className
       )}
-      {...props}
     />
   )
 }

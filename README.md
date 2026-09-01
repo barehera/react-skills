@@ -32,10 +32,11 @@ More skills can be added without changing the installation workflow.
 
 The composable-component skill covers the cases that usually break down as a
 design system grows: extending shadcn and Radix contracts, root-owned size and
-variant propagation, render-callback collections with consumer-owned item
-anatomy, controlled optional values, per-root Zustand stores, persistent
-overlays, and optimistic server-state boundaries. Its worked examples progress
-from ordinary props to advanced and expert compound families.
+variant propagation, consumer-mapped presentational lists, controlled or gated
+collections with consumer-owned item anatomy, controlled optional values,
+per-root Zustand stores, persistent overlays, and optimistic server-state
+boundaries. Its worked examples progress from ordinary props to advanced and
+expert compound families.
 
 ## Choose and install
 

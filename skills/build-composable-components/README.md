@@ -15,15 +15,17 @@ onto every child.
 
 Structural slots remain open to composition: consumers can omit, reorder,
 separate, or conditionally render focused fields and actions while those leaf
-components keep their own logic. Collection item identity is supplied once at
-the item boundary, so nested controls derive the current item and position
-without repeated `id` or `index` props.
+components keep their own logic. Displayed copy is passed as slot `children`,
+and independently variable action props stay on the action instead of becoming
+a root callback bag. Collection item identity is supplied once at the item
+boundary, so nested controls derive the current item and position without
+repeated `id` or `index` props.
 
-Collections follow one rule: if the family root receives the collection, its
-`Collection`, `Items`, `Rows`, or `Results` component enumerates it through a
-render callback. The family owns enumeration and state gating; the consumer
-owns every item's anatomy. Consumer `.map()` remains for rendering independent
-roots whose family does not receive that collection.
+Consumers map presentational arrays by default. A collection moves to the root
+only when the family coordinates a controlled snapshot, virtualization,
+sorting, or cohesive loading/error/empty gating; then its collection boundary
+enumerates through a render callback while the consumer still owns item
+anatomy.
 
 Visual configuration follows shadcn-style DOM propagation first: merged
 classes, semantic data attributes, named groups, and inherited CSS variables.
@@ -48,9 +50,9 @@ npx shadcn@latest add barehera/react-skills/build-composable-components
 
 ```text
 Use $build-composable-components to refactor this task action menu.
-Preserve its Radix behavior, move shared resource data to the root, propagate
-size and variant through connected slots, and keep the delete dialog alive
-after the menu closes.
+Preserve its Radix behavior, keep only genuinely shared resource data at the
+root, propagate size and variant through connected slots, and keep the delete
+dialog alive after the menu closes.
 ```
 
 ```text
