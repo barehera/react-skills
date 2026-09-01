@@ -43,3 +43,34 @@ only.
 
 This is the desired conversion: preserve the user's real pain point, extract
 the ownership principle, define its boundary, and make the result testable.
+
+## Convert feature names before capture
+
+Do not make an ingestible example depend on the originating component. This is
+feature-bound and belongs only under `Evidence`:
+
+```text
+Proposed skill change: Update InvoicePanelTitle in invoice-panel.tsx.
+Acceptance criteria: InvoicePanelTitle still sets id after the prop spread.
+```
+
+Extract the rule and express it in vocabulary a skill could publish:
+
+```text
+Proposed skill change: Add a previous-versus-improved snippet beside the
+authoritative-bindings rule in SKILL.md.
+Acceptance criteria: The skill example applies id={titleId} after {...props}.
+```
+
+```tsx
+// Previous
+<Text id={titleId} {...props} />
+
+// Improved
+<Text {...props} id={titleId} />
+```
+
+The local export and path remain useful reproduction evidence, but the
+preferred behavior, proposed destination, reusable example, acceptance test,
+and forward-test must survive deletion of that feature. If they cannot, the
+finding is a project convention rather than a source-skill improvement.

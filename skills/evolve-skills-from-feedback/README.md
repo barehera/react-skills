@@ -15,6 +15,11 @@ Markdown is the canonical handoff because it is readable, diffable, and can
 carry narrow code evidence. JSON and plain text are accepted as input and
 normalized during ingestion.
 
+Capture reports are written for the agent improving the target skill. Product
+paths remain evidence, while proposed changes, reusable examples, acceptance
+criteria, and forward-tests stay portable if the originating feature is later
+removed.
+
 ## Install
 
 ```bash
