@@ -33,6 +33,7 @@ responsibility boundaries.
 | [Build Forms](skills/build-forms/README.md) | Build composable, accessible React forms with slot-owned props, typed feature hooks, and independent workflow orchestration. |
 | [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
 | [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, slot-owned props, scoped state, and correct async boundaries. |
+| [Document Business Logic](skills/document-business-logic/README.md) | Preserve non-obvious product rules without inline implementation narration. |
 | [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |
 
 More skills can be added without changing the installation workflow.
@@ -69,6 +70,7 @@ To install a known skill directly:
 npx shadcn@latest add barehera/react-skills/manage-server-state
 npx shadcn@latest add barehera/react-skills/build-forms
 npx shadcn@latest add barehera/react-skills/build-composable-components
+npx shadcn@latest add barehera/react-skills/document-business-logic
 npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
 ```
 
@@ -114,6 +116,12 @@ overlays explicit, and expose collection item anatomy through render callbacks.
 Use $evolve-skills-from-feedback to review this completed implementation and
 create an evidence-backed feedback report for the skill we used. I will bring
 that report back to the skills repository for planning or implementation.
+```
+
+```text
+Use $document-business-logic while refactoring this component. Default to no
+comment; preserve a non-obvious product rule only when its purpose, reason, and
+constraint are supported.
 ```
 
 If your agent does not discover skills automatically:

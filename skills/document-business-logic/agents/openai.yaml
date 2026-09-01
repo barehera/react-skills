@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document Business Logic"
+  short_description: "Preserve product rules without comment noise"
+  default_prompt: "Use $document-business-logic to preserve non-obvious product rules without adding inline implementation narration."
