@@ -123,6 +123,13 @@ that report back to the skills repository for planning or implementation.
 ```
 
 ```text
+Use $feature-sliced-design to design this Next.js application around
+feature-owned slices. Keep framework routes thin, colocate server state with
+its business owner, separate client and server integrations, and use no barrel
+exports.
+```
+
+```text
 Use $document-business-logic while refactoring this component. Default to no
 comment; preserve a non-obvious product rule only when its purpose, reason, and
 constraint are supported.
