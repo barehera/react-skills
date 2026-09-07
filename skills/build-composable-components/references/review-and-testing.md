@@ -31,6 +31,10 @@ visible broken class.
 - Root semantic inputs reach every connected slot.
 - The default branch still matches the base primitive.
 - Child overrides are explicit and do not become required repetition.
+- Every public part receives its own compatible primitive props directly; the
+  root does not proxy leaf customization through `*Props` bags.
+- Any compact convenience component is implemented from the open slots and does
+  not become the only customization path.
 - Semantic cards, alerts, empty states, fields, and items reuse repository
   primitives instead of duplicating their visual contracts on raw elements.
 - React Compiler projects contain no routine manual memoization hooks unless an
@@ -39,18 +43,26 @@ visible broken class.
 - Long Tailwind class lists are grouped by concern in ordered `cn(...)`
   arguments; base styles remain first, conflict precedence is intentional, and
   the consumer `className` remains last.
-- Shared domain inputs are supplied once.
+- The root contains only genuinely shared state, configuration, domain objects,
+  and wiring; displayed copy and independently variable action props stay on
+  their owning parts.
+- Text parts receive displayed copy as `children`; context may transport their
+  generated IDs but not copy solely to enable empty slots.
+- Each independently optional action owns its `disabled`, loading, and event
+  props unless the family documents a true shared lock.
 - Each domain item has one focused responsibility.
+- Each public part maps to one primitive or DOM role; polymorphism remains
+  consumer-opt-in rather than forcing an inner element.
 - Independently optional fields, actions, statuses, separators, and layout
   regions are exposed as composable slots or items rather than hidden in a
   convenience component.
 - Collection item identity is supplied once; nested leaves do not require
   repeated IDs or positional indexes.
-- Collections received by a root are passed once; a `Collection`, `Items`,
-  `Rows`, or `Results` boundary owns enumeration and cohesive state gating while
-  a render callback keeps every item's anatomy consumer-defined.
-- Consumer `.map()` is used only for independent roots whose family root does
-  not receive that collection.
+- Presentational arrays already owned by the call site use consumer `.map()` by
+  default and keep the family list part structural.
+- Collections move to the root only for controlled snapshots, virtualization,
+  sorting, or cohesive loading/error/empty gating. Those collections are passed
+  once and enumerated through a consumer-anatomy render callback.
 - A consumer can omit, reorder, replace, or augment an item's visible regions
   without reimplementing its selection, mutation, keyboard, or disabled logic.
 - Logic-bearing items forward compatible primitive props and accept custom
@@ -99,11 +111,18 @@ not require editing a structural slot. Reorder the underlying collection and
 verify position-aware leaves derive their current index rather than receiving a
 stale index prop.
 
-For a picker or result list, replace the default item description with custom
-content, omit its indicator, and insert a consumer-owned badge. The test fails
-if doing so requires editing a family-owned presentation or duplicating the
-base item's behavior. Also verify that a root-owned result array is not passed
-to the root and then referenced again by the consumer solely for enumeration.
+Change a heading through the title part's `children`, disable Confirm while
+leaving Cancel enabled, and render a title polymorphically when the underlying
+primitive supports it. These changes should not add root `title`, per-action
+callback bags, or forced inner elements.
+
+For a presentational list, map at the call site and add a consumer-owned badge
+without moving the array to the root. For a picker or result family that truly
+owns result gating, replace the item description with custom content, omit its
+indicator, and insert a badge through the render callback. The test fails if
+doing so requires editing family-owned presentation or duplicating base-item
+behavior. Also verify that a root-owned result array is not passed to the root
+and then referenced again by the consumer solely for enumeration.
 
 ### Mount repeated instances
 

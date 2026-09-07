@@ -10,6 +10,7 @@ Use this reference to design the component family before writing JSX.
 - [Design complete composition boundaries](#design-complete-composition-boundaries)
 - [Supply item identity once](#supply-item-identity-once)
 - [Pass shared inputs once](#pass-shared-inputs-once)
+- [Give each part its own props](#give-each-part-its-own-props)
 - [Preserve substitution](#preserve-substitution)
 - [Prefer composition to switches](#prefer-composition-to-switches)
 - [File boundaries](#file-boundaries)
@@ -18,8 +19,9 @@ Use this reference to design the component family before writing JSX.
 
 A reusable family can contain:
 
-- **Root**: instance boundary, provider, shared configuration, state scope, and
-  required persistent siblings.
+- **Root**: instance boundary, provider, genuinely shared configuration and
+  state scope, plus required persistent siblings. It is not a bag for every
+  slot's copy, actions, or presentational data.
 - **Structural slots**: trigger, list, content, header, body, footer, group,
   row, or field.
 - **Base item**: invariant interaction and presentation shared by domain items.
@@ -84,12 +86,27 @@ A consumer must be able to omit, reorder, wrap, separate, or conditionally
 render every independently optional capability without editing an internal
 component.
 
-Keep anatomy separate from enumeration. Whenever the family root receives a
-collection, pass that collection once and make its collection slot enumerate
-through a render callback. The family owns enumeration and cohesive state
-policy; the consumer owns the returned item's visible anatomy.
+Keep anatomy separate from enumeration. When the call site already owns a
+presentational array, consumer `.map()` is the default. A structural list slot
+owns layout or list semantics, while the consumer owns enumeration and each
+item's visible anatomy:
 
-Use the same contract for a controlled mutable workflow:
+```tsx
+<ResourceCardItemList>
+  {items.map((item) => (
+    <ResourceCardItemListItem key={item.id} status={item.status}>
+      <ResourceCardItemTitle>{item.title}</ResourceCardItemTitle>
+    </ResourceCardItemListItem>
+  ))}
+</ResourceCardItemList>
+```
+
+Move a collection to the root only when the family must coordinate a controlled
+snapshot, virtualization, sorting, or cohesive loading, error, and empty
+gating. Then pass it once and make the collection boundary enumerate through a
+render callback so the consumer still owns returned item anatomy.
+
+A controlled mutable workflow is one such exception:
 
 ```tsx
 <ApprovalWorkflowRoot steps={steps} onStepsChange={setSteps}>
@@ -103,15 +120,13 @@ Use the same contract for a controlled mutable workflow:
 </ApprovalWorkflowRoot>
 ```
 
-This is an ownership boundary, not a convenience render prop. The root already
-owns the accepted controlled snapshot. Keeping enumeration inside the family
-prevents its `Collection` from drifting to a second array and lets that boundary
-add virtualization, sorting, or loading/error/empty gating later without
-closing item presentation.
+This is an ownership boundary, not a convenience render prop. The root owns the
+accepted controlled snapshot, so internal enumeration prevents its
+`Collection` from drifting to a second array. The same exception applies when a
+family owns remote-result gating or virtualization. Do not hoist an array to
+the root merely because a future requirement might need those behaviors.
 
-Use a consumer `.map()` only when the family root does not receive the
-collection. A page that renders several independent action roots is the
-canonical case:
+Consumer mapping also remains correct when a page renders independent roots:
 
 ```tsx
 {tasks.map((task) => (
@@ -121,8 +136,9 @@ canonical case:
 ))}
 ```
 
-Do not mix these modes. Never pass `items` to one family root and then read the
-same external `items` solely to enumerate that root's item boundaries.
+Do not mix the modes. When a family does own a collection, never pass `items`
+to its root and then read the same external `items` solely to enumerate that
+root's item boundaries.
 
 Do not replace the render prop with a closed `Results` component that still
 owns the map and hardcodes each item's visible anatomy:
@@ -148,8 +164,12 @@ to consumer markup:
       <ReviewerPickerItem key={reviewer.id} reviewerId={reviewer.id}>
         <ReviewerPickerItemIndicator />
         <ReviewerPickerItemContent>
-          <ReviewerPickerItemName />
-          <ReviewerPickerItemDescription />
+          <ReviewerPickerItemName>
+            {reviewer.name}
+          </ReviewerPickerItemName>
+          <ReviewerPickerItemDescription>
+            {reviewer.description}
+          </ReviewerPickerItemDescription>
         </ReviewerPickerItemContent>
       </ReviewerPickerItem>
     )}
@@ -173,7 +193,7 @@ Prefer:
   <ApprovalWorkflowStepHeader>
     <ApprovalWorkflowStepTitle>
       <ApprovalWorkflowStepPosition />
-      <ApprovalWorkflowStepName />
+      <ApprovalWorkflowStepName>{step.name}</ApprovalWorkflowStepName>
     </ApprovalWorkflowStepTitle>
     <ApprovalWorkflowStepHeaderActions>
       <ApprovalWorkflowStepEditButton />
@@ -206,6 +226,43 @@ their `children` as the presentation override. Default icon-and-label content
 is acceptable only as a fallback. Do not force a consumer to duplicate the
 item's mutation or selection logic merely to change its visible content.
 
+Each public part should render one primitive or one DOM role. Do not wrap a
+title primitive in a second text primitive solely to spread another prop type:
+
+```tsx
+// Previous: two primitives compete for one public part and force an inner node.
+function ResourceCardTitle({ children, ...props }: TextProps) {
+  return (
+    <CardTitle>
+      <Text asChild {...props}>
+        <span>{children}</span>
+      </Text>
+    </CardTitle>
+  )
+}
+
+// Improved: one public part is one primitive; required wiring wins after props.
+function ResourceCardTitle({ className, children, ...props }: TextProps) {
+  const { titleId } = useResourceCard()
+
+  return (
+    <Text
+      data-slot="resource-card-title"
+      className={cn("font-semibold", className)}
+      {...props}
+      id={titleId}
+    >
+      {children}
+    </Text>
+  )
+}
+```
+
+Keep `asChild`, Base UI `render`, or equivalent polymorphism available when the
+chosen primitive supports it, but let the consumer opt in. Do not force
+`asChild` or add an extra element to layout-only parts such as a card header or
+`ul`.
+
 ### Supply item identity once
 
 For collections, put the stable item identity on the nearest item boundary and
@@ -227,13 +284,14 @@ subscribe to only the state slices they need.
 
 ## Pass shared inputs once
 
-Put cohesive shared values on the root:
+Put only cohesive values that several parts need to coordinate on the root:
 
-- domain resource and related objects;
-- placement or analytics source;
-- disabled or read-only policy;
+- controlled family state such as `open`, `value`, `onOpenChange`, or
+  `onValueChange`;
 - family size, variant, density, or tone;
-- callbacks that apply to the entire instance.
+- a domain resource used by several behavioral parts;
+- stable placement or analytics source used across the instance;
+- generated IDs and other accessibility or state wiring.
 
 Prefer:
 
@@ -241,9 +299,74 @@ Prefer:
 <ResourceActions resource={resource} project={project} source="header" />
 ```
 
-Avoid passing `resourceId`, `projectId`, `projectName`, `source`, and `disabled`
-through every child. Use a smaller object type only when the family intentionally
-supports multiple domain models.
+Avoid passing `resourceId`, `projectId`, `projectName`, and `source` through
+every behavioral child when they describe the same instance. Use a smaller
+object type only when the family intentionally supports multiple domain models.
+
+Displayed copy belongs to the part that renders it:
+
+```tsx
+<ResourceCard>
+  <ResourceCardTitle>{title}</ResourceCardTitle>
+</ResourceCard>
+```
+
+Context may carry `titleId` so the root and title agree; it must not carry
+`title`. Likewise, `disabled`, loading, and click handlers belong to the action
+that can vary independently:
+
+```tsx
+<ResourceCardFooter>
+  <ResourceCardCancel onClick={onCancel} />
+  <ResourceCardConfirm
+    disabled={locked}
+    isLoading={pending}
+    onClick={onConfirm}
+  />
+</ResourceCardFooter>
+```
+
+A root lock is appropriate only when it is truly family-wide, such as a
+fieldset policy. Shared state setters such as `onOpenChange` stay on the root.
+Do not put a presentational array on the root unless the family owns one of the
+collection behaviors described above.
+
+## Give each part its own props
+
+Map every public part to one primitive or clear DOM responsibility, and let that
+part accept the compatible props directly:
+
+```tsx
+<ResourcePickerRoot resource={resource}>
+  <ResourcePickerLabel className="sr-only">Resource</ResourcePickerLabel>
+  <ResourcePickerTrigger variant="outline" size="sm">
+    <ResourcePickerValue placeholder="Choose a resource" />
+  </ResourcePickerTrigger>
+  <ResourcePickerContent align="start" sideOffset={6}>
+    <ResourcePickerItem value="one">One</ResourcePickerItem>
+  </ResourcePickerContent>
+</ResourcePickerRoot>
+```
+
+Avoid moving those contracts onto the root:
+
+```tsx
+<ResourcePickerRoot
+  triggerProps={{ variant: "outline", size: "sm" }}
+  contentProps={{ align: "start", sideOffset: 6 }}
+  itemProps={{ className: "..." }}
+/>
+```
+
+Prop bags hide the actual composition boundary, make types harder to discover,
+and force the parent to proxy every future primitive prop. If a child needs
+independent styling, events, ARIA, positioning, or polymorphism, expose that
+child as a slot. Reserve root props for shared identity, state, policy-neutral
+configuration, and callbacks that apply to the whole family.
+
+A convenience component may compose the slots for the common case. Keep it
+secondary to the open family and implement it from the same slots so behavior,
+accessibility, and defaults cannot drift.
 
 ## Preserve substitution
 
@@ -259,6 +382,11 @@ For every extended primitive, inventory:
 
 Spread compatible props, merge `className`, forward refs using the repository's
 React convention, and compose handlers without erasing user handlers.
+
+Apply required internal bindings after the consumer spread. Generated IDs and
+controlled `value` or `open` must not be replaceable when doing so breaks
+family wiring. Keep consumer `className` last in `cn(...)`; compose
+observational event handlers instead of silently replacing them.
 
 An extended trigger should still be usable where the base trigger is expected.
 If the extension deliberately narrows the contract, give it a domain-specific
@@ -282,6 +410,11 @@ Those props turn the root into a product-rule switchboard. Prefer slots and
 focused adapters. A boolean is appropriate when it changes one cohesive
 behavior of the component rather than selecting arbitrary children.
 
+The same applies to leftover `phase`, `mode`, or `layout` props. When the
+consumer already expresses the mode by swapping, omitting, or reordering slots,
+do not also label the root unless descendants actually need that value for
+shared behavior or styling. A family-wide `variant="pill"` remains valid.
+
 ## Keep names honest
 
 Use names that reveal the underlying family and role:
@@ -293,6 +426,12 @@ Use names that reveal the underlying family and role:
 
 Short aliases are acceptable only when a local namespace or export pattern
 makes the base primitive unambiguous.
+
+When a public collection and row would differ only by plural, name the roles:
+prefer `ResourceCardItemList` and `ResourceCardItemListItem` (or `Menu` and
+`MenuItem`) over `ResourceCardItems` and `ResourceCardItem`. Keep domain leaf
+names such as `ResourceCardItemTitle` on the leaf. Established families such
+as `Tabs` and `TabsTrigger` are not plural-only collection/row pairs.
 
 ## File boundaries
 

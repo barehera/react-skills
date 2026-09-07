@@ -22,32 +22,55 @@ file evidence without a separate schema tool.
 
 ## Capture mode
 
+Write for the agent who will improve the target skill. Originating product code
+is evidence, not the destination: `Preferred behavior`, `Proposed skill change`,
+examples intended for reuse, and `Acceptance criteria` must describe a skill
+rule, reference, example, validator, or other skill artifact. Only a finding
+explicitly classified as `project-convention` may recommend a consuming-repo
+change.
+
 1. Identify the target skill, its installed version or commit, and the task the
    agent attempted. Read the target `SKILL.md` and every reference needed for
    the behavior under review.
 2. Gather primary evidence: user corrections, prompts, implementation diffs,
    exact code locations, screenshots, test failures, review comments, and the
    final accepted implementation. Do not reconstruct evidence from memory when
-   the artifact remains available.
-3. Separate observations from proposals. For each finding, record:
+   the artifact remains available. Keep project paths and export names in
+   `Evidence`; do not carry them into the reusable proposal.
+3. Before drafting findings, read
+   [worked-example.md](references/worked-example.md) and convert each project
+   observation into an ownership or decision rule with a boundary. Prepare a
+   portable example, its intended skill destination, and a fresh-task test.
+   Prefer the target skill's vocabulary when it exists; otherwise use a short
+   generic name rather than an originating feature name.
+4. Separate observations from proposals. For each finding, record:
    - the scenario and relevant repository conventions;
    - current agent or skill behavior;
    - the user's preferred behavior and why;
    - minimal evidence with file paths or compact excerpts;
    - severity, recurrence, and confidence;
    - a proposed skill change, generalization test, and acceptance criteria.
-4. Classify the finding as `missing-rule`, `ambiguous-rule`, `bad-example`,
+5. Classify the finding as `missing-rule`, `ambiguous-rule`, `bad-example`,
    `missing-example`, `validation-gap`, `tool-limitation`,
    `project-convention`, or `false-positive`.
-5. Write one canonical report per target skill to
+6. Apply the deletion gate to every reusable finding: would its preferred
+   behavior, proposed change, examples, acceptance criteria, and fresh-task
+   test still teach the right behavior if the originating feature disappeared?
+   If not, rewrite those sections or classify the finding as
+   `project-convention`. Do not remove narrow origin evidence.
+7. Write one canonical report per target skill to
    `.agents/feedback/<target-skill>/<YYYY-MM-DD>-<topic>.md`. If `.agents` is
    inappropriate for the repository, use `docs/skill-feedback/`. Follow
    [feedback-format.md](references/feedback-format.md) and copy
    [skill-feedback-template.md](assets/skill-feedback-template.md).
-6. Run `node <installed-skill>/scripts/validate-feedback.mjs <report>` when
+8. Run `node <installed-skill>/scripts/validate-feedback.mjs <report>` when
    Node.js is available. Otherwise, manually verify the same required fields.
-7. Show the user the report path and a short list of the proposed improvements.
+9. Show the user the report path and a short list of the proposed improvements.
    Ask for correction only where intent remains uncertain.
+
+Capture checklist: extracted rule and boundary; portable example; skill
+destination; acceptance criteria observable on skill artifacts; fresh-task
+test that does not name the originating feature.
 
 ## Ingest mode
 
@@ -56,7 +79,9 @@ file evidence without a separate schema tool.
    editing a skill. Do not require the user to rewrite their feedback.
 2. Locate the current source skill and read its `SKILL.md`, routed references,
    examples, scripts, registry item, repository instructions, and validation
-   workflow. Compare the report's version with the current source.
+   workflow. When the source repository provides skill-authoring or technology
+   guides, read them before evaluating a finding or creating a new skill.
+   Compare the report's version with the current source.
 3. Verify each claim against available project evidence. Mark absent evidence
    as an assumption; do not present it as confirmed behavior.
 4. Deduplicate findings against current rules and recent changes. A report may
@@ -89,6 +114,9 @@ file evidence without a separate schema tool.
 - Cite exact paths and narrow excerpts. Include only enough proprietary code to
   demonstrate the issue, and redact secrets, personal data, endpoints, and
   customer identifiers.
+- Keep origin excerpts under `Evidence`. If origin and reusable snippets must
+  appear together, label them `origin (do not ingest)` and `skill example
+  (ingest this)`.
 - Keep one behavioral claim per finding. Split findings that need different
   destinations or acceptance tests.
 - Preserve counterexamples and tradeoffs. Do not turn a preference into
@@ -102,7 +130,7 @@ file evidence without a separate schema tool.
 ## Completion contract
 
 For capture mode, deliver a validated feedback report that another agent can
-understand without the original conversation. For ingest mode, deliver a
-finding-by-finding decision ledger plus either a plan or validated source-skill
-changes. Keep unresolved product choices explicit instead of silently choosing
-them.
+use to improve the named skill without the original conversation or feature.
+For ingest mode, deliver a finding-by-finding decision ledger plus either a
+plan or validated source-skill changes. Keep unresolved product choices
+explicit instead of silently choosing them.

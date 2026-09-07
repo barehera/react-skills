@@ -89,6 +89,7 @@ if (!/^# Skill Feedback: .+$/m.test(content)) {
 }
 
 const findingMatches = [...content.matchAll(/^### (F-\d{3}): .+$/gm)]
+const isReady = metadata.get("status") === "ready"
 
 if (findingMatches.length === 0) {
   errors.push("Report must contain at least one F-### finding.")
@@ -120,6 +121,20 @@ for (const [index, finding] of findingMatches.entries()) {
     if (!block.includes(required)) {
       errors.push(`${finding[1]} is missing: ${required}`)
     }
+  }
+
+  const category = block.match(/^- Category:\s*(\S+)$/m)?.[1]
+  const proposedChange = block.match(
+    /#### Proposed skill change\s*\n([\s\S]*?)(?=\n#### |$)/
+  )?.[1]
+  const consumingPath = proposedChange?.match(
+    /(?:^|[\s`'"(])(?:src[\\/])?(?:app|features)[\\/][A-Za-z0-9_.@()[\]{}-]+/im
+  )
+
+  if (isReady && category !== "project-convention" && consumingPath) {
+    errors.push(
+      `${finding[1]} Proposed skill change points to consuming-app path: ${consumingPath[0].trim()}`
+    )
   }
 }
 

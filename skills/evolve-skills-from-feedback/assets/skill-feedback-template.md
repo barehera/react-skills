@@ -11,7 +11,9 @@ status: draft
 
 ## Executive Summary
 
-{{Summarize the task, the most important mismatch, and the accepted direction.}}
+{{Summarize the task, the most important mismatch, and the accepted direction.
+State that this report is for improving the named skill, not editing the
+originating product feature.}}
 
 ## Project Context
 
@@ -35,7 +37,8 @@ status: draft
 
 #### Evidence
 
-{{Cite exact paths and narrow excerpts, test output, or direct user feedback.}}
+{{Cite exact origin paths and narrow excerpts, test output, or direct user
+feedback. Originating feature names belong here, not in the reusable proposal.}}
 
 #### Current behavior
 
@@ -43,11 +46,14 @@ status: draft
 
 #### Preferred behavior
 
-{{Describe the final accepted behavior and why it is better.}}
+{{Describe the portable behavior and why it is better. Use vocabulary the skill
+could publish rather than the originating feature's names.}}
 
 #### Proposed skill change
 
-{{Name the rule, reference, example, validator, or project-only instruction.}}
+{{Name the skill rule, reference, reusable example, or validator to change. Do
+not instruct edits to consuming-app files unless this is explicitly classified
+as project-convention.}}
 
 #### Generalization test
 
@@ -55,8 +61,8 @@ status: draft
 
 #### Acceptance criteria
 
-- {{Observable check one}}
-- {{Observable check two}}
+- {{Check observable on the skill artifact or its behavior on a fresh task}}
+- {{A second skill-observable check, not a check of the originating feature}}
 
 ## Cross-Cutting Decisions
 
@@ -64,5 +70,6 @@ status: draft
 
 ## Validation Requested
 
-- {{Skill or repository validation}}
-- {{Realistic forward-test prompt or example}}
+- {{Exact skill files, validator, or repository validation to run}}
+- {{Realistic fresh-task prompt or portable fixture that does not name the
+  originating feature}}

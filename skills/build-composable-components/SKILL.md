@@ -18,7 +18,7 @@ repository instead of imposing a starter architecture.
    requirements. Preserve behavior unless a change is requested.
 3. Classify the task as `create`, `extend`, `refactor`, or `audit`.
 4. Write a short family model before implementation:
-   - root responsibility and shared inputs;
+   - root responsibility and genuinely shared inputs;
    - structural slots, item boundaries, and base items;
    - domain items and consumer composition;
    - transient content and persistent overlays;
@@ -39,7 +39,19 @@ repository instead of imposing a starter architecture.
 
 ## Non-negotiable contracts
 
-- Supply shared domain data and semantic configuration once at the root.
+- Keep the root focused on the instance boundary and values the family must
+  coordinate: controlled state such as `open` or `value`, family-wide visual
+  configuration, shared domain objects used by several behavioral parts, and
+  generated IDs or other wiring. Do not hoist displayed copy, independently
+  variable action props, or presentational arrays merely to avoid passing them
+  to the part that owns them.
+- Put titles, labels, descriptions, names, and other displayed copy in the
+  `children` of the part that renders it. Context may carry a generated label
+  ID; it must not carry the title string just to make `<Title />` empty.
+- Put `disabled`, loading, and event props on an independently optional action.
+  Root-level locks and handlers are only for genuinely shared behavior such as
+  a fieldset lock or `onOpenChange`; one action must be able to stay enabled
+  while another is disabled.
 - Make the root own family-wide `size`, `variant`, `density`, `tone`, or similar
   inputs. For DOM descendants, propagate visual values with root data
   attributes, named Tailwind groups, or inherited CSS variables before adding
@@ -48,8 +60,25 @@ repository instead of imposing a starter architecture.
 - Preserve base defaults. An omitted family prop must render like the base
   primitive unless the documented extension intentionally changes the default.
 - Spread compatible consumer props without letting them overwrite required
-  internal bindings. Compose observational handlers, then apply the family's
-  authoritative `value`, `open`, `disabled`, IDs, and behavior props.
+  internal bindings. Compose observational handlers, then apply authoritative
+  controlled `value` or `open`, generated IDs, and other required behavior
+  props. Treat `disabled` as authoritative only when the family truly owns a
+  shared lock; otherwise preserve the action's own prop contract.
+
+  ```tsx
+  // Previous: a consumer id can break the family's labelled-by wiring.
+  <Text id={titleId} {...props} />
+
+  // Improved: the required binding is applied after the consumer spread.
+  <Text {...props} id={titleId} />
+  ```
+- Give every public part the props of the primitive or DOM role it renders.
+  Treat parent-level bags such as `triggerProps`, `contentProps`, `labelProps`,
+  or `itemProps` as evidence that the child needs an explicit slot. Keep the
+  root focused on shared family inputs instead of proxying unrelated leaf props.
+- Offer a compact convenience component only as a thin composition of the open
+  slots. It may provide a common default anatomy, but it must not be the only
+  API or require prop bags to customize independently addressable parts.
 - Do not encode reusable semantic sizing with ad hoc leaf `height`, `min-height`,
   padding, font-size, or icon-size classes.
 - Keep consumer layout in `className`; promote repeated semantic appearance to
@@ -79,7 +108,9 @@ repository instead of imposing a starter architecture.
 - Keep raw cache keys and cache mechanics in the repository's server-state
   layer. Synchronize and roll back every affected representation.
 - Prefer composition over boolean switchboards. Consumers decide capability,
-  ordering, and responsive placement.
+  ordering, and responsive placement. Do not add `phase`, `mode`, or `layout`
+  to the root when omitting, reordering, or swapping slots already expresses
+  that mode and no descendant reads the prop for behavior or styling.
 - In JSX examples, render a boolean-only optional branch with `condition &&
   <Component />`. Use a ternary only when both branches produce meaningful UI;
   do not write `condition ? <Component /> : null`.
@@ -89,12 +120,13 @@ repository instead of imposing a starter architecture.
 - Establish item identity once at the item boundary. Nested fields and actions
   derive their item and current position from that boundary; do not require
   repeated `id` or `index` props that can drift after reordering.
-- Choose one collection owner. Whenever a family root receives the collection,
-  pass it once and let its `Collection`, `Items`, `Rows`, or `Results` boundary
-  enumerate through a render callback. This applies to controlled mutable
-  collections as well as remote results. Use a consumer `.map()` only when the
-  family root does not receive the collection, such as a page rendering several
-  independent card roots.
+- Let the consumer `.map()` a presentational collection by default when the
+  call site already owns the array and the family does not coordinate its
+  enumeration. Keep the family's `List` or `Rows` part structural.
+- Move a collection to the root and enumerate through a render callback only
+  when the family owns a controlled snapshot, virtualization, sorting, or
+  cohesive loading, error, and empty gating. In that case pass the collection
+  once; do not also enumerate the external array at the call site.
 - Never let a `Results`, `Items`, `Rows`, or similar component hardcode item
   presentation. It may own enumeration plus cohesive loading, error, and empty
   gating only when the family owns the collection. Expose each item to a render
@@ -104,6 +136,11 @@ repository instead of imposing a starter architecture.
 - Let logic-bearing items accept ordinary primitive props and customizable
   `children`. A default icon or label may be convenient, but it must not be the
   only presentation available to the consumer.
+- Map each public part to one primitive or DOM role. Do not nest two primitives
+  merely to render one title or description. Preserve `asChild`, `render`, or
+  other polymorphism when the underlying primitive supports it, but keep that
+  substitution consumer-opt-in; layout-only slots do not need polymorphism by
+  default.
 - When an overlay implements an optional capability, expose it as an explicit
   persistent sibling in the consumer composition. Auto-mount an overlay from
   the root only when it is mandatory for every valid family instance.

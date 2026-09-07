@@ -351,8 +351,54 @@ if (
 
 await stat(resolve(root, ".github/workflows/release.yml"));
 const installer = await readFile(resolve(root, "bin/react-skills.mjs"), "utf8");
-await stat(resolve(root, "docs/adding-a-skill.md"));
+const [
+  repositoryInstructions,
+  authoringGuide,
+  technologyContract,
+  pullRequestTemplate,
+  rootReadme,
+] = await Promise.all([
+  readFile(resolve(root, "AGENTS.md"), "utf8"),
+  readFile(resolve(root, "docs/adding-a-skill.md"), "utf8"),
+  readFile(resolve(root, "docs/technology-stack.md"), "utf8"),
+  readFile(resolve(root, ".github/pull_request_template.md"), "utf8"),
+  readFile(resolve(root, "README.md"), "utf8"),
+]);
 await stat(resolve(root, "scripts/sync-release-version.mjs"));
+
+const stackMarkers = [
+  "React Hook Form",
+  "TanStack Query",
+  "shadcn",
+  "Zustand",
+  "Zod",
+  "Axios",
+  "compound",
+];
+
+if (
+  !repositoryInstructions.includes("docs/technology-stack.md") ||
+  !repositoryInstructions.includes("docs/adding-a-skill.md") ||
+  !authoringGuide.includes("technology-stack.md") ||
+  !authoringGuide.includes("evolve-skills-from-feedback") ||
+  stackMarkers.some((marker) => !technologyContract.includes(marker))
+) {
+  throw new Error(
+    "Skill authoring guidance must preserve the React Skills technology contract",
+  );
+}
+
+if (
+  !rootReadme.includes("## Contribute through feedback") ||
+  !rootReadme.includes("validate-feedback.mjs") ||
+  !pullRequestTemplate.includes("Feedback report") ||
+  !pullRequestTemplate.includes("Architecture alignment") ||
+  !pullRequestTemplate.includes("npm run validate")
+) {
+  throw new Error(
+    "Contributor feedback and pull-request guidance is incomplete",
+  );
+}
 
 if (
   !installer.includes('type: "multiselect"') ||
