@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extract Named Helpers"
+  short_description: "Extract focused helpers without needless indirection"
+  default_prompt: "Use $extract-named-helpers to simplify this React hook and its domain utilities while preserving behavior and leaving obvious expressions inline."

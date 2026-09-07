@@ -1,0 +1,10 @@
+---
+description: Design or migrate React application structure around feature ownership, downward dependencies, direct public module paths, and explicit framework and runtime boundaries.
+globs:
+  - "src/**/*.{ts,tsx}"
+  - "app/**/*.{ts,tsx}"
+  - "pages/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+Read and follow `@.agents/skills/feature-sliced-design/SKILL.md` before creating or moving application architecture. Inspect the repository first, decide ownership before file kind, keep framework roots thin, preserve downward dependencies, use stable direct imports without re-export-only barrels, and create folders only for real responsibilities.

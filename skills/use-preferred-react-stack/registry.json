@@ -1,0 +1,72 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "use-preferred-react-stack",
+      "type": "registry:item",
+      "title": "Use Preferred React Stack",
+      "description": "Choose verified React libraries by concern.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/agents/openai.yaml"
+        },
+        {
+          "path": "examples/banner-store.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/examples/banner-store.ts"
+        },
+        {
+          "path": "examples/preferences-provider.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/examples/preferences-provider.tsx"
+        },
+        {
+          "path": "examples/preferences-store.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/examples/preferences-store.ts"
+        },
+        {
+          "path": "examples/search-composition.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/examples/search-composition.md"
+        },
+        {
+          "path": "examples/use-library-search.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/examples/use-library-search.ts"
+        },
+        {
+          "path": "references/decision-table.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/references/decision-table.md"
+        },
+        {
+          "path": "references/tanstack-pacer.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/references/tanstack-pacer.md"
+        },
+        {
+          "path": "references/zustand.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/references/zustand.md"
+        },
+        {
+          "path": "scripts/verify-pacer.mjs",
+          "type": "registry:file",
+          "target": "~/.agents/skills/use-preferred-react-stack/scripts/verify-pacer.mjs"
+        }
+      ],
+      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+    }
+  ]
+}

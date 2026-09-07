@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature-Sliced Design"
+  short_description: "Design scalable feature-sliced React apps"
+  default_prompt: "Use $feature-sliced-design to design or refactor this React application into clear feature-owned boundaries."
