@@ -106,6 +106,11 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 Inspect the installed skill catalog before implementation when the request
 crosses the form boundary.
 
+- For library selection and verified defaults, use `$use-preferred-react-stack`
+  when available; preserve the consuming project's coherent incumbent stack.
+- For helper extraction and signatures, use `$extract-named-helpers`; this
+  skill continues to own form bindings and shared field infrastructure.
+
 - For general compound-family or primitive-extension architecture, use
   `$build-composable-components` when available.
 - For API contracts, TanStack Query, submit mutations, cache synchronization,
@@ -153,10 +158,11 @@ Use these only when the repository has no established convention:
   rendered sections. Do not create `schemas`, `types`, `constants`, or `logic`
   folders merely to hold one form's small private artifacts.
 - React Hook Form as the state/controller boundary and Zod as the schema source
-  only when already installed or explicitly requested.
-- Scoped Zustand for optional externally supplied form-wide properties only
-  when the repository already uses Zustand or the user requests it. Create one
-  vanilla store per form root and expose selector-based consumption.
+  for fresh choices. Check installed dependencies first and preserve an
+  established incumbent in consuming projects.
+- Scoped Zustand for justified external form-wide properties. Create one
+  vanilla store per form root and expose selector-based consumption; do not
+  install or create a store when ordinary props suffice.
 - One shared compound-field context for stable IDs and controller bindings;
   control-specific contexts only for item identity such as radio options.
 - Compound families as the primary API and compact fields as optional secondary

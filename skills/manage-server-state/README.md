@@ -105,3 +105,5 @@ Check the installed version:
 ```powershell
 Get-Content .agents\skills\VERSION
 ```
+
+Companion guidance: [library defaults](../use-preferred-react-stack/README.md) and [helper extraction](../extract-named-helpers/README.md). Existing form, server-state, and component ownership stays with its focused skill.

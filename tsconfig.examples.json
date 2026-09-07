@@ -3,7 +3,10 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "lib": ["DOM", "ES2022"],
+    "lib": [
+      "DOM",
+      "ES2022"
+    ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
@@ -23,6 +26,9 @@
     "skills/build-forms/examples/typed-feature-form/src/**/*.ts",
     "skills/build-forms/examples/typed-feature-form/src/**/*.tsx",
     "skills/document-business-logic/examples/**/*.tsx",
-    "typecheck/build-forms-shadcn.d.ts"
+    "typecheck/build-forms-shadcn.d.ts",
+    "skills/extract-named-helpers/examples/**/*.ts",
+    "skills/use-preferred-react-stack/examples/**/*.ts",
+    "skills/use-preferred-react-stack/examples/**/*.tsx"
   ]
 }

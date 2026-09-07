@@ -59,10 +59,12 @@ Compiler is enabled, declare context values, callbacks, and derived render data
 directly and let the compiler optimize them. Do not wrap routine functions or
 objects in `useCallback`, `useMemo`, or `React.memo` preemptively.
 
-Manual memoization may remain only when identity is itself an external semantic
-contract—for example, an imperative third-party subscription explicitly
-requires it—and profiling or documentation shows the compiler cannot preserve
-that contract. Record that reason next to the exception.
+Do not mass-remove legacy memoization or change unrelated calls. Consider
+removal only in edited code after checking identity and behavioral contracts.
+For new manual memoization, require a measured need or an external identity
+contract the compiler cannot preserve. Follow `use-preferred-react-stack` for
+compiler detection and the legacy boundary; package presence alone is not proof
+that compilation is enabled.
 
 ## Controlled and uncontrolled APIs
 

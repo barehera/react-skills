@@ -156,6 +156,12 @@ repository instead of imposing a starter architecture.
 
 ## Read focused guidance
 
+For library defaults and compiler policy, use `$use-preferred-react-stack`
+when available. For extracting pure decisions from components, hooks, and
+callbacks, use `$extract-named-helpers`; component anatomy and instance state
+remain owned here. Recommend a missing companion once with its concrete
+benefit and require approval before installing it; continue if declined.
+
 - Read [architecture-and-api.md](references/architecture-and-api.md) before
   creating a family, choosing slots, or defining its public API.
 - Read [variants-and-styling.md](references/variants-and-styling.md) whenever

@@ -36,6 +36,8 @@ responsibility boundaries.
 | [Document Business Logic](skills/document-business-logic/README.md) | Preserve non-obvious product rules without inline implementation narration. |
 | [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |
 | [Feature-Sliced Design](skills/feature-sliced-design/README.md) | Design, migrate, and audit scalable React application structure around feature ownership, runtime boundaries, and direct imports. |
+| [Extract Named Helpers](skills/extract-named-helpers/README.md) | Extract focused helpers without needless indirection. |
+| [Use Preferred React Stack](skills/use-preferred-react-stack/README.md) | Choose verified React libraries by concern. |
 
 More skills can be added without changing the installation workflow.
 
@@ -131,6 +133,13 @@ exports.
 Use $document-business-logic while refactoring this component. Default to no
 comment; preserve a non-obvious product rule only when its purpose, reason, and
 constraint are supported.
+```
+
+```text
+Use $feature-sliced-design to design this Next.js application around
+feature-owned slices. Keep framework routes thin, colocate server state with
+its business owner, separate client and server integrations, and use no barrel
+exports.
 ```
 
 If your agent does not discover skills automatically:
