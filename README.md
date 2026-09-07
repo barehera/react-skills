@@ -35,6 +35,7 @@ responsibility boundaries.
 | [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, slot-owned props, scoped state, and correct async boundaries. |
 | [Document Business Logic](skills/document-business-logic/README.md) | Preserve non-obvious product rules without inline implementation narration. |
 | [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |
+| [Feature-Sliced Design](skills/feature-sliced-design/README.md) | Design, migrate, and audit scalable React application structure around feature ownership, runtime boundaries, and direct imports. |
 
 More skills can be added without changing the installation workflow.
 
@@ -72,6 +73,7 @@ npx shadcn@latest add barehera/react-skills/build-forms
 npx shadcn@latest add barehera/react-skills/build-composable-components
 npx shadcn@latest add barehera/react-skills/document-business-logic
 npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
+npx shadcn@latest add barehera/react-skills/feature-sliced-design
 ```
 
 To inspect the catalog without installing:
@@ -116,6 +118,13 @@ overlays explicit, and expose collection item anatomy through render callbacks.
 Use $evolve-skills-from-feedback to review this completed implementation and
 create an evidence-backed feedback report for the skill we used. I will bring
 that report back to the skills repository for planning or implementation.
+```
+
+```text
+Use $feature-sliced-design to design this Next.js application around
+feature-owned slices. Keep framework routes thin, colocate server state with
+its business owner, separate client and server integrations, and use no barrel
+exports.
 ```
 
 ```text
