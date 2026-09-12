@@ -95,3 +95,5 @@ supplied the installed workflow.
 ```bash
 npx shadcn@latest add barehera/react-skills/build-composable-components --overwrite
 ```
+
+Companion guidance: [library defaults](../use-preferred-react-stack/README.md) and [helper extraction](../extract-named-helpers/README.md). Existing form, server-state, and component ownership stays with its focused skill.

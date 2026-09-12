@@ -25,6 +25,9 @@ const skillGlobs = {
   ],
   "document-business-logic": ["**/*.{ts,tsx}"],
   "evolve-skills-from-feedback": ["**/.agents/feedback/**/*.md", "**/skills/**/SKILL.md"],
+  "feature-sliced-design": ["**/src/**/*.{ts,tsx}", "**/app/**/*.{ts,tsx}"],
+  "extract-named-helpers": ["**/*.{ts,tsx}"],
+  "use-preferred-react-stack": ["**/*.{ts,tsx}", "**/package.json"],
 };
 
 const defaultGlobs = ["**/*.{ts,tsx}"];

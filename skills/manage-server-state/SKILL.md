@@ -80,6 +80,13 @@ gracefully. Do not throw solely because a server response failed schema parsing.
 
 ## Defaults, not mandates
 
+Use `$use-preferred-react-stack` when available for library defaults and
+verified imports, and `$extract-named-helpers` for pure helper extraction and
+hook boundaries. Public operation inputs and cache action vocabulary remain
+owned here; helper defaults do not override them. Recommend an absent companion
+once with its concrete benefit and require approval before installing it.
+Continue without it if declined.
+
 When no project convention exists, prefer:
 
 - Feature-colocated remote state with direct imports and one hook per operation.
@@ -89,6 +96,8 @@ When no project convention exists, prefer:
 - Named cache operations returned by a pure feature factory that binds QueryClient once, plus a thin feature hook for React callers. Do not memoize the returned cache API without a measured need.
 - Runtime validation for untrusted serialized data, unless generated backend types are the established source of truth.
 - The project's existing Axios, fetch, or generated-client transport instead of adding another client.
+- Axios through a project wrapper and TanStack Query when establishing a fresh
+  transport/remote-state stack; do not add a second client to an existing one.
 - `set`, `patch`, `invalidate`, and `remove` for cache actions; reserve `delete` for the backend mutation.
 - No barrel exports in a new structure. Preserve existing public entry points during a scoped refactor unless removal is requested.
 

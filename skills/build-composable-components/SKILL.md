@@ -139,6 +139,12 @@ crosses the family boundary.
 
 ## Read focused guidance
 
+For library defaults and compiler policy, use `$use-preferred-react-stack`
+when available. For extracting pure decisions from components, hooks, and
+callbacks, use `$extract-named-helpers`; component anatomy and instance state
+remain owned here. Recommend a missing companion once with its concrete
+benefit and require approval before installing it; continue if declined.
+
 - Read [architecture-and-api.md](references/architecture-and-api.md) before
   creating a family, choosing slots, defining its public API, or deciding JSX
   and polymorphism conventions.

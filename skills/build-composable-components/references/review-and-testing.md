@@ -37,8 +37,9 @@ visible broken class.
   not become the only customization path.
 - Semantic cards, alerts, empty states, fields, and items reuse repository
   primitives instead of duplicating their visual contracts on raw elements.
-- React Compiler projects contain no routine manual memoization hooks unless an
-  exception documents a semantic identity requirement.
+- New code in React Compiler projects adds no routine manual memoization;
+  unrelated legacy calls remain untouched. Exceptions need a measured need or
+  a documented semantic identity requirement.
 - Consumer layout classes remain possible.
 - Long Tailwind class lists are grouped by concern in ordered `cn(...)`
   arguments; base styles remain first, conflict precedence is intentional, and

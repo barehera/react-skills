@@ -36,6 +36,12 @@ invitation to make canonical React Skills examples technology-agnostic.
 | Remote state | TanStack Query | Own queries, mutations, request status, retries, invalidation, and cache synchronization. |
 | HTTP transport | Axios through a project transport wrapper | Keep authentication, cancellation, normalization, and transport errors below feature query code. |
 | Query identity | TanStack Query keys and Query Key Factory where useful | Centralize stable query identity and use targeted cache effects. |
+| Timing control | TanStack Pacer | Own repeated timing policies; retain Query-owned retries and simple one-shot native delays. |
+| URL state | nuqs | Own parsed client URL state with the correct framework adapter. |
+| Next.js localization | next-intl | Follow the repository's locale policy and server/client translation APIs. |
+| Transient notices | sonner | Reuse one app-level toaster and one notification owner. |
+| Next.js environment | `@t3-oss/env-nextjs` | Centralize typed environment validation with separate server/client access. |
+| Render optimization | React Compiler when enabled | Verify build configuration; avoid routine new manual memoization and unrelated legacy cleanup. |
 | Registry and installation | shadcn registry | Publish every agent resource through a skill-local registry item and the root catalog. |
 
 Use the smallest applicable part of the stack. A presentational component does
@@ -114,10 +120,13 @@ Use and extend the existing skill that owns the concern:
 
 | Concern | Owning skill |
 | --- | --- |
+| application layers, business ownership, file placement, imports, and framework/runtime boundaries | `feature-sliced-design` |
 | shadcn extensions, compound slots, variants, scoped component state | `build-composable-components` |
 | React Hook Form, Zod form schemas, field families, browser form UX | `build-forms` |
 | Axios contracts, TanStack Query, mutations, query keys, cache effects | `manage-server-state` |
 | evidence capture, finding evaluation, and durable skill improvements | `evolve-skills-from-feedback` |
+| library selection, verified import paths, and integration prerequisites | `use-preferred-react-stack` |
+| extraction thresholds, helper signatures, naming, and hook/helper separation | `extract-named-helpers` |
 
 A new skill may compose these capabilities, but it must route to the owning
 skill rather than copying its complete rules. Recommend an uninstalled
@@ -149,6 +158,14 @@ References may explain adaptation points, but the canonical implementation
 must remain decisive and internally consistent.
 
 ## Changing the stack
+
+The September 2026 stack extension is recorded in
+[the feedback decision ledger](skill-feedback/2026-09-07-decisions.md).
+It adds defaults for previously unowned concerns; it does not migrate existing
+projects or turn companion skills framework-neutral. Next.js-specific choices
+apply only to Next.js projects. Browser-only app-wide Zustand stores are an
+explicit lifetime exception; canonical SSR and repeated-instance examples
+retain scoped vanilla stores. Placement remains owned by `feature-sliced-design`.
 
 Treat a preferred-library change as a repository architecture decision, not a
 local example preference. A proposal must include:
