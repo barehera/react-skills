@@ -29,9 +29,29 @@
           "path": "examples/wait-lock.tsx",
           "type": "registry:file",
           "target": "~/.agents/skills/document-business-logic/examples/wait-lock.tsx"
+        },
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/document-business-logic/SKILL.md"
+        },
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/document-business-logic.instructions.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/document-business-logic.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/document-business-logic.md"
         }
       ],
-      "docs": "Installs the business-logic comment skill, focused contract reference, typed React example, and UI metadata. It does not install runtime dependencies or change a consuming project's comment tooling."
+      "docs": "Installs the business-logic comment skill, focused contract reference, typed React example, UI metadata, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or change a consuming project's comment tooling."
     }
   ]
 }

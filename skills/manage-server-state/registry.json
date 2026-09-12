@@ -26,24 +26,14 @@
           "target": "~/.agents/skills/manage-server-state/references/architecture.md"
         },
         {
-          "path": "references/placements.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/references/placements.md"
-        },
-        {
-          "path": "references/naming.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/references/naming.md"
-        },
-        {
           "path": "references/backend-contracts.md",
           "type": "registry:file",
           "target": "~/.agents/skills/manage-server-state/references/backend-contracts.md"
         },
         {
-          "path": "references/queries.md",
+          "path": "references/examples.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/references/queries.md"
+          "target": "~/.agents/skills/manage-server-state/references/examples.md"
         },
         {
           "path": "references/mutations-cache.md",
@@ -51,14 +41,109 @@
           "target": "~/.agents/skills/manage-server-state/references/mutations-cache.md"
         },
         {
+          "path": "references/naming.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/references/naming.md"
+        },
+        {
+          "path": "references/placements.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/references/placements.md"
+        },
+        {
+          "path": "references/queries.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/references/queries.md"
+        },
+        {
           "path": "references/workflows.md",
           "type": "registry:file",
           "target": "~/.agents/skills/manage-server-state/references/workflows.md"
         },
         {
-          "path": "references/examples.md",
+          "path": "examples/feature-colocated/src/features/posts/server-state/api.ts",
           "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/references/examples.md"
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/api.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/cache/index.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache/index.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/cache/use-cache.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache/use-cache.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/constants.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/constants.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/mutations/use-create-post-mutation.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/mutations/use-create-post-mutation.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/mutations/use-delete-post-mutation.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/mutations/use-delete-post-mutation.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/mutations/use-update-post-mutation.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/mutations/use-update-post-mutation.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/names.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/names.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/queries/keys.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/keys.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/queries/options.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/options.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-post-detail-query.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-post-detail-query.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-post-related-query.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-post-related-query.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-posts-infinite-list-query.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-posts-infinite-list-query.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-posts-list-query.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-posts-list-query.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/schemas.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/schemas.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/types.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/types.ts"
+        },
+        {
+          "path": "examples/feature-colocated/src/features/posts/server-state/utils.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/utils.ts"
         },
         {
           "path": "examples/feature-colocated/src/server-state/api.ts",
@@ -96,97 +181,27 @@
           "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/server-state/utils.ts"
         },
         {
-          "path": "examples/feature-colocated/src/features/posts/server-state/api.ts",
+          "path": "adapters/claude.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/api.ts"
+          "target": "~/.claude/skills/manage-server-state/SKILL.md"
         },
         {
-          "path": "examples/feature-colocated/src/features/posts/server-state/cache/index.ts",
+          "path": "adapters/copilot.instructions.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache/index.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/cache/use-cache.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/cache/use-cache.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/constants.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/constants.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/names.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/names.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/schemas.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/schemas.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/types.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/types.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/utils.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/utils.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/queries/keys.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/keys.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/queries/options.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/options.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-posts-infinite-list-query.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-posts-infinite-list-query.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-posts-list-query.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-posts-list-query.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-post-detail-query.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-post-detail-query.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/queries/use-post-related-query.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/queries/use-post-related-query.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/mutations/use-create-post-mutation.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/mutations/use-create-post-mutation.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/mutations/use-update-post-mutation.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/mutations/use-update-post-mutation.ts"
-        },
-        {
-          "path": "examples/feature-colocated/src/features/posts/server-state/mutations/use-delete-post-mutation.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/features/posts/server-state/mutations/use-delete-post-mutation.ts"
+          "target": "~/.github/instructions/manage-server-state.instructions.md"
         },
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/manage-server-state.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/manage-server-state.md"
         }
       ],
-      "docs": "Installs the Agent Skill, focused references, non-runtime example, and thin Cursor adapter. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the Agent Skill, focused references, non-runtime example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
     }
   ]
 }

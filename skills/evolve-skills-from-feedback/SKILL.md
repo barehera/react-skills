@@ -10,6 +10,37 @@ carefully scoped skill changes. Prefer a Markdown report with YAML frontmatter:
 it is readable by people and agents, diffable, and able to preserve code and
 file evidence without a separate schema tool.
 
+## Version
+
+Read `../VERSION` and include `React Skills v<version>` in the final handoff
+and in every feedback report's frontmatter.
+
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, queries, mutations, product
+rules). Dependencies point downward only.
+
+This skill owns no application layer. When a finding proposes a rule, state
+which layer the rule governs and confirm the proposal keeps dependencies
+pointing downward. A finding that would make a family read a query or a
+primitive learn a product rule is a boundary violation, not a missing rule.
+
+## Companion skill routing
+
+- Route the behavior under review to its owning skill:
+  `$build-composable-components` for families and primitive extensions,
+  `$build-forms` for field families and typed forms, `$manage-server-state`
+  for transport, queries, mutations, and cache effects, and
+  `$document-business-logic` for comment decisions.
+- In ingest mode, apply the source repository's skill quality contract in
+  `docs/adding-a-skill.md` to every accepted change: layer placement, version
+  handoff, companion routing, a type-checked example, the complete adapter set,
+  and validation.
+- If a useful companion is not installed, explain its concrete benefit once
+  and ask before installing it. Continue without it if the user declines.
+
 ## Choose the mode
 
 - Use **capture mode** inside a consuming project after or during development.
@@ -80,8 +111,10 @@ test that does not name the originating feature.
 2. Locate the current source skill and read its `SKILL.md`, routed references,
    examples, scripts, registry item, repository instructions, and validation
    workflow. When the source repository provides skill-authoring or technology
-   guides, read them before evaluating a finding or creating a new skill.
-   Compare the report's version with the current source.
+   guides, read them before evaluating a finding or creating a new skill; in
+   React Skills that is `docs/technology-stack.md` and the skill quality
+   contract in `docs/adding-a-skill.md`. Compare the report's version with the
+   current source.
 3. Verify each claim against available project evidence. Mark absent evidence
    as an assumption; do not present it as confirmed behavior.
 4. Deduplicate findings against current rules and recent changes. A report may

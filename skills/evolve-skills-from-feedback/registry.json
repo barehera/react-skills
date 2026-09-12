@@ -21,24 +21,19 @@
           "target": "~/.agents/skills/evolve-skills-from-feedback/agents/openai.yaml"
         },
         {
-          "path": "references/feedback-format.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/evolve-skills-from-feedback/references/feedback-format.md"
-        },
-        {
           "path": "references/evaluation-and-integration.md",
           "type": "registry:file",
           "target": "~/.agents/skills/evolve-skills-from-feedback/references/evaluation-and-integration.md"
         },
         {
+          "path": "references/feedback-format.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/references/feedback-format.md"
+        },
+        {
           "path": "references/worked-example.md",
           "type": "registry:file",
           "target": "~/.agents/skills/evolve-skills-from-feedback/references/worked-example.md"
-        },
-        {
-          "path": "assets/skill-feedback-template.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/evolve-skills-from-feedback/assets/skill-feedback-template.md"
         },
         {
           "path": "examples/composable-component-feedback.md",
@@ -49,9 +44,34 @@
           "path": "scripts/validate-feedback.mjs",
           "type": "registry:file",
           "target": "~/.agents/skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs"
+        },
+        {
+          "path": "assets/skill-feedback-template.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/evolve-skills-from-feedback/assets/skill-feedback-template.md"
+        },
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/evolve-skills-from-feedback/SKILL.md"
+        },
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/evolve-skills-from-feedback.instructions.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/evolve-skills-from-feedback.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/evolve-skills-from-feedback.md"
         }
       ],
-      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, and deterministic report validator. It does not modify application source or source skills unless the user requests those changes."
+      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, deterministic report validator, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not modify application source or source skills unless the user requests those changes."
     }
   ]
 }

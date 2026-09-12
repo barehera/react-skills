@@ -1,7 +1,9 @@
 # Worked examples
 
 Use these examples as API-shape references. Adapt names, primitives, state
-libraries, and file placement to the repository.
+libraries, and file placement to the repository. For a complete, type-checked
+composition of a generic family, a feature adapter, and an optimistic
+mutation, read [../examples/layered-family](../examples/layered-family).
 
 ## Contents
 

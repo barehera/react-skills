@@ -9,20 +9,24 @@ import {
   PROPOSAL_DEFAULT_VALUES,
   ProposalFormRoot,
   proposalSchema,
-  submitProposal,
 } from "./proposal-form"
+import { useCreateProposalMutation } from "./server-state/mutations/use-create-proposal-mutation"
 
 export function ProposalScreen() {
+  const createProposal = useCreateProposalMutation()
+
   return (
     <ProposalFormRoot
       properties={{
         reviewGroupName: "Launch council",
-        submissionDisabled: false,
+        submissionDisabled: createProposal.isSuccess,
       }}
       resolver={zodResolver(proposalSchema)}
       defaultValues={PROPOSAL_DEFAULT_VALUES}
       mode="onBlur"
-      onSubmit={submitProposal}
+      onSubmit={async (values) => {
+        await createProposal.mutateAsync(values)
+      }}
     >
       <ProposalDetails />
       <ProposalPreview />

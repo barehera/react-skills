@@ -14,6 +14,36 @@ the user can identify stale guidance. This shared file is the repository release
 version for every installed React Skills workflow; this skill has no independent
 version.
 
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, queries, mutations, cache
+effects, product rules). Dependencies point downward only.
+
+This skill owns the remote-state part of the feature adapter: transport,
+contracts, query keys, hooks, mutations, and cache effects. Visual families and
+primitives never import this layer; a feature component or screen calls the
+hooks and passes results into families as ordinary props.
+
+## Companion skill routing
+
+Inspect the installed skill catalog before implementation when the request
+crosses the server-state boundary.
+
+- For the component family that renders the data, its slots, root-owned
+  visuals, and where an optimistic boundary sits, use
+  `$build-composable-components` when available.
+- For the form that submits to a mutation, its schema, and field families, use
+  `$build-forms` when available.
+- For deciding whether a product rule around a request deserves a comment, use
+  `$document-business-logic` when available.
+- If a useful companion is not installed, explain its concrete benefit once
+  and ask whether the user wants it installed. Install only after approval and
+  only through the environment's supported skill installer; otherwise offer
+  `npx shadcn@latest add barehera/react-skills/<skill>`. Continue with this
+  skill if the user declines and do not repeat the recommendation.
+
 ## Operating rule
 
 Separate decisions into three groups:

@@ -8,6 +8,23 @@ const releaseVersionPath = resolve(root, "VERSION");
 const registrySchema = "https://ui.shadcn.com/schema/registry.json";
 const dependencyFields = ["dependencies", "devDependencies"];
 
+// Skill quality contract (docs/adding-a-skill.md). Every skill ships the same
+// sections, the same adapter set, and a type-checked example when it has one.
+const requiredSkillSections = [
+  "## Version",
+  "## Layer placement",
+  "## Companion skill routing",
+];
+const requiredAdapters = {
+  "adapters/claude.md": (name) => `~/.claude/skills/${name}/SKILL.md`,
+  "adapters/cursor.mdc": (name) => `~/.cursor/rules/${name}.mdc`,
+  "adapters/copilot.instructions.md": (name) =>
+    `~/.github/instructions/${name}.instructions.md`,
+  "adapters/windsurf.md": (name) => `~/.windsurf/rules/${name}.md`,
+};
+const maxSkillLines = 220;
+const maxDescriptionLength = 1024;
+
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
@@ -285,6 +302,63 @@ for (const { item, registryPath } of resolvedSkillItems) {
     throw new Error(`${item.name}/SKILL.md frontmatter is missing or invalid`);
   }
 
+  const description = skill.match(/^description:\s*(.+)$/m)?.[1]?.trim() ?? "";
+
+  if (description.length === 0 || description.length > maxDescriptionLength) {
+    throw new Error(
+      `${item.name}/SKILL.md description must be 1-${maxDescriptionLength} characters`,
+    );
+  }
+
+  const skillLineCount = skill.trimEnd().split("\n").length;
+
+  if (skillLineCount > maxSkillLines) {
+    throw new Error(
+      `${item.name}/SKILL.md has ${skillLineCount} lines; keep the core under ${maxSkillLines} and move detail to references`,
+    );
+  }
+
+  for (const section of requiredSkillSections) {
+    if (!skill.includes(`\n${section}\n`)) {
+      throw new Error(`${item.name}/SKILL.md must contain a "${section}" section`);
+    }
+  }
+
+  const registeredTargets = new Map(
+    (item.files ?? []).map((file) => [file.path, file.target]),
+  );
+
+  for (const [adapterPath, targetFor] of Object.entries(requiredAdapters)) {
+    await stat(resolve(skillDirectory, adapterPath));
+
+    if (registeredTargets.get(adapterPath) !== targetFor(item.name)) {
+      throw new Error(
+        `${item.name}:${adapterPath} must install to ${targetFor(item.name)}; run npm run skills:sync`,
+      );
+    }
+  }
+
+  const exampleSources = [...itemFiles].filter(
+    (path) =>
+      path.startsWith(`skills/${item.name}/examples/`) &&
+      /\.(ts|tsx)$/.test(path),
+  );
+
+  if (exampleSources.length > 0) {
+    const examplesTsconfig = await readJson(resolve(root, "tsconfig.examples.json"));
+    const covered = exampleSources.every((path) =>
+      (examplesTsconfig.include ?? []).some((pattern) =>
+        path.startsWith(pattern.split("**")[0]),
+      ),
+    );
+
+    if (!covered) {
+      throw new Error(
+        `${item.name} ships TypeScript examples that tsconfig.examples.json does not type-check`,
+      );
+    }
+  }
+
   if (item.name === "manage-server-state") {
     const exampleUtils = await readFile(
       resolve(
@@ -365,6 +439,7 @@ const [
   readFile(resolve(root, "README.md"), "utf8"),
 ]);
 await stat(resolve(root, "scripts/sync-release-version.mjs"));
+await stat(resolve(root, "scripts/sync-skill-package.mjs"));
 
 const stackMarkers = [
   "React Hook Form",
@@ -379,8 +454,12 @@ const stackMarkers = [
 if (
   !repositoryInstructions.includes("docs/technology-stack.md") ||
   !repositoryInstructions.includes("docs/adding-a-skill.md") ||
+  !repositoryInstructions.includes("Skill quality contract") ||
   !authoringGuide.includes("technology-stack.md") ||
   !authoringGuide.includes("evolve-skills-from-feedback") ||
+  !authoringGuide.includes("## Skill quality contract") ||
+  !authoringGuide.includes("skills:sync") ||
+  !technologyContract.includes("## Layer model") ||
   stackMarkers.some((marker) => !technologyContract.includes(marker))
 ) {
   throw new Error(
@@ -393,6 +472,7 @@ if (
   !rootReadme.includes("validate-feedback.mjs") ||
   !pullRequestTemplate.includes("Feedback report") ||
   !pullRequestTemplate.includes("Architecture alignment") ||
+  !pullRequestTemplate.includes("Skill quality contract") ||
   !pullRequestTemplate.includes("npm run validate")
 ) {
   throw new Error(

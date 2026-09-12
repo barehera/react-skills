@@ -35,8 +35,3 @@ export const {
   useForm: useProposalForm,
   useProperties: useProposalFormProperties,
 } = createForm<ProposalForm, ProposalFormProperties>()
-
-export async function submitProposal(values: ProposalForm) {
-  // Replace this development example with the feature's mutation hook.
-  return values
-}

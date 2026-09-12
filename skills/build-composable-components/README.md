@@ -83,6 +83,9 @@ keyboard behavior, and maintainability.
 - [Async boundaries and adapters](references/async-and-adapters.md)
 - [Review and testing](references/review-and-testing.md)
 - [Worked advanced examples](references/examples.md)
+- [Complete layered example](examples/layered-family): a generic `Roster`
+  family, a `ShiftCrewRoster` feature adapter with one documented product rule,
+  and the optimistic TanStack Query mutation it calls
 
 The shared `.agents/skills/VERSION` file records the React Skills release that
 supplied the installed workflow.

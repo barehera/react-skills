@@ -29,8 +29,11 @@ sections. It demonstrates:
   outside either field module;
 - direct component-module imports without barrel exports;
 - one cohesive `proposal-form.ts` containing schema, inferred values, defaults,
-  option metadata, a `ProposalForm` value type, the `ProposalFormRoot`/typed
-  hooks, and its small local submit example;
+  option metadata, a `ProposalForm` value type, and the `ProposalFormRoot`/typed
+  hooks;
+- a `server-state` folder with the Axios call, response schema, and
+  `useCreateProposalMutation`, connected to the form only at the screen so the
+  form owner and the remote-state owner stay separate;
 - descendant components that call `useProposalForm()` instead of receiving a
   repeated `form` prop;
 - a submit component that reads `isSubmitting` from `useProposalForm()` inside

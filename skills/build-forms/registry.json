@@ -26,19 +26,19 @@
           "target": "~/.agents/skills/build-forms/references/architecture.md"
         },
         {
-          "path": "references/field-contracts.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/references/field-contracts.md"
-        },
-        {
           "path": "references/browser-and-ux.md",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/references/browser-and-ux.md"
         },
         {
-          "path": "references/workflows-and-submission.md",
+          "path": "references/examples.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/references/workflows-and-submission.md"
+          "target": "~/.agents/skills/build-forms/references/examples.md"
+        },
+        {
+          "path": "references/field-contracts.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/references/field-contracts.md"
         },
         {
           "path": "references/review-and-testing.md",
@@ -46,9 +46,9 @@
           "target": "~/.agents/skills/build-forms/references/review-and-testing.md"
         },
         {
-          "path": "references/examples.md",
+          "path": "references/workflows-and-submission.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/references/examples.md"
+          "target": "~/.agents/skills/build-forms/references/workflows-and-submission.md"
         },
         {
           "path": "examples/typed-feature-form/src/features/form/components/form.tsx",
@@ -71,11 +71,6 @@
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/utils/index.ts"
         },
         {
-          "path": "examples/typed-feature-form/src/features/proposal/proposal-form.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-form.ts"
-        },
-        {
           "path": "examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx"
@@ -91,12 +86,52 @@
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/components/proposal-submit.tsx"
         },
         {
+          "path": "examples/typed-feature-form/src/features/proposal/proposal-form.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-form.ts"
+        },
+        {
           "path": "examples/typed-feature-form/src/features/proposal/proposal-screen.tsx",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/proposal-screen.tsx"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/server-state/api.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/server-state/api.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/features/proposal/server-state/mutations/use-create-proposal-mutation.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/server-state/mutations/use-create-proposal-mutation.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/server-state/api.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/server-state/api.ts"
+        },
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/build-forms/SKILL.md"
+        },
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/build-forms.instructions.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/build-forms.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/build-forms.md"
         }
       ],
-      "docs": "Installs the form-building Agent Skill, focused references, and a non-runtime typed feature-form example. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the form-building Agent Skill, focused references, a non-runtime typed feature-form example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
     }
   ]
 }

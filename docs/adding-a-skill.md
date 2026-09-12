@@ -6,6 +6,7 @@
 - [Choose the contribution path](#choose-the-contribution-path)
 - [Design within the catalog](#design-within-the-catalog)
 - [Use the shared skill shape](#use-the-shared-skill-shape)
+- [Skill quality contract](#skill-quality-contract)
 - [Create the package](#create-the-package)
 - [Build canonical examples](#build-canonical-examples)
 - [Add the catalog entry](#add-the-catalog-entry)
@@ -69,16 +70,18 @@ and require user approval before installing it.
 
 ## Use the shared skill shape
 
-Keep `SKILL.md` concise and imperative. Use this order when the sections apply:
+Keep `SKILL.md` concise and imperative. Use this order:
 
 1. YAML frontmatter with only `name` and `description`;
 2. one-sentence outcome;
-3. shared catalog version handoff;
-4. required workflow;
-5. core contracts;
-6. companion-skill routing;
-7. direct links to focused references;
-8. decision defaults for repositories without an established convention.
+3. `## Version`, the shared catalog version handoff;
+4. `## Layer placement`, naming the layer the skill owns and the layers it
+   routes;
+5. `## Required workflow`;
+6. core contracts;
+7. `## Companion skill routing`;
+8. direct links to focused references;
+9. decision defaults for repositories without an established convention.
 
 Put detailed conditional guidance in `references/`, realistic code in
 `examples/`, deterministic checks in `scripts/`, and reusable output material
@@ -88,6 +91,33 @@ chains and include a contents list in references longer than 100 lines.
 The human-facing `README.md` should explain the outcome, installation, two or
 three realistic invocation prompts, focused guidance links, and update command.
 Keep it useful to contributors without repeating the complete skill.
+
+## Skill quality contract
+
+These rules apply to every new skill and to every skill changed through
+feedback. `npm run validate` enforces the mechanical ones; the pull-request
+template asks for the rest.
+
+| Rule | Why | Checked by |
+| --- | --- | --- |
+| `SKILL.md` contains `## Version`, `## Layer placement`, and `## Companion skill routing` | Every installed skill reports the release, shares the layer vocabulary, and routes instead of duplicating | validator |
+| `SKILL.md` has a `## Required workflow` section, or mode sections when the skill branches on the user's situation | Agents follow numbered steps instead of improvising | review |
+| `SKILL.md` stays under 220 lines and its description under 1024 characters | The core file is loaded on every task; detail belongs in `references/` | validator |
+| Every rule and example names its layer: primitive, composable family, or feature adapter | Agents place product policy, families, and primitives correctly without re-deriving the split | review |
+| The `description` does not claim a concern another skill owns | Overlapping triggers make agents pick the wrong skill | review |
+| A skill that ships TypeScript examples includes them in `tsconfig.examples.json` | Prose examples drift against real package APIs unnoticed | validator |
+| Product policy in an example lives in the feature adapter and carries one business-logic block when non-obvious | The examples demonstrate the split rather than describe it | review |
+| The adapter set is generated, complete, and registered: `adapters/claude.md`, `adapters/cursor.mdc`, `adapters/copilot.instructions.md`, `adapters/windsurf.md` | Every supported agent reaches the same canonical `SKILL.md` | `skills:sync --check` |
+| The registry `files` list matches the skill folder | An installed skill is never missing a reference or example | `skills:sync --check` |
+
+Run `npm run skills:sync` after adding, renaming, or removing any file in a
+skill folder. It rewrites the adapters from the `SKILL.md` frontmatter and
+`agents/openai.yaml`, and regenerates each `registry.json` `files` array. Give
+a new skill an entry in the glob table inside
+`scripts/sync-skill-package.mjs` so its editor rules attach to the right files.
+
+When ingesting feedback with `evolve-skills-from-feedback`, apply this
+contract to every accepted finding before editing the source skill.
 
 ## Create the package
 
@@ -107,9 +137,17 @@ skills/
     scripts/
     assets/
     adapters/
+      claude.md
+      cursor.mdc
+      copilot.instructions.md
+      windsurf.md
 ```
 
-Only create optional folders that the skill uses.
+Only create optional folders that the skill uses. `adapters/` is not optional:
+`npm run skills:sync` generates it, and the files install to `.claude/skills`,
+`.cursor/rules`, `.github/instructions`, and `.windsurf/rules` as thin
+pointers to the canonical `.agents/skills/<name>/SKILL.md`. Codex reads the
+canonical folder and `agents/openai.yaml` directly.
 
 - Root `VERSION` is generated from the canonical GitHub release. Do not edit it
   manually or add a skill-local version.
@@ -207,15 +245,21 @@ node skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs \
   .agents/feedback/<target-skill>/<YYYY-MM-DD>-<topic>.md
 ```
 
-Run the complete repository validation for every source change:
+Regenerate adapters and registry file lists, then run the complete repository
+validation for every source change:
+
+```bash
+npm run skills:sync
+```
 
 ```bash
 npm run validate
 ```
 
-It checks the composed catalog, unique names, complete publication files,
-install targets, metadata, examples, TypeScript contracts, interactive listing,
-the canonical feedback-report example, and built shadcn registry output. Also
+It checks that adapters and registry files are in sync, the composed catalog,
+unique names, complete publication files, install targets, metadata, the skill
+quality contract, examples, TypeScript contracts, interactive listing, the
+canonical feedback-report example, and built shadcn registry output. Also
 run focused scripts, interaction tests, or forward tests appropriate to the
 changed skill.
 
