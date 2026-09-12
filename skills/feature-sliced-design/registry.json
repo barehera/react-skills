@@ -66,7 +66,7 @@
           "target": "~/.windsurf/rules/feature-sliced-design.md"
         }
       ],
-      "docs": "Installs the Agent Skill, focused architecture references, canonical Next.js placement example, and a thin Cursor adapter. It does not move application files, install dependencies, or add runtime source code."
+      "docs": "Installs the Agent Skill, focused architecture references, canonical Next.js placement example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not move application files, install dependencies, or add runtime source code."
     }
   ]
 }
