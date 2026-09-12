@@ -1,0 +1,17 @@
+---
+name: manage-server-state
+description: Create, extend, refactor, or audit type-safe React server-state code while adapting to the repository's existing architecture, backend contracts, transport, authentication, validation strategy, and naming. Discover contracts from user-provided documentation, raw JSON examples, generated clients, and repository evidence before using runtime inspection. Use for TanStack Query features, API operations, query keys and options, hooks, mutations, pagination, cache synchronization, authenticated requests, or establishing a server-state structure from scratch.
+---
+
+Read and follow `.agents/skills/manage-server-state/SKILL.md`, and the references,
+examples, and companion routing it names, before starting.
+
+Purpose: Adapt type-safe server state to any React project.
+
+- Inspect the repository before changing it; preserve a coherent existing
+  structure and treat the bundled examples as references, never as templates.
+- Keep primitives, composable families, and feature adapters in separate
+  layers with dependencies pointing downward only.
+- Route work the skill does not own to the companion skill it names.
+- Report `React Skills v<version>` from `.agents/skills/VERSION` in the
+  final handoff.

@@ -4,6 +4,7 @@
 
 - [Purpose](#purpose)
 - [Preferred stack](#preferred-stack)
+- [Layer model](#layer-model)
 - [Responsibility boundaries](#responsibility-boundaries)
 - [Skill boundaries](#skill-boundaries)
 - [Canonical example rules](#canonical-example-rules)
@@ -48,6 +49,49 @@ not need Zustand, a local synchronous form does not need TanStack Query, and a
 query without a runtime trust-boundary requirement does not need a duplicate
 Zod model. Do not substitute a different library in a canonical example merely
 to demonstrate extensibility.
+
+## Layer model
+
+Every skill, reference, and canonical example places code in one of three
+layers. Use these names everywhere so skills can route to one another without
+re-explaining the split.
+
+| Layer | Contains | Knows about | Default location |
+| --- | --- | --- | --- |
+| Primitive | shadcn/Radix components and the `cn` utility | Interaction, focus, ARIA, base styling | `components/ui` |
+| Composable family | Compound roots, structural slots, item boundaries, focused actions, scoped stores | Its own controlled values, generated IDs, family-wide `size` and `variant` | `components/<family>.tsx`, or a shared feature such as `features/form` |
+| Feature adapter | Screens, domain components, schemas, typed forms, queries, mutations, cache effects, product rules | The product: which records exist, who may act, what a selection means | `features/<feature>` |
+
+Dependencies point downward only. A feature adapter composes families and
+primitives; a family composes primitives; a primitive composes nothing from
+the catalog. A family never imports a feature module, reads a query, or
+encodes a product rule, and a primitive never learns about a family.
+
+Placement test: ask whether the code would change if the product changed but
+the design system stayed the same. If yes, it belongs in the feature adapter.
+Ask whether it would change if the design system changed but the product
+stayed the same. If yes, it belongs in the family or the primitive. Code that
+would change for both reasons is fused and must be split.
+
+Each skill owns one layer and routes the others:
+
+- `build-composable-components` owns the composable-family layer and the
+  primitive extensions it needs;
+- `build-forms` owns the field-family layer plus the typed feature form in the
+  adapter;
+- `manage-server-state` owns the remote-state part of the feature adapter;
+- `document-business-logic` documents product rules, which live only in the
+  feature adapter.
+
+Every `SKILL.md` carries a short `Layer placement` section that names the
+layer it owns and the layers it routes, so installed agents share this
+vocabulary without reading this document.
+
+The canonical layered example is
+[the shift-crew roster](../skills/build-composable-components/examples/layered-family):
+a generic `Roster` family under `components`, and a `ShiftCrewRoster` feature
+adapter that maps crew members, applies the lead-retention rule, and calls an
+optimistic TanStack Query mutation.
 
 ## Responsibility boundaries
 

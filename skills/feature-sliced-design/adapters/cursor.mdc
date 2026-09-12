@@ -1,10 +1,20 @@
 ---
-description: Design or migrate React application structure around feature ownership, downward dependencies, direct public module paths, and explicit framework and runtime boundaries.
+description: Design, create, refactor, migrate, or audit scalable React and TypeScript application structure using feature-owned slices, controlled dependency direction, direct public module paths, and explicit app/shared/runtime boundaries. Use when deciding where files belong; creating a large-project folder skeleton; organizing features, entities, pages, widgets, shared UI, hooks, schemas, state, server state, API code, providers, integrations, assets, or utilities; adapting Feature-Sliced Design to Next.js, SSR, Server Actions, or another React router; removing global technical dumping grounds; or reviewing imports and ownership without changing behavior.
 globs:
-  - "src/**/*.{ts,tsx}"
-  - "app/**/*.{ts,tsx}"
-  - "pages/**/*.{ts,tsx}"
+  - "**/src/**/*.{ts,tsx}"
+  - "**/app/**/*.{ts,tsx}"
 alwaysApply: false
 ---
 
-Read and follow `@.agents/skills/feature-sliced-design/SKILL.md` before creating or moving application architecture. Inspect the repository first, decide ownership before file kind, keep framework roots thin, preserve downward dependencies, use stable direct imports without re-export-only barrels, and create folders only for real responsibilities.
+Read and follow `.agents/skills/feature-sliced-design/SKILL.md`, and the references,
+examples, and companion routing it names, before starting.
+
+Purpose: Design scalable feature-sliced React apps.
+
+- Inspect the repository before changing it; preserve a coherent existing
+  structure and treat the bundled examples as references, never as templates.
+- Keep primitives, composable families, and feature adapters in separate
+  layers with dependencies pointing downward only.
+- Route work the skill does not own to the companion skill it names.
+- Report `React Skills v<version>` from `.agents/skills/VERSION` in the
+  final handoff.

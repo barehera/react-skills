@@ -26,19 +26,14 @@
           "target": "~/.agents/skills/build-composable-components/references/architecture-and-api.md"
         },
         {
-          "path": "references/variants-and-styling.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/variants-and-styling.md"
-        },
-        {
-          "path": "references/state-and-lifecycles.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/state-and-lifecycles.md"
-        },
-        {
           "path": "references/async-and-adapters.md",
           "type": "registry:file",
           "target": "~/.agents/skills/build-composable-components/references/async-and-adapters.md"
+        },
+        {
+          "path": "references/examples.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/examples.md"
         },
         {
           "path": "references/review-and-testing.md",
@@ -46,12 +41,92 @@
           "target": "~/.agents/skills/build-composable-components/references/review-and-testing.md"
         },
         {
-          "path": "references/examples.md",
+          "path": "references/state-and-lifecycles.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/examples.md"
+          "target": "~/.agents/skills/build-composable-components/references/state-and-lifecycles.md"
+        },
+        {
+          "path": "references/variants-and-styling.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/references/variants-and-styling.md"
+        },
+        {
+          "path": "examples/layered-family/src/components/roster.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/components/roster.tsx"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/components/shift-crew-roster.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/components/shift-crew-roster.tsx"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/api.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/api.ts"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/mutations/use-assign-shift-crew-mutation.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/mutations/use-assign-shift-crew-mutation.ts"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/queries/keys.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/queries/keys.ts"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/queries/options.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/queries/options.ts"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/queries/use-shift-crew-query.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/queries/use-shift-crew-query.ts"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/schemas.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/schemas.ts"
+        },
+        {
+          "path": "examples/layered-family/src/features/shift-crew/server-state/types.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/features/shift-crew/server-state/types.ts"
+        },
+        {
+          "path": "examples/layered-family/src/server-state/api.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/server-state/api.ts"
+        },
+        {
+          "path": "examples/layered-family/src/server-state/utils.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/server-state/utils.ts"
+        },
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/build-composable-components/SKILL.md"
+        },
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/build-composable-components.instructions.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/build-composable-components.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/build-composable-components.md"
         }
       ],
-      "docs": "Installs the Agent Skill plus focused architecture, styling, state, async, review, and worked-example references. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the Agent Skill, focused architecture, styling, state, async, review, and worked-example references, a non-runtime layered family example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
     }
   ]
 }

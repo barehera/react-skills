@@ -21,16 +21,6 @@
           "target": "~/.agents/skills/extract-named-helpers/agents/openai.yaml"
         },
         {
-          "path": "examples/inspection.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/extract-named-helpers/examples/inspection.ts"
-        },
-        {
-          "path": "examples/use-inspection-status.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/extract-named-helpers/examples/use-inspection-status.ts"
-        },
-        {
           "path": "references/extraction-triggers.md",
           "type": "registry:file",
           "target": "~/.agents/skills/extract-named-helpers/references/extraction-triggers.md"
@@ -49,6 +39,36 @@
           "path": "references/signatures-and-naming.md",
           "type": "registry:file",
           "target": "~/.agents/skills/extract-named-helpers/references/signatures-and-naming.md"
+        },
+        {
+          "path": "examples/inspection.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/extract-named-helpers/examples/inspection.ts"
+        },
+        {
+          "path": "examples/use-inspection-status.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/extract-named-helpers/examples/use-inspection-status.ts"
+        },
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/extract-named-helpers/SKILL.md"
+        },
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/extract-named-helpers.instructions.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/extract-named-helpers.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/extract-named-helpers.md"
         }
       ],
       "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."

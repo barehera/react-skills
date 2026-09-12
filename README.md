@@ -23,8 +23,11 @@ TypeScript, shadcn/Radix primitives, compound components, React Hook Form, Zod,
 scoped Zustand stores, TanStack Query, Axios, and focused feature ownership.
 Skills inspect a consuming repository before changing it, but source skills and
 examples do not become framework-neutral menus of interchangeable packages.
-See the [technology contract](docs/technology-stack.md) for the shared stack and
-responsibility boundaries.
+Every skill places code in one of three layers: primitives (shadcn/Radix),
+composable families (compound roots and slots with no product knowledge), and
+feature adapters (screens, schemas, queries, mutations, and product rules).
+See the [technology contract](docs/technology-stack.md) for the shared stack,
+the layer model, and responsibility boundaries.
 
 ## Available skills
 
@@ -141,6 +144,12 @@ feature-owned slices. Keep framework routes thin, colocate server state with
 its business owner, separate client and server integrations, and use no barrel
 exports.
 ```
+
+Every skill installs the canonical `SKILL.md` under `.agents/skills`, which
+Codex reads directly, plus thin pointers for Claude Code (`.claude/skills`),
+Cursor (`.cursor/rules`), GitHub Copilot (`.github/instructions`), and
+Windsurf (`.windsurf/rules`). The pointers attach to the files each skill owns
+and send the agent to the same canonical instructions.
 
 If your agent does not discover skills automatically:
 

@@ -18,8 +18,18 @@ framework-neutral or add interchangeable technology branches without an
 approved change to the stack guide.
 
 Keep Form, Stepper, server state, local Zustand state, transport, and visual
-component responsibilities separate. Reuse existing skills through explicit
-companion routing instead of duplicating their rules in a new skill.
+component responsibilities separate. Place every rule and example in one of
+the three layers named in the technology contract: primitive, composable
+family, or feature adapter. Reuse existing skills through explicit companion
+routing instead of duplicating their rules in a new skill.
+
+Every new or changed skill must satisfy the Skill quality contract in
+[docs/adding-a-skill.md](docs/adding-a-skill.md): `Version`, `Layer placement`,
+and `Companion skill routing` sections in `SKILL.md`, a core file under 220
+lines, a type-checked example when it ships code, and the
+generated adapter set for Claude Code, Cursor, GitHub Copilot, and Windsurf.
+Run `npm run skills:sync` after adding or renaming skill files; it regenerates
+adapters and registry file lists.
 
 Run `npm run validate` before handoff. For feedback reports, also run
 `node skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs <report>`.

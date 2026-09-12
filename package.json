@@ -21,9 +21,11 @@
     "shadcn": "shadcn",
     "release": "semantic-release",
     "skills:list": "node bin/react-skills.mjs --list",
+    "skills:sync": "node scripts/sync-skill-package.mjs",
+    "skills:sync:check": "node scripts/sync-skill-package.mjs --check",
     "typecheck:examples": "tsc --project tsconfig.examples.json",
     "validate:feedback-example": "node skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs skills/evolve-skills-from-feedback/examples/composable-component-feedback.md",
-    "validate": "node scripts/validate-registry.mjs && npm run validate:feedback-example && npm run skills:list && npm run typecheck:examples && npm run validate:pacer && npm run test:skill-examples && npm run registry:build",
+    "validate": "npm run skills:sync:check && node scripts/validate-registry.mjs && npm run validate:feedback-example && npm run skills:list && npm run typecheck:examples && npm run validate:pacer && npm run test:skill-examples && npm run registry:build",
     "test:skill-examples": "node --test scripts/skill-examples.test.mjs",
     "validate:pacer": "node skills/use-preferred-react-stack/scripts/verify-pacer.mjs"
   },

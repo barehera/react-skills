@@ -13,6 +13,8 @@ Use this reference to design the component family before writing JSX.
 - [Give each part its own props](#give-each-part-its-own-props)
 - [Preserve substitution](#preserve-substitution)
 - [Prefer composition to switches](#prefer-composition-to-switches)
+- [Keep names honest](#keep-names-honest)
+- [JSX and element conventions](#jsx-and-element-conventions)
 - [File boundaries](#file-boundaries)
 
 ## Start from responsibilities
@@ -432,6 +434,23 @@ prefer `ResourceCardItemList` and `ResourceCardItemListItem` (or `Menu` and
 `MenuItem`) over `ResourceCardItems` and `ResourceCardItem`. Keep domain leaf
 names such as `ResourceCardItemTitle` on the leaf. Established families such
 as `Tabs` and `TabsTrigger` are not plural-only collection/row pairs.
+
+## JSX and element conventions
+
+- Map each public part to one primitive or DOM role. Do not nest two primitives
+  merely to render one title or description.
+- Preserve `asChild`, `render`, or other polymorphism when the underlying
+  primitive supports it, but keep substitution consumer-opt-in; layout-only
+  slots do not need polymorphism by default.
+- Let logic-bearing items accept ordinary primitive props and customizable
+  `children`. A default icon or label may be convenient, but it must not be the
+  only presentation available to the consumer.
+- Render a boolean-only optional branch with `condition && <Component />`. Use
+  a ternary only when both branches produce meaningful UI; do not write
+  `condition ? <Component /> : null`.
+- When React Compiler is enabled, write direct values and functions. Do not add
+  `useMemo`, `useCallback`, or `React.memo` for routine render optimization or
+  context-value stability.
 
 ## File boundaries
 

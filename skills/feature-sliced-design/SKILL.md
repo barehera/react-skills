@@ -14,6 +14,19 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 This shared file is the repository release version for every installed React
 Skills workflow; this skill has no independent version.
 
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, queries, mutations, product
+rules). Dependencies point downward only.
+
+This skill owns where those layers live in the folder tree: primitives and
+generic families under the shared foundation, feature adapters inside the
+business slice that owns them. It does not change what a layer may import;
+an adapter still depends on families and primitives, never the reverse, and
+slices reach each other only through documented public module paths.
+
 ## Required workflow
 
 1. Read repository instructions and inspect the framework, source roots,
@@ -88,7 +101,7 @@ Skills workflow; this skill has no independent version.
   credentials, admin SDK setup, filesystem code, or server action internals.
 - Do not move unrelated files merely to make the tree look symmetrical.
 
-## Companion-skill routing
+## Companion skill routing
 
 This skill owns architecture, placement, imports, and migration boundaries. It
 does not duplicate implementation guidance owned elsewhere:

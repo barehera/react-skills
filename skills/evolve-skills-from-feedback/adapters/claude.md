@@ -1,0 +1,17 @@
+---
+name: evolve-skills-from-feedback
+description: Capture concrete lessons from AI-assisted development and turn them into durable, evidence-backed skill improvements. Use when an agent must produce a skill feedback guide at the end of work in a consuming project, record user corrections or failed skill behavior, normalize a supplied Markdown, JSON, or plain-text feedback artifact, review proposed rule changes, plan updates to a source skill, or implement and validate approved skill improvements from real-world examples.
+---
+
+Read and follow `.agents/skills/evolve-skills-from-feedback/SKILL.md`, and the references,
+examples, and companion routing it names, before starting.
+
+Purpose: Turn project evidence into durable skill improvements.
+
+- Inspect the repository before changing it; preserve a coherent existing
+  structure and treat the bundled examples as references, never as templates.
+- Keep primitives, composable families, and feature adapters in separate
+  layers with dependencies pointing downward only.
+- Route work the skill does not own to the companion skill it names.
+- Report `React Skills v<version>` from `.agents/skills/VERSION` in the
+  final handoff.

@@ -12,6 +12,18 @@ part remains independently composable.
 
 Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, typed forms, queries,
+mutations, product rules). Dependencies point downward only.
+
+This skill owns the field-family layer under `features/form` and the typed
+feature form in the adapter. Field families never import a feature schema,
+mutation, or product rule; the feature's `<feature>-form.ts` and screen own
+those and connect them to server state through `$manage-server-state`.
+
 ## Required workflow
 
 1. Read repository instructions and inspect React, form-library, validator,

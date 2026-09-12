@@ -11,6 +11,19 @@ Choose one owner per concern and verify its API before writing imports.
 
 Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, queries, mutations, product
+rules). Dependencies point downward only.
+
+This skill owns library selection across all three layers and verifies the
+installed APIs. It chooses one owner per concern and then routes the code to
+the skill that owns the layer: families to `$build-composable-components`,
+field families and typed forms to `$build-forms`, and remote state to
+`$manage-server-state`.
+
 ## Required workflow
 
 1. Read repository instructions, `package.json`, the lockfile, framework/build

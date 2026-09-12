@@ -26,6 +26,15 @@
 - [ ] Existing owning skills are reused or referenced instead of duplicated.
 - [ ] Skill resources, registry files, READMEs, and examples remain in sync.
 
+## Skill quality contract
+
+- [ ] `SKILL.md` has `Version`, `Layer placement`, and `Companion skill
+      routing` sections, a workflow or mode section, and stays under 220 lines.
+- [ ] Every rule and example names the layer it governs: primitive,
+      composable family, or feature adapter.
+- [ ] Shipped TypeScript examples are covered by `tsconfig.examples.json`.
+- [ ] `npm run skills:sync` was run so adapters and registry files match.
+
 ## Validation
 
 - [ ] `npm run validate`

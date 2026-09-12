@@ -11,6 +11,18 @@ Make call sites express intent while keeping small, obvious logic local.
 
 Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, queries, mutations, product
+rules). Dependencies point downward only.
+
+This skill owns no layer. A helper stays in the layer of the code it was
+extracted from: a derivation over product data stays in the feature adapter,
+a helper over slot props stays in the family, and a class helper stays with
+the primitive. Extraction must never create an import that points upward.
+
 ## Required workflow
 
 1. Inspect repository instructions, callers, neighboring domain utilities,

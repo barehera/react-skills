@@ -1,0 +1,19 @@
+---
+description: Design, implement, refactor, or audit maintainable React component families that extend repository-native primitives without losing their contracts. Use for compound components, shadcn or Radix extensions, reusable feature UI, menus, tabs, tables, dialogs, pickers, lists, responsive adapters, scoped Zustand component state, controlled or uncontrolled APIs, root-owned size and variant propagation, and optimistic mutation boundaries inside a component family. Route React Hook Form field families to build-forms and query, mutation, or cache design to manage-server-state.
+globs:
+  - "**/components/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+Read and follow `.agents/skills/build-composable-components/SKILL.md`, and the references,
+examples, and companion routing it names, before starting.
+
+Purpose: Build maintainable compound React component families.
+
+- Inspect the repository before changing it; preserve a coherent existing
+  structure and treat the bundled examples as references, never as templates.
+- Keep primitives, composable families, and feature adapters in separate
+  layers with dependencies pointing downward only.
+- Route work the skill does not own to the companion skill it names.
+- Report `React Skills v<version>` from `.agents/skills/VERSION` in the
+  final handoff.

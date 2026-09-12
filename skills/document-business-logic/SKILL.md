@@ -12,6 +12,19 @@ Most edited code should receive no new comment.
 
 Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 
+## Layer placement
+
+React Skills code lives in one of three layers: primitives (shadcn/Radix and
+`cn`), composable families (compound roots, slots, item boundaries, scoped
+stores), and feature adapters (screens, schemas, queries, mutations, product
+rules). Dependencies point downward only.
+
+Product rules live only in the feature adapter, so a supported business block
+belongs on a feature component, hook, store action, or const. A comment that
+seems to need a product reason inside a primitive or a generic family is a
+sign the rule is in the wrong layer; route the move to the owning skill
+instead of documenting it in place.
+
 ## Required workflow
 
 1. Read repository instructions and nearby comments before editing. If the

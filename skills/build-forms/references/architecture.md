@@ -138,24 +138,33 @@ export const {
 } = createForm<ProposalForm, ProposalFormProperties>()
 ```
 
-Pass form configuration directly to the typed root:
+Pass form configuration directly to the typed root, and hand submission to
+the feature's mutation hook rather than a placeholder function:
 
 ```tsx
+const createProposal = useCreateProposalMutation()
+
 return (
   <ProposalFormRoot
     properties={{
       reviewGroupName: "Launch council",
-      submissionDisabled: false,
+      submissionDisabled: createProposal.isSuccess,
     }}
     resolver={zodResolver(proposalSchema)}
     defaultValues={PROPOSAL_DEFAULT_VALUES}
     mode="onBlur"
-    onSubmit={submitProposal}
+    onSubmit={async (values) => {
+      await createProposal.mutateAsync(values)
+    }}
   >
     <ProposalDetails />
   </ProposalFormRoot>
 )
 ```
+
+The mutation hook, its Axios call, and the response schema live under the
+feature's `server-state` folder and follow `$manage-server-state`. The typed
+form never imports TanStack Query itself; the screen connects the two owners.
 
 Descendants call `useProposalForm()` and pass `form.control` to individual field
 roots, preserving typed field-path inference without receiving the entire form
