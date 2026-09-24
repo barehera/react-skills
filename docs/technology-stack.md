@@ -41,6 +41,7 @@ invitation to make canonical React Skills examples technology-agnostic.
 | Next.js localization | next-intl | Follow the repository's locale policy and server/client translation APIs. |
 | Transient notices | sonner | Reuse one app-level toaster and one notification owner. |
 | Next.js environment | `@t3-oss/env-nextjs` | Centralize typed environment validation with separate server/client access. |
+| Unit and contract tests | Vitest in a Node environment | Lock feature-adapter decisions with one shared case runner and one table per decision; keep baked config defaults on a separate schema contract. |
 | Render optimization | React Compiler when enabled | Verify build configuration; avoid routine new manual memoization and unrelated legacy cleanup. |
 | Registry and installation | shadcn registry | Publish every agent resource through a skill-local registry item and the root catalog. |
 
@@ -81,7 +82,9 @@ Each skill owns one layer and routes the others:
   adapter;
 - `manage-server-state` owns the remote-state part of the feature adapter;
 - `document-business-logic` documents product rules, which live only in the
-  feature adapter.
+  feature adapter;
+- `write-feature-tests` locks those product rules with case tables and keeps
+  baked config defaults on a schema contract.
 
 Every `SKILL.md` carries a short `Layer placement` section that names the
 layer it owns and the layers it routes, so installed agents share this
@@ -108,6 +111,8 @@ Keep one owner for each kind of state and behavior:
 - TanStack Query owns remote records and mutation/cache lifecycle;
 - Axios owns HTTP transport details;
 - Zod owns runtime parsing at explicit trust boundaries;
+- a case-table test owns the expected branches of one pure decision, while the
+  production function keeps the only Business Logic block for that rule;
 - feature composition connects these owners without merging their public APIs.
 
 Do not create fused `StepperForm`, `CardForm`, query-aware visual primitives, or
@@ -127,6 +132,7 @@ Use and extend the existing skill that owns the concern:
 | evidence capture, finding evaluation, and durable skill improvements | `evolve-skills-from-feedback` |
 | library selection, verified import paths, and integration prerequisites | `use-preferred-react-stack` |
 | extraction thresholds, helper signatures, naming, and hook/helper separation | `extract-named-helpers` |
+| product-rule case tables, rule-change test discipline, and baked-defaults contracts | `write-feature-tests` |
 
 A new skill may compose these capabilities, but it must route to the owning
 skill rather than copying its complete rules. Recommend an uninstalled
@@ -166,6 +172,11 @@ projects or turn companion skills framework-neutral. Next.js-specific choices
 apply only to Next.js projects. Browser-only app-wide Zustand stores are an
 explicit lifetime exception; canonical SSR and repeated-instance examples
 retain scoped vanilla stores. Placement remains owned by `feature-sliced-design`.
+
+The Vitest addition for unit and contract tests is recorded in
+[the rule-tests decision ledger](skill-feedback/2026-09-24-decisions.md). It
+names the canonical runner for a repository without one; an existing runner
+stays in place and is not migrated.
 
 Treat a preferred-library change as a repository architecture decision, not a
 local example preference. A proposal must include:

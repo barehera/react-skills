@@ -12,7 +12,7 @@ Before creating or changing a skill:
 
 This catalog is an opinionated React and TypeScript skeleton. Canonical skills
 and examples use shadcn/Radix primitives, compound component APIs, React Hook
-Form, Zod, scoped Zustand stores, TanStack Query, Axios, and the repository's
+Form, Zod, scoped Zustand stores, TanStack Query, Axios, Vitest, and the repository's
 documented companion-skill boundaries. Do not make new source skills
 framework-neutral or add interchangeable technology branches without an
 approved change to the stack guide.
