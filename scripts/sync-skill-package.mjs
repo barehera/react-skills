@@ -28,6 +28,7 @@ const skillGlobs = {
   "feature-sliced-design": ["**/src/**/*.{ts,tsx}", "**/app/**/*.{ts,tsx}"],
   "extract-named-helpers": ["**/*.{ts,tsx}"],
   "use-preferred-react-stack": ["**/*.{ts,tsx}", "**/package.json"],
+  "write-feature-tests": ["**/*.test.{ts,tsx}", "**/tests/**/*.{ts,tsx}"],
 };
 
 const defaultGlobs = ["**/*.{ts,tsx}"];

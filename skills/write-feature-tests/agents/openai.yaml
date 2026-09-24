@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Feature Tests"
+  short_description: "Lock product rules with reusable case tables and a baked-defaults contract"
+  default_prompt: "Use $write-feature-tests to lock the product decisions in this feature with one case table each and keep baked config defaults on a schema contract."

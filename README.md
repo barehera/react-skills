@@ -20,7 +20,7 @@ copies of that release number.
 
 The catalog is intentionally opinionated. Its canonical skeleton uses React,
 TypeScript, shadcn/Radix primitives, compound components, React Hook Form, Zod,
-scoped Zustand stores, TanStack Query, Axios, and focused feature ownership.
+scoped Zustand stores, TanStack Query, Axios, Vitest, and focused feature ownership.
 Skills inspect a consuming repository before changing it, but source skills and
 examples do not become framework-neutral menus of interchangeable packages.
 Every skill places code in one of three layers: primitives (shadcn/Radix),
@@ -41,6 +41,7 @@ the layer model, and responsibility boundaries.
 | [Feature-Sliced Design](skills/feature-sliced-design/README.md) | Design, migrate, and audit scalable React application structure around feature ownership, runtime boundaries, and direct imports. |
 | [Extract Named Helpers](skills/extract-named-helpers/README.md) | Extract focused helpers without needless indirection. |
 | [Use Preferred React Stack](skills/use-preferred-react-stack/README.md) | Choose verified React libraries by concern. |
+| [Write Feature Tests](skills/write-feature-tests/README.md) | Lock product rules with reusable case tables and a baked-defaults contract. |
 
 More skills can be added without changing the installation workflow.
 
@@ -79,6 +80,7 @@ npx shadcn@latest add barehera/react-skills/build-composable-components
 npx shadcn@latest add barehera/react-skills/document-business-logic
 npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
 npx shadcn@latest add barehera/react-skills/feature-sliced-design
+npx shadcn@latest add barehera/react-skills/write-feature-tests
 ```
 
 To inspect the catalog without installing:

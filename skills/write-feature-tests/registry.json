@@ -1,0 +1,82 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "write-feature-tests",
+      "type": "registry:item",
+      "title": "Write Feature Tests",
+      "description": "Lock product rules with reusable case tables and a baked-defaults contract.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/agents/openai.yaml"
+        },
+        {
+          "path": "references/case-tables.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/references/case-tables.md"
+        },
+        {
+          "path": "examples/rule-tests/src/config/app-config.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/config/app-config.ts"
+        },
+        {
+          "path": "examples/rule-tests/src/config/tests/contract/app-config-defaults.test.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/config/tests/contract/app-config-defaults.test.ts"
+        },
+        {
+          "path": "examples/rule-tests/src/features/support-request/submission.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/submission.ts"
+        },
+        {
+          "path": "examples/rule-tests/src/features/support-request/tests/unit/can-submit.test.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/tests/unit/can-submit.test.ts"
+        },
+        {
+          "path": "examples/rule-tests/src/features/support-request/tests/unit/get-attachment-limit-mb.test.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/tests/unit/get-attachment-limit-mb.test.ts"
+        },
+        {
+          "path": "examples/rule-tests/src/tests/rule-cases.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/tests/rule-cases.ts"
+        },
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/write-feature-tests/SKILL.md"
+        },
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/write-feature-tests.instructions.md"
+        },
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/write-feature-tests.mdc"
+        },
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/write-feature-tests.md"
+        }
+      ],
+      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+    }
+  ]
+}

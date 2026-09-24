@@ -29,6 +29,7 @@
     "skills/build-composable-components/examples/layered-family/src/**/*.tsx",
     "skills/document-business-logic/examples/**/*.tsx",
     "skills/extract-named-helpers/examples/**/*.ts",
+    "skills/write-feature-tests/examples/**/*.ts",
     "skills/use-preferred-react-stack/examples/**/*.ts",
     "skills/use-preferred-react-stack/examples/**/*.tsx",
     "typecheck/build-forms-shadcn.d.ts",
