@@ -104,29 +104,89 @@
           "path": "examples/layered-family/src/server-state/utils.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/server-state/utils.ts"
-        },
+        }
+      ],
+      "docs": "Installs the Agent Skill, focused architecture, styling, state, async, review, and worked-example references, a non-runtime layered family example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+    },
+    {
+      "name": "build-composable-components-claude",
+      "type": "registry:item",
+      "title": "Build Composable Components for Claude Code",
+      "description": "Claude Code pointer that loads the Build Composable Components skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-composable-components"
+      ],
+      "files": [
         {
           "path": "adapters/claude.md",
           "type": "registry:file",
           "target": "~/.claude/skills/build-composable-components/SKILL.md"
-        },
-        {
-          "path": "adapters/copilot.instructions.md",
-          "type": "registry:file",
-          "target": "~/.github/instructions/build-composable-components.instructions.md"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "build-composable-components",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "build-composable-components-cursor",
+      "type": "registry:item",
+      "title": "Build Composable Components for Cursor",
+      "description": "Cursor pointer that loads the Build Composable Components skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-composable-components"
+      ],
+      "files": [
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/build-composable-components.mdc"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "build-composable-components",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "build-composable-components-copilot",
+      "type": "registry:item",
+      "title": "Build Composable Components for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Build Composable Components skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-composable-components"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/build-composable-components.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "build-composable-components",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "build-composable-components-windsurf",
+      "type": "registry:item",
+      "title": "Build Composable Components for Windsurf",
+      "description": "Windsurf pointer that loads the Build Composable Components skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-composable-components"
+      ],
+      "files": [
         {
           "path": "adapters/windsurf.md",
           "type": "registry:file",
           "target": "~/.windsurf/rules/build-composable-components.md"
         }
       ],
-      "docs": "Installs the Agent Skill, focused architecture, styling, state, async, review, and worked-example references, a non-runtime layered family example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+      "meta": {
+        "skill": "build-composable-components",
+        "agent": "windsurf"
+      }
     }
   ]
 }

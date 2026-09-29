@@ -49,29 +49,89 @@
           "path": "examples/use-inspection-status.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/extract-named-helpers/examples/use-inspection-status.ts"
-        },
+        }
+      ],
+      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+    },
+    {
+      "name": "extract-named-helpers-claude",
+      "type": "registry:item",
+      "title": "Extract Named Helpers for Claude Code",
+      "description": "Claude Code pointer that loads the Extract Named Helpers skill.",
+      "registryDependencies": [
+        "barehera/react-skills/extract-named-helpers"
+      ],
+      "files": [
         {
           "path": "adapters/claude.md",
           "type": "registry:file",
           "target": "~/.claude/skills/extract-named-helpers/SKILL.md"
-        },
-        {
-          "path": "adapters/copilot.instructions.md",
-          "type": "registry:file",
-          "target": "~/.github/instructions/extract-named-helpers.instructions.md"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "extract-named-helpers",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "extract-named-helpers-cursor",
+      "type": "registry:item",
+      "title": "Extract Named Helpers for Cursor",
+      "description": "Cursor pointer that loads the Extract Named Helpers skill.",
+      "registryDependencies": [
+        "barehera/react-skills/extract-named-helpers"
+      ],
+      "files": [
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/extract-named-helpers.mdc"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "extract-named-helpers",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "extract-named-helpers-copilot",
+      "type": "registry:item",
+      "title": "Extract Named Helpers for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Extract Named Helpers skill.",
+      "registryDependencies": [
+        "barehera/react-skills/extract-named-helpers"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/extract-named-helpers.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "extract-named-helpers",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "extract-named-helpers-windsurf",
+      "type": "registry:item",
+      "title": "Extract Named Helpers for Windsurf",
+      "description": "Windsurf pointer that loads the Extract Named Helpers skill.",
+      "registryDependencies": [
+        "barehera/react-skills/extract-named-helpers"
+      ],
+      "files": [
         {
           "path": "adapters/windsurf.md",
           "type": "registry:file",
           "target": "~/.windsurf/rules/extract-named-helpers.md"
         }
       ],
-      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+      "meta": {
+        "skill": "extract-named-helpers",
+        "agent": "windsurf"
+      }
     }
   ]
 }

@@ -49,29 +49,89 @@
           "path": "assets/skill-feedback-template.md",
           "type": "registry:file",
           "target": "~/.agents/skills/evolve-skills-from-feedback/assets/skill-feedback-template.md"
-        },
+        }
+      ],
+      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, deterministic report validator, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not modify application source or source skills unless the user requests those changes."
+    },
+    {
+      "name": "evolve-skills-from-feedback-claude",
+      "type": "registry:item",
+      "title": "Evolve Skills from Feedback for Claude Code",
+      "description": "Claude Code pointer that loads the Evolve Skills from Feedback skill.",
+      "registryDependencies": [
+        "barehera/react-skills/evolve-skills-from-feedback"
+      ],
+      "files": [
         {
           "path": "adapters/claude.md",
           "type": "registry:file",
           "target": "~/.claude/skills/evolve-skills-from-feedback/SKILL.md"
-        },
-        {
-          "path": "adapters/copilot.instructions.md",
-          "type": "registry:file",
-          "target": "~/.github/instructions/evolve-skills-from-feedback.instructions.md"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "evolve-skills-from-feedback",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "evolve-skills-from-feedback-cursor",
+      "type": "registry:item",
+      "title": "Evolve Skills from Feedback for Cursor",
+      "description": "Cursor pointer that loads the Evolve Skills from Feedback skill.",
+      "registryDependencies": [
+        "barehera/react-skills/evolve-skills-from-feedback"
+      ],
+      "files": [
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/evolve-skills-from-feedback.mdc"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "evolve-skills-from-feedback",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "evolve-skills-from-feedback-copilot",
+      "type": "registry:item",
+      "title": "Evolve Skills from Feedback for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Evolve Skills from Feedback skill.",
+      "registryDependencies": [
+        "barehera/react-skills/evolve-skills-from-feedback"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/evolve-skills-from-feedback.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "evolve-skills-from-feedback",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "evolve-skills-from-feedback-windsurf",
+      "type": "registry:item",
+      "title": "Evolve Skills from Feedback for Windsurf",
+      "description": "Windsurf pointer that loads the Evolve Skills from Feedback skill.",
+      "registryDependencies": [
+        "barehera/react-skills/evolve-skills-from-feedback"
+      ],
+      "files": [
         {
           "path": "adapters/windsurf.md",
           "type": "registry:file",
           "target": "~/.windsurf/rules/evolve-skills-from-feedback.md"
         }
       ],
-      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, deterministic report validator, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not modify application source or source skills unless the user requests those changes."
+      "meta": {
+        "skill": "evolve-skills-from-feedback",
+        "agent": "windsurf"
+      }
     }
   ]
 }
