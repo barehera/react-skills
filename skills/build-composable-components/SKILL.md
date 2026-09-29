@@ -33,7 +33,9 @@ changes belongs in the family or the primitive.
    server-state conventions, neighboring component families, and validation
    commands.
 2. Find current consumers and infer likely extensions from concrete product
-   requirements. Preserve behavior unless a change is requested.
+   requirements (roadmaps, backlogs, plans, designs, and sibling screens count
+   as concrete requirements, in both create and audit mode). Preserve behavior
+   unless a change is requested.
 3. Classify the task as `create`, `extend`, `refactor`, or `audit`.
 4. Write a short family model before implementation:
    - root responsibility and genuinely shared inputs;
@@ -159,7 +161,8 @@ benefit and require approval before installing it; continue if declined.
   performs mutations, synchronizes caches, navigates, emits analytics, applies
   permissions, or changes composition by environment.
 - Read [review-and-testing.md](references/review-and-testing.md) for audits,
-  refactors, accessibility checks, extension tests, and final verification.
+  refactors, over-engineering judgments, accessibility checks, extension
+  tests, and final verification.
 - Read [examples.md](references/examples.md) when implementing a collection,
   controlled optional value, scoped Zustand family, composable overlay, or
   root-owned visual matrix.
@@ -190,3 +193,7 @@ Use these only when the repository has no established convention:
 
 Do not force compound components, context, Zustand, CVA, Radix, shadcn, or a
 particular folder layout onto a project with a simpler coherent solution.
+This governs introducing machinery. In an audit it does not permit removing an
+existing part: judge each abstraction with the over-engineering decision test
+in [review-and-testing.md](references/review-and-testing.md#judge-over-engineering),
+where a low caller count is a signal, never the verdict.

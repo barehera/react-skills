@@ -1,6 +1,6 @@
 ---
 name: write-feature-tests
-description: Lock React and TypeScript feature-adapter product rules with reusable Vitest case tables and a separate schema contract for baked config defaults. Use when adding tests for a pure product decision, Zod transform, or store transition; when a product rule changes and its tests fail; or when remote-config or baked default values need a safety net. Keeps one shared case runner, one table per decision, and the Business Logic block on the production function only.
+description: Lock React and TypeScript feature-adapter product rules with reusable Vitest case tables and a separate schema contract for baked config defaults. Use when adding tests for a pure product decision, Zod transform, or store transition; when a product rule changes and its tests fail; when remote-config or baked default values need a safety net; or when auditing feature tests for change-detectors or over-engineering. Keeps one shared case runner, one table per decision, and the Business Logic block on the production function only.
 ---
 
 Read and follow `.agents/skills/write-feature-tests/SKILL.md`, and the references,

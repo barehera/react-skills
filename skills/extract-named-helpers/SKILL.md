@@ -1,6 +1,6 @@
 ---
 name: extract-named-helpers
-description: Extract focused named helpers from React and TypeScript derivations, duplicated predicates, and branching transforms. Use when simplifying components, hooks, callbacks, or domain utilities; decide what stays inline, where helpers live, and how signatures communicate intent without changing behavior.
+description: Extract focused named helpers from React and TypeScript derivations, duplicated predicates, and branching transforms. Use when simplifying components, hooks, callbacks, or domain utilities, or when auditing existing helpers for over-engineering; decide what stays inline, where helpers live, and how signatures communicate intent without changing behavior.
 ---
 
 # Extract Named Helpers
@@ -26,8 +26,9 @@ the primitive. Extraction must never create an import that points upward.
 ## Required workflow
 
 1. Inspect repository instructions, callers, neighboring domain utilities,
-   types, compiler configuration, and checks. Preserve the existing React and
-   TypeScript stack and business ownership.
+   types, compiler configuration, and checks; when auditing, also read the
+   planning artifacts the repository supplies (roadmap, backlog, plan).
+   Preserve the existing React and TypeScript stack and business ownership.
 2. Identify the decision or transform hidden in the implementation. Compare
    extraction against a named local value and simpler control flow first.
 3. Choose the narrowest signature and placement using the contracts below.
@@ -64,13 +65,25 @@ decision point. Hoist only if order, conditions, exceptions, and call count stay
 equivalent. Similar-looking code with different business policies is not
 necessarily duplication.
 
+These rules decide whether to create a helper. When auditing an existing
+helper, keep it when its name carries a product rule, an external contract, or
+a transform a recorded upcoming feature needs; inline only a restatement or a
+plain alias. See
+[Auditing existing helpers](references/extraction-triggers.md#auditing-existing-helpers).
+
 ## Placement
 
 | Consumers | Default |
 | --- | --- |
 | One module, including several callers inside it | Module-private helper beside or above its consumers |
 | Multiple modules with one domain owner | Export from the existing cohesive domain utility module |
-| Never by default | Speculative exports, a miscellaneous `helpers.ts`, or one file per tiny helper |
+| Never by default | Exports with no current or recorded consumer outside the module (speculative exports), a miscellaneous `helpers.ts`, or one file per tiny helper of the same concern |
+
+A recorded upcoming consumer (roadmap, backlog, plan, design, or sibling
+screen) counts as a consumer for placement; speculation has no record. A small
+module for a separate purpose, such as locale resolution beside formatting, is
+a legitimate boundary even with one function; route purpose placement to
+`$feature-sliced-design`.
 
 A second call inside the same file does not earn an export. A legitimate
 independent boundary or existing public API may justify a dedicated module.
@@ -124,8 +137,9 @@ it when declined. Do not duplicate its full guidance here.
 ## Read focused guidance
 
 - [Extraction triggers](references/extraction-triggers.md): chains, callback
-  boundaries, and safe hoisting.
-- [Placement](references/placement.md): private helpers versus domain exports.
+  boundaries, safe hoisting, and auditing existing helpers.
+- [Placement](references/placement.md): private helpers versus domain exports,
+  recorded consumers, and purpose splits.
 - [Signatures and naming](references/signatures-and-naming.md): minimal inputs
   and return contracts.
 - [Hooks and helpers](references/hooks-and-helpers.md): React boundaries.

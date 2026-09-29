@@ -1,6 +1,6 @@
 ---
 name: write-feature-tests
-description: Lock React and TypeScript feature-adapter product rules with reusable Vitest case tables and a separate schema contract for baked config defaults. Use when adding tests for a pure product decision, Zod transform, or store transition; when a product rule changes and its tests fail; or when remote-config or baked default values need a safety net. Keeps one shared case runner, one table per decision, and the Business Logic block on the production function only.
+description: Lock React and TypeScript feature-adapter product rules with reusable Vitest case tables and a separate schema contract for baked config defaults. Use when adding tests for a pure product decision, Zod transform, or store transition; when a product rule changes and its tests fail; when remote-config or baked default values need a safety net; or when auditing feature tests for change-detectors or over-engineering. Keeps one shared case runner, one table per decision, and the Business Logic block on the production function only.
 ---
 
 # Write Feature Tests
@@ -24,7 +24,9 @@ transforms, and store transitions whose branches fit `input -> result`, plus
 the contract between config schemas and their baked defaults. A test imports
 the feature module it locks; the shared case runner imports only Vitest and
 never a feature. Primitive and family behavior tests belong to
-`$build-composable-components` and `$build-forms`.
+`$build-composable-components` and `$build-forms`. That routes interaction
+tests; it does not forbid tables elsewhere. A pure `input -> result` transform
+in a business-agnostic library may use the same runner and layout.
 
 ## Required workflow
 
@@ -49,8 +51,12 @@ never a feature. Primitive and family behavior tests belong to
 7. When the change edits a rule, follow "When a rule changes" below.
 8. When the change adds or edits a schema-backed config or its baked
    defaults, keep or add the defaults contract test.
-9. Run the affected tests, typecheck, and lint. Report the tables and rows
-   added or changed, the contract result, and anything left untested.
+9. When auditing tests for over-engineering, remove only duplicate suites,
+   test-only adapters, and change-detectors, covering untested behavior
+   first. Keep product-decision tables, pure library tables, and one file per
+   decision.
+10. Run the affected tests, typecheck, and lint. Report the tables and rows
+    added or changed, the contract result, and anything left untested.
 
 ## Case tables
 
@@ -68,9 +74,15 @@ testRule(canSubmit, [
   repository has one runner; do not add a second runner per feature.
 - A row name states the branch in product words, not the literal values.
 - A decision with several inputs takes one object, so each row stays
-  `input -> expected`.
+  `input -> expected`. An existing positional function, such as a generic
+  type guard, gets plain `it` cases instead of a test-only adapter that
+  reshapes its arguments.
+- Type coverage of a map's keys is not a test of its values. `satisfies
+  Record<K, V>` proves every key exists, not that each maps to the right
+  value, so a product-chosen map keeps its table.
 
-Case tables fit pure functions, Zod transforms, and store transitions. They
+Case tables fit pure functions, product-chosen constant maps, Zod transforms,
+and store transitions. They
 do not fit multi-step HTTP or cache contracts, such as an MSW handler
 sequence, or browser journeys; keep those as contract or end-to-end tests
 owned by `$manage-server-state` and the repository's established test root.
@@ -87,6 +99,9 @@ owned by `$manage-server-state` and the repository's established test root.
   product rule removed that branch.
 - A red test with no behavior change, such as a renamed function or a broken
   import, is an import fix. Fix the import and leave `expected` alone.
+- A test that only restates a constant's literal is a change-detector, not a
+  rule test. Replace it with a behavior test where the behavior is untested,
+  then delete it.
 - Update the production function's Business Logic block in the same change
   when its rule text changed, through `$document-business-logic`.
 
@@ -124,14 +139,18 @@ it when declined. Do not duplicate its full guidance here.
 
 ## Read focused guidance
 
-- [Case tables and contracts](references/case-tables.md): runner contract, a
-  worked rule change, the defaults contract, and project-policy boundaries.
+- [Case tables and contracts](references/case-tables.md): runner contract,
+  product-chosen maps, change-detectors, a worked rule change, the defaults
+  contract, one file per decision, and project-policy boundaries.
 - [Shared runner](examples/rule-tests/src/tests/rule-cases.ts): the only
   `testRule` implementation.
 - [Decisions](examples/rule-tests/src/features/support-request/submission.ts)
   with their Business Logic blocks, and their
   [case table](examples/rule-tests/src/features/support-request/tests/unit/can-submit.test.ts)
   and [default-dependent table](examples/rule-tests/src/features/support-request/tests/unit/get-attachment-limit-mb.test.ts).
+- [Product-chosen map](examples/rule-tests/src/features/support-request/status.ts)
+  and its
+  [lookup table](examples/rule-tests/src/features/support-request/tests/unit/support-request-status-tone.test.ts).
 - [Config schemas and loader](examples/rule-tests/src/config/app-config.ts)
   and their
   [defaults contract](examples/rule-tests/src/config/tests/contract/app-config-defaults.test.ts).
@@ -141,8 +160,10 @@ it when declined. Do not duplicate its full guidance here.
 - Runner: Vitest, Node environment, for pure decisions and contracts.
 - Shared runner location: the repository's shared test utilities, such as
   `src/tests/rule-cases.ts`.
-- Test file: one per decision, named for the decision, beside its feature.
+- Test file: one per decision, named for the decision, beside its feature; do
+  not merge decision files to reduce file count.
 - Matcher: deep equality on the decision's return value.
-- Hosted-runner names, banned browser vendors, and a project's own test
-  folder layout are project policy; follow the repository and do not promote
-  them into this skill.
+- Hosted-runner names, banned browser vendors, and the test folder name and
+  location, such as `tests/unit` or `__tests__`, are project policy; follow
+  the repository and do not promote them into this skill. One file per
+  decision is this skill's granularity, not folder policy.

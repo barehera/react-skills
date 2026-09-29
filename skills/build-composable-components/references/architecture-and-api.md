@@ -34,6 +34,9 @@ A reusable family can contain:
   analytics, or server state without teaching generic slots those policies.
 
 Not every family needs every layer. A two-component wrapper should stay simple.
+That guides creating a family; it does not license removing parts from an
+existing family during an audit (see
+[Judge over-engineering](review-and-testing.md#judge-over-engineering)).
 
 ## Dependency direction
 
@@ -127,6 +130,10 @@ accepted controlled snapshot, so internal enumeration prevents its
 `Collection` from drifting to a second array. The same exception applies when a
 family owns remote-result gating or virtualization. Do not hoist an array to
 the root merely because a future requirement might need those behaviors.
+That rejects speculation, a need with no record. A consumer named in a
+roadmap, backlog, plan, design, or sibling screen with the same shape is a
+concrete requirement. When auditing an existing family, judge its parts with
+[Judge over-engineering](review-and-testing.md#judge-over-engineering).
 
 Consumer mapping also remains correct when a page renders independent roots:
 

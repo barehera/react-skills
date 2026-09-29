@@ -36,6 +36,11 @@
           "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/config/tests/contract/app-config-defaults.test.ts"
         },
         {
+          "path": "examples/rule-tests/src/features/support-request/status.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/status.ts"
+        },
+        {
           "path": "examples/rule-tests/src/features/support-request/submission.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/submission.ts"
@@ -49,6 +54,11 @@
           "path": "examples/rule-tests/src/features/support-request/tests/unit/get-attachment-limit-mb.test.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/tests/unit/get-attachment-limit-mb.test.ts"
+        },
+        {
+          "path": "examples/rule-tests/src/features/support-request/tests/unit/support-request-status-tone.test.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/write-feature-tests/examples/rule-tests/src/features/support-request/tests/unit/support-request-status-tone.test.ts"
         },
         {
           "path": "examples/rule-tests/src/tests/rule-cases.ts",
