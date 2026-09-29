@@ -41,7 +41,7 @@ crosses the server-state boundary.
 - If a useful companion is not installed, explain its concrete benefit once
   and ask whether the user wants it installed. Install only after approval and
   only through the environment's supported skill installer; otherwise offer
-  `npx --yes github:barehera/react-skills <skill>`, which installs it for the
+  `react-skills <skill>`, which installs it for the
   project's saved agents. Continue with this skill if the user declines and do
   not repeat the recommendation.
 

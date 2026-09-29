@@ -55,17 +55,38 @@ expert compound families.
 
 ## Install
 
+React Skills is private. Installing needs read access to this repository:
+your own GitHub login, or a read-only deploy key from the owner. See
+[private access](docs/private-access.md) to set up a key.
+
+### Set up once per machine
+
+On Windows, run these in Git Bash:
+
+```bash
+git clone git@github.com:barehera/react-skills.git ~/.react-skills
+cd ~/.react-skills
+npm install --omit=dev
+npm link
+```
+
+With a deploy key, clone `git@react-skills:barehera/react-skills.git` instead.
+`npm link` adds the `react-skills` command. It installs from this local copy,
+so installing into a project downloads nothing and sends nothing anywhere.
+
+### Install into a project
+
 Run the installer from your project root:
 
 ```bash
-npx --yes github:barehera/react-skills
+react-skills
 ```
 
 1. **Pick skills.** `↑` / `↓` move, `Space` selects, `a` toggles all, and
    `Enter` continues.
 2. **Pick your agents.** Agents already set up in the project, such as a
    `.cursor` folder, are pre-selected.
-3. **Done.** shadcn writes the files. Nothing else in your project changes.
+3. **Done.** The installer copies the files and keeps them out of git.
 
 Press `Ctrl+C` at any point to cancel.
 
@@ -83,19 +104,39 @@ Only the files for the agents you pick are written:
 Each agent file is a thin pointer that attaches to the files the skill owns and
 sends the agent to the same canonical `SKILL.md`. The installer also writes
 `.agents/skills/VERSION`, the React Skills release, and
-`.agents/skills/react-skills.json`, your skills and agents. Keep
-`react-skills.json` in version control so teammates update the same selection.
+`.agents/skills/react-skills.json`, your skills and agents.
+
+### Keep the skills private in a shared repository
+
+The installer lists every React Skills path in the repository's
+`.git/info/exclude`. Git reads that file like `.gitignore` but never commits
+it, so the skills stay on your machine and teammates see no change. If React
+Skills files were committed earlier, the installer prints the
+`git rm -r --cached` command that stops sharing them while keeping your copy.
+To commit a file on purpose, use `git add -f`.
+
+### Install once for every project (Claude Code)
+
+```bash
+react-skills --global
+```
+
+Claude Code also reads skills from `~/.claude/skills`, so one global install
+serves every project and adds no file to any of them. Other agents read skills
+from the project, so `--global` installs for Claude Code only.
 
 ### Install without questions
 
 ```bash
-npx --yes github:barehera/react-skills build-forms manage-server-state --agent cursor
-npx --yes github:barehera/react-skills --all --agent claude,cursor
+react-skills build-forms manage-server-state --agent cursor
+react-skills --all --agent claude,cursor
+react-skills build-forms --global
 ```
 
 | Option | What it does |
 | --- | --- |
 | `--agent <ids>` | `claude`, `cursor`, `copilot`, `windsurf`, `codex`, comma-separated. Saved for updates. |
+| `--global` | Install once for Claude Code in `~/.claude/skills`, for every project. |
 | `--all` | Every skill in the catalog. |
 | `--overwrite` | Replace existing React Skills files without asking. |
 | `--prune` | Remove React Skills pointer files for agents you did not pick. |
@@ -106,47 +147,33 @@ npx --yes github:barehera/react-skills --all --agent claude,cursor
 See the skills and agents without installing:
 
 ```bash
-npx --yes github:barehera/react-skills list
-```
-
-### Install with shadcn directly
-
-Every skill has one registry item for the skill and one per agent. An agent
-item installs the skill too:
-
-```bash
-npx shadcn@latest add barehera/react-skills/build-forms-cursor
-npx shadcn@latest add barehera/react-skills/build-forms-claude
-npx shadcn@latest add barehera/react-skills/build-forms
-```
-
-The last line installs the skill alone, which is all Codex needs. Agent items
-end in `-claude`, `-cursor`, `-copilot`, or `-windsurf`. Review an item
-before installing it:
-
-```bash
-npx shadcn@latest view barehera/react-skills/build-forms
-npx shadcn@latest add barehera/react-skills/build-forms-cursor --dry-run
+react-skills list
 ```
 
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+react-skills update
+react-skills update --global
 ```
 
-`update` reinstalls your saved skills for your saved agents from the latest
-release, replaces their files, and lists catalog skills you have not installed
-yet. Without a saved selection, for example after installing with shadcn
-directly or with an older installer, it finds the installed skills and asks for
-your agents once.
+`update` first downloads the latest release into `~/.react-skills` with
+`git pull`, then reinstalls your saved skills for your saved agents, replaces
+their files, removes files a release dropped, and lists catalog skills you have
+not installed yet. If the download fails, for example offline or after access
+was removed, it updates from the copy you already have. Without a saved
+selection, for example after an install made by an older installer, it finds
+the installed skills and asks for your agents once.
 
-- Add a skill with your saved agents:
-  `npx --yes github:barehera/react-skills write-feature-tests`
-- Change agents: `npx --yes github:barehera/react-skills update --agent cursor,claude`
+- Upgrade a project installed with 1.x: finish the
+  [one-time setup](#set-up-once-per-machine), then run `react-skills update`
+  in the project. The file layout is unchanged; the update adds the
+  `.git/info/exclude` entries.
+- Add a skill with your saved agents: `react-skills write-feature-tests`
+- Change agents: `react-skills update --agent cursor,claude`
 - Remove pointer files for agents you do not use, for example Windsurf and
   Copilot files from an install made before agents were selectable:
-  `npx --yes github:barehera/react-skills update --agent cursor --prune`.
+  `react-skills update --agent cursor --prune`.
   Only generated React Skills pointers are removed; a file you rewrote so it no
   longer points to its skill is kept.
 
@@ -206,7 +233,7 @@ React Skills pull request.
    repository:
 
    ```bash
-   npx --yes github:barehera/react-skills build-forms evolve-skills-from-feedback
+   react-skills build-forms evolve-skills-from-feedback
    ```
 
 2. Complete a real task with the target skill. Keep the accepted implementation,
