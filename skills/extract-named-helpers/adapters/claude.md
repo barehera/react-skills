@@ -1,6 +1,6 @@
 ---
 name: extract-named-helpers
-description: Extract focused named helpers from React and TypeScript derivations, duplicated predicates, and branching transforms. Use when simplifying components, hooks, callbacks, or domain utilities; decide what stays inline, where helpers live, and how signatures communicate intent without changing behavior.
+description: Extract focused named helpers from React and TypeScript derivations, duplicated predicates, and branching transforms. Use when simplifying components, hooks, callbacks, or domain utilities, or when auditing existing helpers for over-engineering; decide what stays inline, where helpers live, and how signatures communicate intent without changing behavior.
 ---
 
 Read and follow `.agents/skills/extract-named-helpers/SKILL.md`, and the references,
