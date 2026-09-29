@@ -148,6 +148,10 @@ async function chooseAgents(preselected) {
   return selected;
 }
 
+function countFiles(count) {
+  return `${count} React Skills ${count === 1 ? "file" : "files"}`;
+}
+
 function confirm(message, initial) {
   return ask({ type: "confirm", name: "value", message, initial });
 }
@@ -214,7 +218,7 @@ async function selectAgents(options, state, interactive) {
     return saved;
   }
 
-  const detected = detectAgents(options.cwd);
+  const detected = await detectAgents(options.cwd);
 
   if (interactive) {
     return chooseAgents(saved.length > 0 ? saved : detected);
@@ -247,12 +251,12 @@ async function decideOverwrite(options, skills, skillNames, agentIds, releaseVer
 
   if (!interactive) {
     throw new Error(
-      `${existing.length} React Skills files already exist. Pass --overwrite to replace them, or run ${command} update.`,
+      `${countFiles(existing.length)} already exist. Pass --overwrite to replace them, or run ${command} update.`,
     );
   }
 
   return confirm(
-    `${existing.length} React Skills files already exist. Replace them with v${releaseVersion}? (No asks for each file)`,
+    `${countFiles(existing.length)} already exist. Replace them with v${releaseVersion}? (No asks for each file)`,
     true,
   );
 }
@@ -267,7 +271,7 @@ async function pruneOtherAgents(options, skills, skillNames, agentIds, interacti
 
   const labels = agentLabels([...new Set(candidates.map((candidate) => candidate.agentId))]);
   const paths = candidates.map((candidate) => candidate.path);
-  const summary = `${paths.length} React Skills pointer files for ${labels.join(", ")}`;
+  const summary = `${countFiles(paths.length)} for ${labels.join(", ")}`;
 
   if (options.dryRun) {
     console.log(`\nWould remove ${summary}:\n  ${paths.join("\n  ")}`);
@@ -278,10 +282,10 @@ async function pruneOtherAgents(options, skills, skillNames, agentIds, interacti
     options.prune ||
     (interactive &&
       !options.yes &&
-      (await confirm(`Remove ${summary}, which you did not select?`, false)));
+      (await confirm(`Remove ${summary} (agents you did not select)?`, false)));
 
   if (!shouldRemove) {
-    console.log(`\n${summary} remain. Remove them with --prune.`);
+    console.log(`\nKept ${summary}. Remove them later with --prune.`);
     return;
   }
 
@@ -362,7 +366,7 @@ async function main() {
   console.log(`\nSaved your selection in ${stateFile}.`);
 
   if (options.command === "update" && notInstalled.length > 0) {
-    console.log(`New skills you have not installed: ${notInstalled.join(", ")}`);
+    console.log(`More skills available: ${notInstalled.join(", ")}`);
     console.log(`Add one with: ${command} <skill>`);
   }
 

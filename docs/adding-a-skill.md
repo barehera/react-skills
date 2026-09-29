@@ -108,11 +108,15 @@ template asks for the rest.
 | A skill that ships TypeScript examples includes them in `tsconfig.examples.json` | Prose examples drift against real package APIs unnoticed | validator |
 | Product policy in an example lives in the feature adapter and carries one business-logic block when non-obvious | The examples demonstrate the split rather than describe it | review |
 | The adapter set is generated, complete, and registered: `adapters/claude.md`, `adapters/cursor.mdc`, `adapters/copilot.instructions.md`, `adapters/windsurf.md` | Every supported agent reaches the same canonical `SKILL.md` | `skills:sync --check` |
-| The registry `files` list matches the skill folder | An installed skill is never missing a reference or example | `skills:sync --check` |
+| The skill item's `files` list matches the skill folder, and one generated item per agent adapter exists | An installed skill is never missing a reference or example, and a project installs only its agents' pointers | `skills:sync --check` |
 
 Run `npm run skills:sync` after adding, renaming, or removing any file in a
 skill folder. It rewrites the adapters from the `SKILL.md` frontmatter and
-`agents/openai.yaml`, and regenerates each `registry.json` `files` array. Give
+`agents/openai.yaml`, regenerates the skill item's `files` array, and
+generates one registry item per agent adapter (`<skill>-claude`,
+`<skill>-cursor`, `<skill>-copilot`, `<skill>-windsurf`). The agent list lives
+in `bin/install-targets.mjs`, shared by the sync script, the validator, and
+the installer. Give
 a new skill an entry in the glob table inside
 `scripts/sync-skill-package.mjs` so its editor rules attach to the right files.
 
@@ -144,10 +148,11 @@ skills/
 ```
 
 Only create optional folders that the skill uses. `adapters/` is not optional:
-`npm run skills:sync` generates it, and the files install to `.claude/skills`,
-`.cursor/rules`, `.github/instructions`, and `.windsurf/rules` as thin
-pointers to the canonical `.agents/skills/<name>/SKILL.md`. Codex reads the
-canonical folder and `agents/openai.yaml` directly.
+`npm run skills:sync` generates it. Each adapter ships in its own registry item
+and installs to `.claude/skills`, `.cursor/rules`, `.github/instructions`, or
+`.windsurf/rules` as a thin pointer to the canonical
+`.agents/skills/<name>/SKILL.md`, only for the agents a project selects. Codex
+reads the canonical folder and `agents/openai.yaml` directly.
 
 - Root `VERSION` is generated from the canonical GitHub release. Do not edit it
   manually or add a skill-local version.
@@ -199,9 +204,11 @@ Add the skill registry to root `registry.json`:
 }
 ```
 
-Paths in a skill registry are relative to that skill folder. Publish every
-resource needed by the agent, but do not publish the human-facing `README.md` or
-local `registry.json`. Depend on the shared version item:
+Paths in a skill registry are relative to that skill folder. Write only the
+first item, the skill itself; `npm run skills:sync` fills its `files` and
+appends the agent items. Publish every resource needed by the agent, but do not
+publish the human-facing `README.md` or local `registry.json`. Depend on the
+shared version item:
 
 ```json
 {

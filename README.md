@@ -53,52 +53,102 @@ per-root Zustand stores, persistent overlays, and optimistic server-state
 boundaries. Its worked examples progress from ordinary props to advanced and
 expert compound families.
 
-## Choose and install
+## Install
 
-Run the interactive installer from your project root:
+Run the installer from your project root:
 
 ```bash
 npx --yes github:barehera/react-skills
 ```
 
-The selector uses the same terminal interaction style as shadcn:
+1. **Pick skills.** `↑` / `↓` move, `Space` selects, `a` toggles all, and
+   `Enter` continues.
+2. **Pick your agents.** Agents already set up in the project, such as a
+   `.cursor` folder, are pre-selected.
+3. **Done.** shadcn writes the files. Nothing else in your project changes.
 
-- `↑` / `↓` moves between skills.
-- `Space` selects or clears a skill.
-- `a` toggles all skills.
-- `Enter` installs the selection.
+Press `Ctrl+C` at any point to cancel.
 
-Press `Ctrl+C` to cancel. shadcn performs the installation after your
-selection.
+Only the files for the agents you pick are written:
 
-To install a known skill directly:
+| Agent | Files for each skill |
+| --- | --- |
+| Every agent | `.agents/skills/<skill>/`, the skill itself |
+| Claude Code | `.claude/skills/<skill>/SKILL.md` |
+| Cursor | `.cursor/rules/<skill>.mdc` |
+| GitHub Copilot | `.github/instructions/<skill>.instructions.md` |
+| Windsurf | `.windsurf/rules/<skill>.md` |
+| Codex | Nothing extra; it reads `.agents/skills` |
+
+Each agent file is a thin pointer that attaches to the files the skill owns and
+sends the agent to the same canonical `SKILL.md`. The installer also writes
+`.agents/skills/VERSION`, the React Skills release, and
+`.agents/skills/react-skills.json`, your skills and agents. Keep
+`react-skills.json` in version control so teammates update the same selection.
+
+### Install without questions
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-server-state
+npx --yes github:barehera/react-skills build-forms manage-server-state --agent cursor
+npx --yes github:barehera/react-skills --all --agent claude,cursor
+```
+
+| Option | What it does |
+| --- | --- |
+| `--agent <ids>` | `claude`, `cursor`, `copilot`, `windsurf`, `codex`, comma-separated. Saved for updates. |
+| `--all` | Every skill in the catalog. |
+| `--overwrite` | Replace existing React Skills files without asking. |
+| `--prune` | Remove React Skills pointer files for agents you did not pick. |
+| `--dry-run` | Show what would change without writing. |
+| `--yes` | Accept every default without asking. |
+| `--cwd <path>` | Install into another folder. |
+
+See the skills and agents without installing:
+
+```bash
+npx --yes github:barehera/react-skills list
+```
+
+### Install with shadcn directly
+
+Every skill has one registry item for the skill and one per agent. An agent
+item installs the skill too:
+
+```bash
+npx shadcn@latest add barehera/react-skills/build-forms-cursor
+npx shadcn@latest add barehera/react-skills/build-forms-claude
 npx shadcn@latest add barehera/react-skills/build-forms
-npx shadcn@latest add barehera/react-skills/build-composable-components
-npx shadcn@latest add barehera/react-skills/document-business-logic
-npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
-npx shadcn@latest add barehera/react-skills/feature-sliced-design
-npx shadcn@latest add barehera/react-skills/write-feature-tests
 ```
 
-To inspect the catalog without installing:
+The last line installs the skill alone, which is all Codex needs. Agent items
+end in `-claude`, `-cursor`, `-copilot`, or `-windsurf`. Review an item
+before installing it:
 
 ```bash
-npx --yes github:barehera/react-skills --list
+npx shadcn@latest view barehera/react-skills/build-forms
+npx shadcn@latest add barehera/react-skills/build-forms-cursor --dry-run
 ```
 
-The catalog displays the one React Skills release version. Installing any skill
-also installs `.agents/skills/VERSION`, so agents can report which repository
-release supplied every installed React Skills workflow.
-
-Review a skill before applying it:
+## Update
 
 ```bash
-npx shadcn@latest view barehera/react-skills/manage-server-state
-npx shadcn@latest add barehera/react-skills/manage-server-state --dry-run
+npx --yes github:barehera/react-skills update
 ```
+
+`update` reinstalls your saved skills for your saved agents from the latest
+release, replaces their files, and lists catalog skills you have not installed
+yet. Without a saved selection, for example after installing with shadcn
+directly or with an older installer, it finds the installed skills and asks for
+your agents once.
+
+- Add a skill with your saved agents:
+  `npx --yes github:barehera/react-skills write-feature-tests`
+- Change agents: `npx --yes github:barehera/react-skills update --agent cursor,claude`
+- Remove pointer files for agents you do not use, for example Windsurf and
+  Copilot files from an install made before agents were selectable:
+  `npx --yes github:barehera/react-skills update --agent cursor --prune`.
+  Only generated React Skills pointers are removed; a file you rewrote so it no
+  longer points to its skill is kept.
 
 ## Use an installed skill
 
@@ -140,19 +190,6 @@ comment; preserve a non-obvious product rule only when its purpose, reason, and
 constraint are supported.
 ```
 
-```text
-Use $feature-sliced-design to design this Next.js application around
-feature-owned slices. Keep framework routes thin, colocate server state with
-its business owner, separate client and server integrations, and use no barrel
-exports.
-```
-
-Every skill installs the canonical `SKILL.md` under `.agents/skills`, which
-Codex reads directly, plus thin pointers for Claude Code (`.claude/skills`),
-Cursor (`.cursor/rules`), GitHub Copilot (`.github/instructions`), and
-Windsurf (`.windsurf/rules`). The pointers attach to the files each skill owns
-and send the agent to the same canonical instructions.
-
 If your agent does not discover skills automatically:
 
 ```text
@@ -169,8 +206,7 @@ React Skills pull request.
    repository:
 
    ```bash
-   npx shadcn@latest add barehera/react-skills/build-forms
-   npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
+   npx --yes github:barehera/react-skills build-forms evolve-skills-from-feedback
    ```
 
 2. Complete a real task with the target skill. Keep the accepted implementation,
@@ -213,15 +249,6 @@ source change is not. Redact secrets, private endpoints, customer identifiers,
 and unnecessary proprietary code. See
 [Adding or improving a skill](docs/adding-a-skill.md) for the full authoring and
 pull-request workflow.
-
-## Update
-
-Open the selector again or update one skill directly:
-
-```bash
-npx --yes github:barehera/react-skills --overwrite
-npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
-```
 
 ## Repository organization
 

@@ -9,6 +9,7 @@ import {
   adapterAgents,
   agentItemName,
   agents,
+  isGeneratedPointer,
   pointerMarker,
   registryAddress,
   skillsRoot,
@@ -179,10 +180,42 @@ export function agentLabels(agentIds) {
     .map((agent) => agent.label);
 }
 
-export function detectAgents(cwd) {
-  return agents
-    .filter((agent) => agent.markers.some((marker) => existsSync(resolve(cwd, marker))))
-    .map((agent) => agent.id);
+// A folder that holds only React Skills pointers was created by an earlier
+// install, not by the agent, so it does not count as using that agent.
+async function hasOwnFiles(path) {
+  const entries = await readdir(path, { withFileTypes: true }).catch(() => null);
+
+  if (entries === null) {
+    return existsSync(path);
+  }
+
+  for (const entry of entries) {
+    const entryPath = resolve(path, entry.name);
+    const isOwn = entry.isDirectory()
+      ? await hasOwnFiles(entryPath)
+      : !isGeneratedPointer(await readFile(entryPath, "utf8"));
+
+    if (isOwn) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export async function detectAgents(cwd) {
+  const detected = [];
+
+  for (const agent of agents) {
+    for (const marker of agent.markers) {
+      if (await hasOwnFiles(resolve(cwd, marker))) {
+        detected.push(agent.id);
+        break;
+      }
+    }
+  }
+
+  return detected;
 }
 
 export async function readInstallState(cwd) {

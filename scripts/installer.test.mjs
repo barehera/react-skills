@@ -85,12 +85,25 @@ test("a plan installs each skill once plus only the selected agents' pointers", 
 
 test("agents are detected from their project folders", async () => {
   await withProject(async (cwd) => {
-    assert.deepEqual(detectAgents(cwd), [])
-    await put(cwd, ".cursor/rules/team.mdc")
+    assert.deepEqual(await detectAgents(cwd), [])
+    await put(cwd, ".cursor/rules/team.mdc", "Use tabs.")
     await put(cwd, ".github/workflows/ci.yml")
-    assert.deepEqual(detectAgents(cwd), ["cursor"])
+    assert.deepEqual(await detectAgents(cwd), ["cursor"])
     await put(cwd, ".github/copilot-instructions.md")
-    assert.deepEqual(detectAgents(cwd), ["cursor", "copilot"])
+    assert.deepEqual(await detectAgents(cwd), ["cursor", "copilot"])
+  })
+})
+
+test("folders holding only React Skills pointers do not count as an agent", async () => {
+  await withProject(async (cwd) => {
+    const pointer = "Read and follow `.agents/skills/a/SKILL.md`, and the references."
+
+    await put(cwd, ".windsurf/rules/a.md", pointer)
+    await put(cwd, ".claude/skills/a/SKILL.md", pointer)
+    await put(cwd, ".github/instructions/a.instructions.md", pointer)
+    assert.deepEqual(await detectAgents(cwd), [])
+    await put(cwd, ".claude/settings.json", "{}")
+    assert.deepEqual(await detectAgents(cwd), ["claude"])
   })
 })
 

@@ -56,3 +56,7 @@ export function agentItemName(skill, agentId) {
 export function pointerMarker(skill) {
   return `${skillsRoot}/${skill}/SKILL.md`;
 }
+
+export function isGeneratedPointer(content) {
+  return /Read and follow `\.agents\/skills\/[a-z0-9-]+\/SKILL\.md`/.test(content);
+}

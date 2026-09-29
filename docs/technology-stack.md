@@ -43,7 +43,7 @@ invitation to make canonical React Skills examples technology-agnostic.
 | Next.js environment | `@t3-oss/env-nextjs` | Centralize typed environment validation with separate server/client access. |
 | Unit and contract tests | Vitest in a Node environment | Lock feature-adapter decisions with one shared case runner and one table per decision; keep baked config defaults on a separate schema contract. |
 | Render optimization | React Compiler when enabled | Verify build configuration; avoid routine new manual memoization and unrelated legacy cleanup. |
-| Registry and installation | shadcn registry | Publish every agent resource through a skill-local registry item and the root catalog. |
+| Registry and installation | shadcn registry | Publish each skill as a skill-local registry item plus one generated item per agent adapter, composed by the root catalog; install only the agents a project selects. |
 
 Use the smallest applicable part of the stack. A presentational component does
 not need Zustand, a local synchronous form does not need TanStack Query, and a
