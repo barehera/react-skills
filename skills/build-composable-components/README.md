@@ -43,7 +43,7 @@ compound state uses a scoped Zustand vanilla store with selector subscriptions.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills build-composable-components
+react-skills build-composable-components
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -51,15 +51,9 @@ in `.agents/skills/build-composable-components/`, plus one pointer each for Clau
 GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
 question with `--agent`, for example `--agent cursor`.
 
-Or install it with shadcn, choosing the item for your agent:
-
-```bash
-npx shadcn@latest add barehera/react-skills/build-composable-components-cursor
-```
-
-Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
-alone, add `barehera/react-skills/build-composable-components`. See the
-[install guide](../../README.md#install) for every option.
+With Claude Code, `--global` installs it once for every project instead. See
+the [install guide](../../README.md#install) for the one-time setup and every
+option.
 
 ## Use
 
@@ -102,7 +96,7 @@ supplied the installed workflow.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+react-skills update
 ```
 
 This updates all installed React Skills for the agents you chose.

@@ -19,7 +19,7 @@ Feature-Sliced Design to the catalog's no-re-export-barrel convention.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills feature-sliced-design
+react-skills feature-sliced-design
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -27,15 +27,9 @@ in `.agents/skills/feature-sliced-design/`, plus one pointer each for Claude Cod
 GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
 question with `--agent`, for example `--agent cursor`.
 
-Or install it with shadcn, choosing the item for your agent:
-
-```bash
-npx shadcn@latest add barehera/react-skills/feature-sliced-design-cursor
-```
-
-Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
-alone, add `barehera/react-skills/feature-sliced-design`. See the
-[install guide](../../README.md#install) for every option.
+With Claude Code, `--global` installs it once for every project instead. See
+the [install guide](../../README.md#install) for the one-time setup and every
+option.
 
 ## Use
 
@@ -76,7 +70,7 @@ Use `$manage-server-state` for the internals of Axios/TanStack Query code,
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+react-skills update
 ```
 
 This updates all installed React Skills for the agents you chose.

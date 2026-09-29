@@ -5,6 +5,10 @@ export const registryAddress = "barehera/react-skills";
 
 export const skillsRoot = ".agents/skills";
 
+// A global install serves every project from the home folder. Claude Code is
+// the agent that reads skills there, so it gets the canonical skill directly.
+export const globalSkillsRoot = ".claude/skills";
+
 // Every agent reads the canonical skill folder. An agent with an adapter also
 // gets one generated pointer file; Codex reads the canonical folder directly.
 export const agents = [

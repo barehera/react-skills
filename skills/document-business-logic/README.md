@@ -27,7 +27,7 @@ invent a product `Why` from implementation details.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills document-business-logic
+react-skills document-business-logic
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -35,15 +35,9 @@ in `.agents/skills/document-business-logic/`, plus one pointer each for Claude C
 GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
 question with `--agent`, for example `--agent cursor`.
 
-Or install it with shadcn, choosing the item for your agent:
-
-```bash
-npx shadcn@latest add barehera/react-skills/document-business-logic-cursor
-```
-
-Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
-alone, add `barehera/react-skills/document-business-logic`. See the
-[install guide](../../README.md#install) for every option.
+With Claude Code, `--global` installs it once for every project instead. See
+the [install guide](../../README.md#install) for the one-time setup and every
+option.
 
 ## Use
 
@@ -72,7 +66,7 @@ supplied the installed workflow.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+react-skills update
 ```
 
 This updates all installed React Skills for the agents you chose.
