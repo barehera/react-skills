@@ -12,8 +12,10 @@ import {
   findExistingTargets,
   findInstalledSkills,
   findPruneCandidates,
+  mergeExcludeBlock,
   parseArguments,
   planItems,
+  projectPaths,
   readCatalog,
   readInstallState,
   removeFiles,
@@ -81,6 +83,35 @@ test("a plan installs each skill once plus only the selected agents' pointers", 
   ])
   assert.deepEqual(planItems(["build-forms"], ["codex"]), ["barehera/react-skills/build-forms"])
   assert.equal(planItems(["a", "b"], ["claude", "windsurf", "codex"]).length, 6)
+})
+
+test("the git exclude block lists every React Skills path and replaces itself", () => {
+  const paths = projectPaths(["a"])
+
+  assert.ok(paths.includes(".agents/skills/a/"))
+  assert.ok(paths.includes(".agents/skills/VERSION"))
+  assert.ok(paths.includes(".agents/skills/react-skills.json"))
+
+  for (const agent of adapterAgents) {
+    assert.ok(paths.includes(agent.targetPath("a")), agent.id)
+  }
+
+  const userRules = "# git ls-files --others --exclude-from=.git/info/exclude\n*.local\n"
+  const once = mergeExcludeBlock(userRules, ["/.agents/skills/a/"])
+  const twice = mergeExcludeBlock(once, ["/.agents/skills/a/", "/.agents/skills/b/"])
+
+  assert.equal(
+    once,
+    `${userRules}\n# >>> React Skills: installed for this clone only\n/.agents/skills/a/\n# <<< React Skills\n`,
+  )
+  assert.equal(twice.match(/# >>> React Skills/g).length, 1)
+  assert.ok(twice.includes("/.agents/skills/b/"))
+  assert.ok(twice.includes("*.local"))
+  assert.equal(mergeExcludeBlock(twice, []), userRules)
+  assert.equal(
+    mergeExcludeBlock(once.replaceAll("\n", "\r\n"), ["/x/"]).match(/# >>> React Skills/g).length,
+    1,
+  )
 })
 
 test("agents are detected from their project folders", async () => {

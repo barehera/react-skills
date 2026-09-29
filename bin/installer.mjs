@@ -322,3 +322,31 @@ export async function removeFiles(cwd, paths) {
     }
   }
 }
+
+// Every path installed skills may occupy in a project. Pointers for agents
+// that were not selected are listed too, so a kept pointer stays local.
+export function projectPaths(skillNames) {
+  return [
+    `${skillsRoot}/VERSION`,
+    stateFile,
+    ...skillNames.flatMap((skill) => [
+      `${skillsRoot}/${skill}/`,
+      ...adapterAgents.map((agent) => agent.targetPath(skill)),
+    ]),
+  ];
+}
+
+const excludeStart = "# >>> React Skills: installed for this clone only";
+const excludeEnd = "# <<< React Skills";
+
+// `.git/info/exclude` works like `.gitignore` but is never committed, so the
+// skills stay on this machine without changing any file the team shares.
+export function mergeExcludeBlock(content, patterns) {
+  const lines = content.split(/\r?\n/);
+  const start = lines.indexOf(excludeStart);
+  const end = start < 0 ? -1 : lines.indexOf(excludeEnd, start);
+  const kept = end < 0 ? lines : [...lines.slice(0, start), ...lines.slice(end + 1)];
+  const block = patterns.length > 0 ? [excludeStart, ...patterns, excludeEnd].join("\n") : "";
+
+  return `${[kept.join("\n").trim(), block].filter(Boolean).join("\n\n")}\n`;
+}
