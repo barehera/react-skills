@@ -109,29 +109,89 @@
           "path": "examples/typed-feature-form/src/server-state/api.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/server-state/api.ts"
-        },
+        }
+      ],
+      "docs": "Installs the form-building Agent Skill, focused references, a non-runtime typed feature-form example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+    },
+    {
+      "name": "build-forms-claude",
+      "type": "registry:item",
+      "title": "Build Forms for Claude Code",
+      "description": "Claude Code pointer that loads the Build Forms skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-forms"
+      ],
+      "files": [
         {
           "path": "adapters/claude.md",
           "type": "registry:file",
           "target": "~/.claude/skills/build-forms/SKILL.md"
-        },
-        {
-          "path": "adapters/copilot.instructions.md",
-          "type": "registry:file",
-          "target": "~/.github/instructions/build-forms.instructions.md"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "build-forms",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "build-forms-cursor",
+      "type": "registry:item",
+      "title": "Build Forms for Cursor",
+      "description": "Cursor pointer that loads the Build Forms skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-forms"
+      ],
+      "files": [
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/build-forms.mdc"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "build-forms",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "build-forms-copilot",
+      "type": "registry:item",
+      "title": "Build Forms for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Build Forms skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-forms"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/build-forms.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "build-forms",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "build-forms-windsurf",
+      "type": "registry:item",
+      "title": "Build Forms for Windsurf",
+      "description": "Windsurf pointer that loads the Build Forms skill.",
+      "registryDependencies": [
+        "barehera/react-skills/build-forms"
+      ],
+      "files": [
         {
           "path": "adapters/windsurf.md",
           "type": "registry:file",
           "target": "~/.windsurf/rules/build-forms.md"
         }
       ],
-      "docs": "Installs the form-building Agent Skill, focused references, a non-runtime typed feature-form example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+      "meta": {
+        "skill": "build-forms",
+        "agent": "windsurf"
+      }
     }
   ]
 }

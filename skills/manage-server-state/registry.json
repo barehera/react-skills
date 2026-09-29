@@ -179,29 +179,89 @@
           "path": "examples/feature-colocated/src/server-state/utils.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/server-state/utils.ts"
-        },
+        }
+      ],
+      "docs": "Installs the Agent Skill, focused references, non-runtime example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+    },
+    {
+      "name": "manage-server-state-claude",
+      "type": "registry:item",
+      "title": "Manage Server State for Claude Code",
+      "description": "Claude Code pointer that loads the Manage Server State skill.",
+      "registryDependencies": [
+        "barehera/react-skills/manage-server-state"
+      ],
+      "files": [
         {
           "path": "adapters/claude.md",
           "type": "registry:file",
           "target": "~/.claude/skills/manage-server-state/SKILL.md"
-        },
-        {
-          "path": "adapters/copilot.instructions.md",
-          "type": "registry:file",
-          "target": "~/.github/instructions/manage-server-state.instructions.md"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "manage-server-state",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "manage-server-state-cursor",
+      "type": "registry:item",
+      "title": "Manage Server State for Cursor",
+      "description": "Cursor pointer that loads the Manage Server State skill.",
+      "registryDependencies": [
+        "barehera/react-skills/manage-server-state"
+      ],
+      "files": [
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/manage-server-state.mdc"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "manage-server-state",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "manage-server-state-copilot",
+      "type": "registry:item",
+      "title": "Manage Server State for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Manage Server State skill.",
+      "registryDependencies": [
+        "barehera/react-skills/manage-server-state"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/manage-server-state.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "manage-server-state",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "manage-server-state-windsurf",
+      "type": "registry:item",
+      "title": "Manage Server State for Windsurf",
+      "description": "Windsurf pointer that loads the Manage Server State skill.",
+      "registryDependencies": [
+        "barehera/react-skills/manage-server-state"
+      ],
+      "files": [
         {
           "path": "adapters/windsurf.md",
           "type": "registry:file",
           "target": "~/.windsurf/rules/manage-server-state.md"
         }
       ],
-      "docs": "Installs the Agent Skill, focused references, non-runtime example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+      "meta": {
+        "skill": "manage-server-state",
+        "agent": "windsurf"
+      }
     }
   ]
 }

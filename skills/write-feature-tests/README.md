@@ -6,9 +6,26 @@ Lock product rules with reusable case tables and a baked-defaults contract.
 
 ## Install
 
+From your project root:
+
 ```bash
-npx shadcn@latest add barehera/react-skills/write-feature-tests
+npx --yes github:barehera/react-skills write-feature-tests
 ```
+
+The installer asks which agents you use and writes only their files: the skill
+in `.agents/skills/write-feature-tests/`, plus one pointer each for Claude Code, Cursor,
+GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
+question with `--agent`, for example `--agent cursor`.
+
+Or install it with shadcn, choosing the item for your agent:
+
+```bash
+npx shadcn@latest add barehera/react-skills/write-feature-tests-cursor
+```
+
+Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
+alone, add `barehera/react-skills/write-feature-tests`. See the
+[install guide](../../README.md#install) for every option.
 
 ## Use
 
@@ -35,5 +52,7 @@ Vitest in Node. Installation adds guidance, not runtime dependencies.
 ## Update
 
 ```bash
-npx shadcn@latest add barehera/react-skills/write-feature-tests --overwrite
+npx --yes github:barehera/react-skills update
 ```
+
+This updates all installed React Skills for the agents you chose.

@@ -16,26 +16,26 @@ Feature-Sliced Design to the catalog's no-re-export-barrel convention.
 
 ## Install
 
-Choose it from the interactive React Skills catalog:
+From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills
+npx --yes github:barehera/react-skills feature-sliced-design
 ```
 
-Use the arrow keys to move, `Space` to select, `a` to toggle all, and `Enter`
-to install.
+The installer asks which agents you use and writes only their files: the skill
+in `.agents/skills/feature-sliced-design/`, plus one pointer each for Claude Code, Cursor,
+GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
+question with `--agent`, for example `--agent cursor`.
 
-Or install it directly:
+Or install it with shadcn, choosing the item for your agent:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/feature-sliced-design
+npx shadcn@latest add barehera/react-skills/feature-sliced-design-cursor
 ```
 
-The canonical instructions are installed at:
-
-```text
-.agents/skills/feature-sliced-design/SKILL.md
-```
+Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
+alone, add `barehera/react-skills/feature-sliced-design`. See the
+[install guide](../../README.md#install) for every option.
 
 ## Use
 
@@ -76,8 +76,10 @@ Use `$manage-server-state` for the internals of Axios/TanStack Query code,
 ## Update
 
 ```bash
-npx shadcn@latest add barehera/react-skills/feature-sliced-design --overwrite
+npx --yes github:barehera/react-skills update
 ```
+
+This updates all installed React Skills for the agents you chose.
 
 Check the installed version:
 

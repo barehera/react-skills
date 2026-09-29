@@ -1,6 +1,6 @@
-// Regenerates the per-agent adapters and the registry `files` list of every
-// skill from the skill folder itself, so a new or changed skill never ships an
-// incomplete adapter set or an out-of-sync registry item.
+// Regenerates the per-agent adapters and the registry items of every skill
+// from the skill folder itself: one skill item for the canonical files, plus
+// one item per agent adapter so a project installs only the agents it uses.
 //
 // Usage: node scripts/sync-skill-package.mjs [--check]
 //   --check  exit non-zero instead of writing when something is out of date.
@@ -8,6 +8,14 @@
 import { readdir, readFile, stat, writeFile, mkdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import {
+  adapterAgents,
+  agentItemName,
+  pointerMarker,
+  registryAddress,
+  skillsRoot as installedSkillsRoot,
+} from "../bin/install-targets.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillsRoot = resolve(root, "skills");
@@ -32,18 +40,6 @@ const skillGlobs = {
 };
 
 const defaultGlobs = ["**/*.{ts,tsx}"];
-
-// Published path inside the skill folder → install target. Adapters are the
-// only files allowed to install outside `~/.agents/skills/<name>/`.
-const adapterTargets = {
-  "adapters/claude.md": (name) => `~/.claude/skills/${name}/SKILL.md`,
-  "adapters/cursor.mdc": (name) => `~/.cursor/rules/${name}.mdc`,
-  "adapters/copilot.instructions.md": (name) =>
-    `~/.github/instructions/${name}.instructions.md`,
-  "adapters/windsurf.md": (name) => `~/.windsurf/rules/${name}.md`,
-};
-
-const requiredAdapterPaths = Object.keys(adapterTargets);
 
 function toPosixPath(path) {
   return path.replaceAll("\\", "/");
@@ -82,7 +78,7 @@ function quoteYaml(value) {
 
 function pointerBody(name, shortDescription) {
   return [
-    `Read and follow \`.agents/skills/${name}/SKILL.md\`, and the references,`,
+    `Read and follow \`${pointerMarker(name)}\`, and the references,`,
     "examples, and companion routing it names, before starting.",
     ...(shortDescription ? ["", `Purpose: ${shortDescription}.`] : []),
     "",
@@ -144,20 +140,35 @@ function fileOrder(path) {
   if (path.startsWith("examples/")) return 3;
   if (path.startsWith("scripts/")) return 4;
   if (path.startsWith("assets/")) return 5;
-  if (path.startsWith("adapters/")) return 6;
-  return 7;
+  return 6;
 }
 
-function registryFiles(name, paths) {
+function skillFiles(name, paths) {
   return [...paths]
     .sort((a, b) => fileOrder(a) - fileOrder(b) || a.localeCompare(b))
     .map((path) => ({
       path,
       type: "registry:file",
-      target: adapterTargets[path]
-        ? adapterTargets[path](name)
-        : `~/.agents/skills/${name}/${path}`,
+      target: `~/${installedSkillsRoot}/${name}/${path}`,
     }));
+}
+
+function agentItems(skillItem) {
+  return adapterAgents.map((agent) => ({
+    name: agentItemName(skillItem.name, agent.id),
+    type: "registry:item",
+    title: `${skillItem.title} for ${agent.label}`,
+    description: `${agent.label} pointer that loads the ${skillItem.title} skill.`,
+    registryDependencies: [`${registryAddress}/${skillItem.name}`],
+    files: [
+      {
+        path: agent.adapterPath,
+        type: "registry:file",
+        target: `~/${agent.targetPath(skillItem.name)}`,
+      },
+    ],
+    meta: { skill: skillItem.name, agent: agent.id },
+  }));
 }
 
 async function syncFile(path, content) {
@@ -228,17 +239,14 @@ for (const name of skillNames) {
 
   const publishedPaths = (await listFiles(skillDirectory))
     .map((path) => toPosixPath(relative(skillDirectory, path)))
-    .filter((path) => !["README.md", "registry.json"].includes(path));
+    .filter(
+      (path) =>
+        !["README.md", "registry.json"].includes(path) &&
+        !path.startsWith("adapters/"),
+    );
 
-  if (checkOnly) {
-    for (const path of requiredAdapterPaths) {
-      if (!publishedPaths.includes(path)) {
-        publishedPaths.push(path);
-      }
-    }
-  }
-
-  item.files = registryFiles(name, publishedPaths);
+  item.files = skillFiles(name, publishedPaths);
+  registry.items = [item, ...agentItems(item)];
 
   const registryContent = `${JSON.stringify(registry, null, 2)}\n`;
 

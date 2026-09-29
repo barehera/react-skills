@@ -64,29 +64,89 @@
           "path": "scripts/verify-pacer.mjs",
           "type": "registry:file",
           "target": "~/.agents/skills/use-preferred-react-stack/scripts/verify-pacer.mjs"
-        },
+        }
+      ],
+      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+    },
+    {
+      "name": "use-preferred-react-stack-claude",
+      "type": "registry:item",
+      "title": "Use Preferred React Stack for Claude Code",
+      "description": "Claude Code pointer that loads the Use Preferred React Stack skill.",
+      "registryDependencies": [
+        "barehera/react-skills/use-preferred-react-stack"
+      ],
+      "files": [
         {
           "path": "adapters/claude.md",
           "type": "registry:file",
           "target": "~/.claude/skills/use-preferred-react-stack/SKILL.md"
-        },
-        {
-          "path": "adapters/copilot.instructions.md",
-          "type": "registry:file",
-          "target": "~/.github/instructions/use-preferred-react-stack.instructions.md"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "use-preferred-react-stack",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "use-preferred-react-stack-cursor",
+      "type": "registry:item",
+      "title": "Use Preferred React Stack for Cursor",
+      "description": "Cursor pointer that loads the Use Preferred React Stack skill.",
+      "registryDependencies": [
+        "barehera/react-skills/use-preferred-react-stack"
+      ],
+      "files": [
         {
           "path": "adapters/cursor.mdc",
           "type": "registry:file",
           "target": "~/.cursor/rules/use-preferred-react-stack.mdc"
-        },
+        }
+      ],
+      "meta": {
+        "skill": "use-preferred-react-stack",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "use-preferred-react-stack-copilot",
+      "type": "registry:item",
+      "title": "Use Preferred React Stack for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Use Preferred React Stack skill.",
+      "registryDependencies": [
+        "barehera/react-skills/use-preferred-react-stack"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/use-preferred-react-stack.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "use-preferred-react-stack",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "use-preferred-react-stack-windsurf",
+      "type": "registry:item",
+      "title": "Use Preferred React Stack for Windsurf",
+      "description": "Windsurf pointer that loads the Use Preferred React Stack skill.",
+      "registryDependencies": [
+        "barehera/react-skills/use-preferred-react-stack"
+      ],
+      "files": [
         {
           "path": "adapters/windsurf.md",
           "type": "registry:file",
           "target": "~/.windsurf/rules/use-preferred-react-stack.md"
         }
       ],
-      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+      "meta": {
+        "skill": "use-preferred-react-stack",
+        "agent": "windsurf"
+      }
     }
   ]
 }

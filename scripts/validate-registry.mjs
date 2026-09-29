@@ -2,6 +2,12 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  adapterAgents,
+  agentItemName,
+  registryAddress,
+} from "../bin/install-targets.mjs";
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillsRoot = resolve(root, "skills");
 const releaseVersionPath = resolve(root, "VERSION");
@@ -15,13 +21,6 @@ const requiredSkillSections = [
   "## Layer placement",
   "## Companion skill routing",
 ];
-const requiredAdapters = {
-  "adapters/claude.md": (name) => `~/.claude/skills/${name}/SKILL.md`,
-  "adapters/cursor.mdc": (name) => `~/.cursor/rules/${name}.mdc`,
-  "adapters/copilot.instructions.md": (name) =>
-    `~/.github/instructions/${name}.instructions.md`,
-  "adapters/windsurf.md": (name) => `~/.windsurf/rules/${name}.md`,
-};
 const maxSkillLines = 220;
 const maxDescriptionLength = 1024;
 
@@ -152,10 +151,56 @@ const resolvedSkillItems = resolvedItems.filter(
 );
 const releaseVersion = (await readFile(releaseVersionPath, "utf8")).trim();
 const itemNames = new Set();
+const skillItemNames = new Set();
 const registeredFiles = new Set();
 
 if (!/^\d+\.\d+\.\d+$/.test(releaseVersion)) {
   throw new Error("The root VERSION must use x.y.z format");
+}
+
+function registerFile(itemName, absoluteFilePath) {
+  const repositoryPath = toRepositoryPath(absoluteFilePath);
+
+  if (registeredFiles.has(repositoryPath)) {
+    throw new Error(`Duplicate registry file: ${repositoryPath} (${itemName})`);
+  }
+
+  registeredFiles.add(repositoryPath);
+
+  return repositoryPath;
+}
+
+// An agent item installs one generated adapter and depends on its skill item,
+// so `shadcn add <skill>-<agent>` is enough on its own.
+async function validateAgentItem(item, registryPath) {
+  const { skill, agent: agentId, ...extraMeta } = item.meta;
+  const agent = adapterAgents.find((candidate) => candidate.id === agentId);
+  const [file, ...extraFiles] = item.files ?? [];
+
+  if (!agent || Object.keys(extraMeta).length > 0) {
+    throw new Error(`${item.name} must declare only a known meta.skill and meta.agent`);
+  }
+
+  if (
+    item.name !== agentItemName(skill, agent.id) ||
+    registryPath !== resolve(skillsRoot, skill, "registry.json") ||
+    item.type !== "registry:item" ||
+    !item.title ||
+    !item.description ||
+    JSON.stringify(item.registryDependencies) !==
+      JSON.stringify([`${registryAddress}/${skill}`]) ||
+    extraFiles.length > 0 ||
+    file?.path !== agent.adapterPath ||
+    file?.type !== "registry:file" ||
+    file?.target !== `~/${agent.targetPath(skill)}`
+  ) {
+    throw new Error(`${item.name} is out of sync; run npm run skills:sync`);
+  }
+
+  const absoluteFilePath = resolve(dirname(registryPath), file.path);
+
+  await stat(absoluteFilePath);
+  registerFile(item.name, absoluteFilePath);
 }
 
 for (const { item, registryPath } of resolvedSkillItems) {
@@ -171,6 +216,13 @@ for (const { item, registryPath } of resolvedSkillItems) {
   ) {
     throw new Error(`Invalid skill name: ${item.name}`);
   }
+
+  if (item.meta?.agent !== undefined) {
+    await validateAgentItem(item, registryPath);
+    continue;
+  }
+
+  skillItemNames.add(item.name);
 
   const skillDirectory = resolve(skillsRoot, item.name);
   const expectedRegistryPath = resolve(skillDirectory, "registry.json");
@@ -233,14 +285,7 @@ for (const { item, registryPath } of resolvedSkillItems) {
 
     await stat(absoluteFilePath);
 
-    const repositoryPath = toRepositoryPath(absoluteFilePath);
-
-    if (registeredFiles.has(repositoryPath)) {
-      throw new Error(`Duplicate registry file: ${repositoryPath}`);
-    }
-
-    registeredFiles.add(repositoryPath);
-    itemFiles.add(repositoryPath);
+    itemFiles.add(registerFile(item.name, absoluteFilePath));
 
     if (file.type === "registry:file" && !file.target) {
       throw new Error(`${item.name}:${file.path} requires a target`);
@@ -252,19 +297,21 @@ for (const { item, registryPath } of resolvedSkillItems) {
       );
     }
 
-    if (
-      !file.path.startsWith("adapters/") &&
-      !file.target?.startsWith(`~/.agents/skills/${item.name}/`)
-    ) {
+    if (!file.target?.startsWith(`~/.agents/skills/${item.name}/`)) {
       throw new Error(
-        `${item.name}:${file.path} must install inside its canonical skill folder`,
+        `${item.name}:${file.path} must install inside its canonical skill folder; adapters belong to agent items`,
       );
     }
   }
 
   const expectedSkillFiles = (await listFiles(skillDirectory))
-    .filter((path) => !["README.md", "registry.json"].includes(relative(skillDirectory, path)))
-    .map(toRepositoryPath)
+    .map((path) => toPosixPath(relative(skillDirectory, path)))
+    .filter(
+      (path) =>
+        !["README.md", "registry.json"].includes(path) &&
+        !path.startsWith("adapters/"),
+    )
+    .map((path) => `skills/${item.name}/${path}`)
     .sort();
   const actualSkillFiles = [...itemFiles].sort();
 
@@ -324,18 +371,8 @@ for (const { item, registryPath } of resolvedSkillItems) {
     }
   }
 
-  const registeredTargets = new Map(
-    (item.files ?? []).map((file) => [file.path, file.target]),
-  );
-
-  for (const [adapterPath, targetFor] of Object.entries(requiredAdapters)) {
-    await stat(resolve(skillDirectory, adapterPath));
-
-    if (registeredTargets.get(adapterPath) !== targetFor(item.name)) {
-      throw new Error(
-        `${item.name}:${adapterPath} must install to ${targetFor(item.name)}; run npm run skills:sync`,
-      );
-    }
+  for (const agent of adapterAgents) {
+    await stat(resolve(skillDirectory, agent.adapterPath));
   }
 
   const exampleSources = [...itemFiles].filter(
@@ -417,10 +454,25 @@ for (const { item, registryPath } of resolvedSkillItems) {
 }
 
 if (
-  itemNames.size !== skillDirectories.length ||
-  skillDirectories.some((skillName) => !itemNames.has(skillName))
+  skillItemNames.size !== skillDirectories.length ||
+  skillDirectories.some((skillName) => !skillItemNames.has(skillName))
 ) {
   throw new Error("Every skill folder must publish exactly one matching item");
+}
+
+const missingAgentItems = skillDirectories.flatMap((skillName) =>
+  adapterAgents
+    .map((agent) => agentItemName(skillName, agent.id))
+    .filter((name) => !itemNames.has(name)),
+);
+
+if (
+  missingAgentItems.length > 0 ||
+  itemNames.size !== skillItemNames.size * (1 + adapterAgents.length)
+) {
+  throw new Error(
+    `Every skill must publish one item per agent adapter; run npm run skills:sync. Missing: ${missingAgentItems.join(", ")}`,
+  );
 }
 
 await stat(resolve(root, ".github/workflows/release.yml"));
@@ -554,5 +606,5 @@ if (!packageJson.dependencies?.prompts?.startsWith("^")) {
 }
 
 console.log(
-  `Validated ${itemNames.size} skill${itemNames.size === 1 ? "" : "s"} in the React Skills catalog.`,
+  `Validated ${skillItemNames.size} skill${skillItemNames.size === 1 ? "" : "s"} and ${itemNames.size - skillItemNames.size} agent items in the React Skills catalog.`,
 );

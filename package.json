@@ -25,10 +25,11 @@
     "skills:sync:check": "node scripts/sync-skill-package.mjs --check",
     "typecheck:examples": "tsc --project tsconfig.examples.json",
     "validate:feedback-example": "node skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs skills/evolve-skills-from-feedback/examples/composable-component-feedback.md",
-    "validate": "npm run skills:sync:check && node scripts/validate-registry.mjs && npm run validate:feedback-example && npm run skills:list && npm run typecheck:examples && npm run validate:pacer && npm run test:skill-examples && npm run test:rule-tests-example && npm run registry:build",
+    "validate": "npm run skills:sync:check && node scripts/validate-registry.mjs && npm run validate:feedback-example && npm run skills:list && npm run typecheck:examples && npm run validate:pacer && npm run test:installer && npm run test:skill-examples && npm run test:rule-tests-example && npm run registry:build",
     "test:skill-examples": "node --test scripts/skill-examples.test.mjs",
     "validate:pacer": "node skills/use-preferred-react-stack/scripts/verify-pacer.mjs",
-    "test:rule-tests-example": "vitest run --dir skills/write-feature-tests/examples/rule-tests"
+    "test:rule-tests-example": "vitest run --dir skills/write-feature-tests/examples/rule-tests",
+    "test:installer": "node --test scripts/installer.test.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.5.7",

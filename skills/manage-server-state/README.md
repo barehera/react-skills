@@ -11,26 +11,26 @@ The skill guides an AI coding agent through TanStack Query keys, option factorie
 
 ## Install
 
-Choose it from the interactive React Skills catalog:
+From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills
+npx --yes github:barehera/react-skills manage-server-state
 ```
 
-Use the arrow keys to move, `Space` to select, `a` to toggle all, and `Enter`
-to install.
+The installer asks which agents you use and writes only their files: the skill
+in `.agents/skills/manage-server-state/`, plus one pointer each for Claude Code, Cursor,
+GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
+question with `--agent`, for example `--agent cursor`.
 
-Or install it directly:
+Or install it with shadcn, choosing the item for your agent:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-server-state
+npx shadcn@latest add barehera/react-skills/manage-server-state-cursor
 ```
 
-The canonical instructions are installed at:
-
-```text
-.agents/skills/manage-server-state/SKILL.md
-```
+Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
+alone, add `barehera/react-skills/manage-server-state`. See the
+[install guide](../../README.md#install) for every option.
 
 ## Use
 
@@ -97,8 +97,10 @@ type-safety problems.
 ## Update
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-server-state --overwrite
+npx --yes github:barehera/react-skills update
 ```
+
+This updates all installed React Skills for the agents you chose.
 
 Check the installed version:
 

@@ -40,17 +40,26 @@ compound state uses a scoped Zustand vanilla store with selector subscriptions.
 
 ## Install
 
-Choose it from the interactive catalog:
+From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills
+npx --yes github:barehera/react-skills build-composable-components
 ```
 
-Or install it directly:
+The installer asks which agents you use and writes only their files: the skill
+in `.agents/skills/build-composable-components/`, plus one pointer each for Claude Code, Cursor,
+GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
+question with `--agent`, for example `--agent cursor`.
+
+Or install it with shadcn, choosing the item for your agent:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/build-composable-components
+npx shadcn@latest add barehera/react-skills/build-composable-components-cursor
 ```
+
+Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
+alone, add `barehera/react-skills/build-composable-components`. See the
+[install guide](../../README.md#install) for every option.
 
 ## Use
 
@@ -93,7 +102,9 @@ supplied the installed workflow.
 ## Update
 
 ```bash
-npx shadcn@latest add barehera/react-skills/build-composable-components --overwrite
+npx --yes github:barehera/react-skills update
 ```
+
+This updates all installed React Skills for the agents you chose.
 
 Companion guidance: [library defaults](../use-preferred-react-stack/README.md) and [helper extraction](../extract-named-helpers/README.md). Existing form, server-state, and component ownership stays with its focused skill.
