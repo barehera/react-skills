@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,8 +16,10 @@ import {
   findExistingTargets,
   findInstalledSkills,
   findPruneCandidates,
+  mergeExcludeBlock,
   parseArguments,
   planItems,
+  projectPaths,
   readCatalog,
   readInstallState,
   readInstalledVersion,
@@ -171,6 +174,47 @@ function runShadcn(addresses, flags, cwd) {
   }
 
   return result.status ?? 1;
+}
+
+function git(args, cwd) {
+  const result = spawnSync("git", args, { cwd, encoding: "utf8" });
+
+  return result.status === 0 ? result.stdout.trim() : null;
+}
+
+// Lists the installed skills in `.git/info/exclude`, which git reads but
+// never commits, so the skills stay private to this clone.
+async function keepOutOfGit(cwd, skillNames) {
+  const excludeFile = git(["rev-parse", "--git-path", "info/exclude"], cwd);
+
+  if (excludeFile === null) {
+    return;
+  }
+
+  const prefix = git(["rev-parse", "--show-prefix"], cwd) ?? "";
+  const paths = projectPaths(skillNames);
+  const excludePath = resolve(cwd, excludeFile);
+  const current = existsSync(excludePath) ? await readFile(excludePath, "utf8") : "";
+
+  await mkdir(dirname(excludePath), { recursive: true });
+  await writeFile(
+    excludePath,
+    mergeExcludeBlock(current, paths.map((path) => `/${prefix}${path}`)),
+    "utf8",
+  );
+  console.log("Kept the skills out of git with .git/info/exclude, which is never committed.");
+
+  const tracked = (git(["ls-files", "--", ...paths], cwd) ?? "").split("\n").filter(Boolean);
+  const committed = paths.filter((path) =>
+    tracked.some((file) => (path.endsWith("/") ? file.startsWith(path) : file === path)),
+  );
+
+  if (committed.length > 0) {
+    console.log(`\nThese React Skills files are committed, so git keeps tracking them:
+  ${committed.join("\n  ")}
+To keep them local only (your copies stay), run:
+  git rm -r --cached ${committed.join(" ")}`);
+  }
 }
 
 async function selectSkills(options, skills, state, releaseVersion, interactive) {
@@ -363,6 +407,7 @@ async function main() {
   const installed = findInstalledSkills(options.cwd, skills);
   const notInstalled = catalogNames.filter((name) => !installed.includes(name));
 
+  await keepOutOfGit(options.cwd, installed);
   console.log(`\nSaved your selection in ${stateFile}.`);
 
   if (options.command === "update" && notInstalled.length > 0) {

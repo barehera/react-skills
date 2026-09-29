@@ -65,7 +65,7 @@ npx --yes github:barehera/react-skills
    `Enter` continues.
 2. **Pick your agents.** Agents already set up in the project, such as a
    `.cursor` folder, are pre-selected.
-3. **Done.** shadcn writes the files. Nothing else in your project changes.
+3. **Done.** shadcn writes the files, and the installer keeps them out of git.
 
 Press `Ctrl+C` at any point to cancel.
 
@@ -83,8 +83,17 @@ Only the files for the agents you pick are written:
 Each agent file is a thin pointer that attaches to the files the skill owns and
 sends the agent to the same canonical `SKILL.md`. The installer also writes
 `.agents/skills/VERSION`, the React Skills release, and
-`.agents/skills/react-skills.json`, your skills and agents. Keep
-`react-skills.json` in version control so teammates update the same selection.
+`.agents/skills/react-skills.json`, your skills and agents.
+
+### Keep the skills out of git
+
+After each install or update, the installer lists every React Skills path in
+the repository's `.git/info/exclude`. Git reads that file like `.gitignore` but
+never commits it, so the skills stay on your machine and teammates see no
+change. Files that are already committed stay tracked; the installer names them
+and prints the `git rm -r --cached` command that keeps them local only. To share
+the skills with your team instead, commit them with `git add -f`. Installing
+with shadcn directly does not change `.git/info/exclude`.
 
 ### Install without questions
 
