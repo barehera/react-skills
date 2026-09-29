@@ -55,31 +55,22 @@ expert compound families.
 
 ## Install
 
-React Skills is private. Installing needs read access to this repository:
-your own GitHub login, or a read-only deploy key from the owner. See
-[private access](docs/private-access.md) to set up a key.
-
-### Set up once per machine
-
-On Windows, run these in Git Bash:
-
-```bash
-git clone git@github.com:barehera/react-skills.git ~/.react-skills
-cd ~/.react-skills
-npm install --omit=dev
-npm link
-```
-
-With a deploy key, clone `git@react-skills:barehera/react-skills.git` instead.
-`npm link` adds the `react-skills` command. It installs from this local copy,
-so installing into a project downloads nothing and sends nothing anywhere.
-
-### Install into a project
+React Skills is private. Set up a read-only deploy key once per machine with
+[private access](docs/private-access.md); then there is nothing else to set up.
 
 Run the installer from your project root:
 
 ```bash
-react-skills
+npx --yes git+ssh://git@react-skills/barehera/react-skills.git
+```
+
+npx fetches the latest release on every run, so the same command installs and
+updates. On a machine signed in to GitHub with access to the repository,
+`npx --yes github:barehera/react-skills` works too. To type less, add an alias
+to your shell profile; the examples below use it:
+
+```bash
+alias react-skills='npx --yes git+ssh://git@react-skills/barehera/react-skills.git'
 ```
 
 1. **Pick skills.** `↑` / `↓` move, `Space` selects, `a` toggles all, and
@@ -157,17 +148,15 @@ react-skills update
 react-skills update --global
 ```
 
-`update` first downloads the latest release into `~/.react-skills` with
-`git pull`, then reinstalls your saved skills for your saved agents, replaces
-their files, removes files a release dropped, and lists catalog skills you have
-not installed yet. If the download fails, for example offline or after access
-was removed, it updates from the copy you already have. Without a saved
-selection, for example after an install made by an older installer, it finds
-the installed skills and asks for your agents once.
+`update` reinstalls your saved skills for your saved agents from the latest
+release, replaces their files, removes files a release dropped, and lists
+catalog skills you have not installed yet. Without a saved selection, for
+example after an install made by an older installer, it finds the installed
+skills and asks for your agents once.
 
-- Upgrade a project installed with 1.x: finish the
-  [one-time setup](#set-up-once-per-machine), then run `react-skills update`
-  in the project. The file layout is unchanged; the update adds the
+- Upgrade a project installed with 1.x: set up
+  [private access](docs/private-access.md), then run `react-skills update` in
+  the project. The file layout is unchanged; the update adds the
   `.git/info/exclude` entries.
 - Add a skill with your saved agents: `react-skills write-feature-tests`
 - Change agents: `react-skills update --agent cursor,claude`

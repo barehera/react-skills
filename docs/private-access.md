@@ -40,11 +40,11 @@ On Windows, run these in Git Bash.
    ssh -T git@react-skills
    ```
 
-5. Clone through the alias and finish the
-   [one-time setup](../README.md#set-up-once-per-machine):
+5. Run the installer from a project root. See [Install](../README.md#install)
+   for what it asks and every option.
 
    ```bash
-   git clone git@react-skills:barehera/react-skills.git ~/.react-skills
+   npx --yes git+ssh://git@react-skills/barehera/react-skills.git
    ```
 
 ## Grant access
@@ -60,9 +60,9 @@ Use one key per machine, so each can be removed on its own.
 
 ## Remove access
 
-Delete the machine's key on the same page. From then on, `react-skills update`
-cannot download new releases on that machine and keeps the copy it already
-has. Files a machine already downloaded cannot be taken back.
+Delete the machine's key on the same page. From then on, the installer cannot
+download new releases on that machine. Skills a machine already installed
+cannot be taken back.
 
 ## What stays private
 
@@ -70,7 +70,7 @@ has. Files a machine already downloaded cannot be taken back.
   `react-skills`, not a GitHub login.
 - **Project repositories** do not receive the skills: the installer lists them
   in `.git/info/exclude`, which is never committed.
-- **Nothing is uploaded.** Installing copies local files, and `update` only
-  downloads with `git pull`.
+- **Nothing is uploaded.** npx only downloads the release; the installer
+  copies it into the project.
 - **Your AI agent** still reads the skills, like any other instructions in its
   context.

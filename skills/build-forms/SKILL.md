@@ -135,7 +135,7 @@ crosses the form boundary.
   install it?”
 - Install only after approval and only through the environment's supported
   skill installer. If no installer is available, offer the direct command:
-  `react-skills manage-server-state`, which installs
+  `npx --yes git+ssh://git@react-skills/barehera/react-skills.git manage-server-state`, which installs
   it for the project's saved agents.
 - Continue with this skill if the user declines. Do not make a companion skill
   a hidden prerequisite or repeatedly recommend it.
