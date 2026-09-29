@@ -106,7 +106,7 @@
           "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/server-state/utils.ts"
         }
       ],
-      "docs": "Installs the Agent Skill, focused architecture, styling, state, async, review, and worked-example references, a non-runtime layered family example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the Agent Skill, focused architecture, styling, state, async, review, and worked-example references, and a non-runtime layered family example. It does not install runtime dependencies or write application source files."
     },
     {
       "name": "build-composable-components-claude",

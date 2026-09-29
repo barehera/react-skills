@@ -111,7 +111,7 @@
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/server-state/api.ts"
         }
       ],
-      "docs": "Installs the form-building Agent Skill, focused references, a non-runtime typed feature-form example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the form-building Agent Skill, focused references, and a non-runtime typed feature-form example. It does not install runtime dependencies or write application source files."
     },
     {
       "name": "build-forms-claude",

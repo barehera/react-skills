@@ -31,7 +31,7 @@
           "target": "~/.agents/skills/document-business-logic/examples/wait-lock.tsx"
         }
       ],
-      "docs": "Installs the business-logic comment skill, focused contract reference, typed React example, UI metadata, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or change a consuming project's comment tooling."
+      "docs": "Installs the business-logic comment skill, focused contract reference, typed React example, and UI metadata. It does not install runtime dependencies or change a consuming project's comment tooling."
     },
     {
       "name": "document-business-logic-claude",

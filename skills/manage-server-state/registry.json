@@ -181,7 +181,7 @@
           "target": "~/.agents/skills/manage-server-state/examples/feature-colocated/src/server-state/utils.ts"
         }
       ],
-      "docs": "Installs the Agent Skill, focused references, non-runtime example, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not install runtime dependencies or write application source files."
+      "docs": "Installs the Agent Skill, focused references, and non-runtime example. It does not install runtime dependencies or write application source files."
     },
     {
       "name": "manage-server-state-claude",

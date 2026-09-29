@@ -51,7 +51,7 @@
           "target": "~/.agents/skills/evolve-skills-from-feedback/assets/skill-feedback-template.md"
         }
       ],
-      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, deterministic report validator, and thin adapters for Claude Code, Cursor, GitHub Copilot, and Windsurf. It does not modify application source or source skills unless the user requests those changes."
+      "docs": "Installs the feedback-loop skill, canonical Markdown template, evidence rubric, worked example, and deterministic report validator. It does not modify application source or source skills unless the user requests those changes."
     },
     {
       "name": "evolve-skills-from-feedback-claude",
