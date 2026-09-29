@@ -248,6 +248,13 @@ for (const { item, registryPath } of resolvedSkillItems) {
     throw new Error(`${item.name} requires complete registry metadata`);
   }
 
+  // shadcn prints `docs` after every install; the skill item ships no adapters.
+  if (/adapter/i.test(item.docs)) {
+    throw new Error(
+      `${item.name} docs must not mention adapters; its agent items install them`,
+    );
+  }
+
   if (item.meta?.version !== undefined) {
     throw new Error(
       `${item.name} must use the root release version, not meta.version`,
