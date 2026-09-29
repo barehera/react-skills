@@ -34,7 +34,11 @@ import {
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const registryPath = resolve(packageRoot, "registry.json");
 const versionPath = resolve(packageRoot, "VERSION");
-const command = "react-skills";
+// npx runs a fresh package from the private repository on every call; a
+// linked clone runs as `react-skills` and pulls before updating.
+const command = existsSync(resolve(packageRoot, ".git"))
+  ? "react-skills"
+  : "npx --yes git+ssh://git@react-skills/barehera/react-skills.git";
 const terminalReset = "\u001B[0m\u001B[?25h";
 
 class Cancelled extends Error {}

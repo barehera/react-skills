@@ -13,7 +13,7 @@
     "bin",
     "VERSION",
     "registry.json",
-    "skills/*/registry.json"
+    "skills"
   ],
   "scripts": {
     "registry:build": "shadcn build",
