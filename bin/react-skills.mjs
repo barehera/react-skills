@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
+import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import prompts from "prompts";
 
-import { agents, skillsRoot } from "./install-targets.mjs";
+import { agents, registryAddress, skillsRoot } from "./install-targets.mjs";
 import {
   agentLabels,
   catalogSkills,
@@ -17,24 +15,21 @@ import {
   findExistingTargets,
   findInstalledSkills,
   findPruneCandidates,
-  installFiles,
-  installLayout,
-  mergeExcludeBlock,
   parseArguments,
-  planFiles,
-  projectPaths,
+  planItems,
   readCatalog,
   readInstallState,
   readInstalledVersion,
   removeFiles,
   resolveSkills,
+  stateFile,
   writeInstallState,
 } from "./installer.mjs";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const registryPath = resolve(packageRoot, "registry.json");
 const versionPath = resolve(packageRoot, "VERSION");
-const command = "react-skills";
+const command = `npx --yes github:${registryAddress}`;
 const terminalReset = "\u001B[0m\u001B[?25h";
 
 class Cancelled extends Error {}
@@ -48,12 +43,12 @@ function restoreTerminal() {
 function printHelp() {
   console.log(`React Skills
 
-Install Agent Skills from your local React Skills copy for the agents you use.
+Install Agent Skills from ${registryAddress} for the agents you use.
 
 Usage:
   ${command}                        Choose skills and agents
   ${command} <skill...> [options]   Install named skills
-  ${command} update                 Download the latest skills and update
+  ${command} update                 Update installed skills
   ${command} list                   List skills and agents
 
 Selector:
@@ -65,13 +60,12 @@ Selector:
 Options:
   --agent <ids>      Agents to install for: ${agents.map((agent) => agent.id).join(", ")}
                      (comma-separated; saved for the next update)
-  --global           Install once for Claude Code in ~/.claude/skills,
-                     for every project
   --all              Select every skill
   --overwrite        Replace existing React Skills files without asking
   --prune            Remove React Skills pointer files for agents you did not select
   --yes              Accept every default without asking
   --dry-run          Preview the installation
+  --silent           Reduce shadcn output
   --cwd <path>       Install into a different project
   --help             Show this help
 `);
@@ -162,96 +156,24 @@ function confirm(message, initial) {
   return ask({ type: "confirm", name: "value", message, initial });
 }
 
-function git(args, cwd, stdio = "pipe") {
-  const result = spawnSync("git", args, { cwd, encoding: "utf8", stdio });
+function runShadcn(addresses, flags, cwd) {
+  const commandArguments = ["--yes", "shadcn@latest", "add", ...addresses, "--yes", ...flags];
+  // shadcn writes successful progress updates to stderr. Forward both visible
+  // streams normally so PowerShell does not render a successful install in red.
+  const stdio = ["inherit", "inherit", process.stdout];
+  const result =
+    process.platform === "win32"
+      ? spawnSync(["npx", ...commandArguments].join(" "), { cwd, shell: true, stdio })
+      : spawnSync("npx", commandArguments, { cwd, stdio });
 
-  return result.status === 0 ? (result.stdout ?? "").trim() : null;
+  if (result.error) {
+    throw result.error;
+  }
+
+  return result.status ?? 1;
 }
 
-function runtimeDependencies() {
-  const packageJson = JSON.parse(readFileSync(resolve(packageRoot, "package.json"), "utf8"));
-
-  return JSON.stringify(packageJson.dependencies ?? {});
-}
-
-// A clone of the private repository downloads the latest release before
-// updating, then hands over to the updated installer. Returns true when the
-// updated installer already ran.
-function pullLatest() {
-  if (process.env.REACT_SKILLS_PULLED || !existsSync(resolve(packageRoot, ".git"))) {
-    return false;
-  }
-
-  const before = git(["rev-parse", "HEAD"], packageRoot);
-  const dependencies = runtimeDependencies();
-
-  console.log("Downloading the latest React Skills...");
-
-  if (git(["pull", "--ff-only", "--quiet"], packageRoot, "inherit") === null) {
-    console.log("Could not download the latest skills. Updating from the copy you already have.");
-    return false;
-  }
-
-  if (git(["rev-parse", "HEAD"], packageRoot) === before) {
-    return false;
-  }
-
-  if (runtimeDependencies() !== dependencies) {
-    const npmArguments = ["install", "--omit=dev", "--no-audit", "--no-fund"];
-    const stdio = "inherit";
-
-    if (process.platform === "win32") {
-      spawnSync(["npm", ...npmArguments].join(" "), { cwd: packageRoot, shell: true, stdio });
-    } else {
-      spawnSync("npm", npmArguments, { cwd: packageRoot, stdio });
-    }
-  }
-
-  const result = spawnSync(process.execPath, process.argv.slice(1), {
-    stdio: "inherit",
-    env: { ...process.env, REACT_SKILLS_PULLED: "1" },
-  });
-
-  process.exitCode = result.status ?? 1;
-  return true;
-}
-
-// Lists the installed skills in `.git/info/exclude`, which git reads but
-// never commits, so the skills stay private to this machine.
-async function keepOutOfGit(cwd, skillNames) {
-  const excludeFile = git(["rev-parse", "--git-path", "info/exclude"], cwd);
-
-  if (excludeFile === null) {
-    return;
-  }
-
-  const prefix = git(["rev-parse", "--show-prefix"], cwd) ?? "";
-  const paths = projectPaths(skillNames);
-  const excludePath = resolve(cwd, excludeFile);
-  const current = existsSync(excludePath) ? await readFile(excludePath, "utf8") : "";
-
-  await mkdir(dirname(excludePath), { recursive: true });
-  await writeFile(
-    excludePath,
-    mergeExcludeBlock(current, paths.map((path) => `/${prefix}${path}`)),
-    "utf8",
-  );
-  console.log("Kept the skills out of git: they are listed in .git/info/exclude, which is never committed.");
-
-  const tracked = (git(["ls-files", "--", ...paths], cwd) ?? "").split("\n").filter(Boolean);
-  const committed = paths.filter((path) =>
-    tracked.some((file) => (path.endsWith("/") ? file.startsWith(path) : file === path)),
-  );
-
-  if (committed.length > 0) {
-    console.log(`\nThese React Skills files were committed earlier, so git still shares them:
-  ${committed.join("\n  ")}
-Stop sharing them (your local copies stay) with:
-  git rm -r --cached ${committed.join(" ")}`);
-  }
-}
-
-async function selectSkills(options, skills, state, releaseVersion, interactive, root, layout) {
+async function selectSkills(options, skills, state, releaseVersion, interactive) {
   if (options.all) {
     return skills.map((skill) => skill.name);
   }
@@ -261,7 +183,7 @@ async function selectSkills(options, skills, state, releaseVersion, interactive,
   }
 
   if (options.command === "update") {
-    const recorded = state?.skills ?? findInstalledSkills(root, skills, layout);
+    const recorded = state?.skills ?? findInstalledSkills(options.cwd, skills);
     const known = recorded.filter((name) => skills.some((skill) => skill.name === name));
     const removed = recorded.filter((name) => !known.includes(name));
 
@@ -270,9 +192,7 @@ async function selectSkills(options, skills, state, releaseVersion, interactive,
     }
 
     if (known.length === 0) {
-      const installCommand = options.global ? `${command} --global` : command;
-
-      throw new Error(`No installed React Skills found in ${root}. Run ${installCommand} first.`);
+      throw new Error(`No installed React Skills found in ${options.cwd}. Run ${command} first.`);
     }
 
     return known;
@@ -286,10 +206,6 @@ async function selectSkills(options, skills, state, releaseVersion, interactive,
 }
 
 async function selectAgents(options, state, interactive) {
-  if (options.global) {
-    return ["claude"];
-  }
-
   if (options.agentIds.length > 0) {
     return options.agentIds;
   }
@@ -318,12 +234,12 @@ async function selectAgents(options, state, interactive) {
   );
 }
 
-async function decideOverwrite(options, root, plan, releaseVersion, interactive) {
+async function decideOverwrite(options, skills, skillNames, agentIds, releaseVersion, interactive) {
   if (options.overwrite || options.command === "update") {
     return true;
   }
 
-  const existing = findExistingTargets(root, plan);
+  const existing = findExistingTargets(options.cwd, skills, skillNames, agentIds);
 
   if (existing.length === 0) {
     return false;
@@ -340,7 +256,7 @@ async function decideOverwrite(options, root, plan, releaseVersion, interactive)
   }
 
   return confirm(
-    `${countFiles(existing.length)} already exist. Replace them with v${releaseVersion}? (No keeps them)`,
+    `${countFiles(existing.length)} already exist. Replace them with v${releaseVersion}? (No asks for each file)`,
     true,
   );
 }
@@ -385,10 +301,6 @@ async function main() {
     return;
   }
 
-  if (options.command === "update" && pullLatest()) {
-    return;
-  }
-
   const [registryItems, releaseVersion] = await Promise.all([
     readCatalog(registryPath),
     readFile(versionPath, "utf8").then((value) => value.trim()),
@@ -405,85 +317,60 @@ async function main() {
   }
 
   const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY);
-  const layout = installLayout(options.global);
-  const root = options.global ? homedir() : options.cwd;
-  const state = await readInstallState(root, layout);
-  const skillNames = await selectSkills(
+  const state = await readInstallState(options.cwd);
+  const skillNames = await selectSkills(options, skills, state, releaseVersion, interactive);
+  const agentIds = await selectAgents(options, state, interactive);
+  const overwrite = await decideOverwrite(
     options,
     skills,
-    state,
+    skillNames,
+    agentIds,
     releaseVersion,
     interactive,
-    root,
-    layout,
   );
-  const agentIds = await selectAgents(options, state, interactive);
-  const plan = planFiles(skillNames, agentIds, registryItems, layout);
-  const overwrite = await decideOverwrite(options, root, plan, releaseVersion, interactive);
-  const audience = options.global
-    ? `Claude Code in ~/${layout.skillsRoot}`
-    : agentLabels(agentIds).join(", ");
+  const flags = [
+    ...(overwrite ? ["--overwrite"] : []),
+    ...(options.dryRun ? ["--dry-run"] : []),
+    ...(options.silent ? ["--silent"] : []),
+  ];
 
-  const action =
-    options.command === "update"
-      ? `Updating ${skillNames.join(", ")} to v${releaseVersion}`
-      : `Installing ${skillNames.join(", ")}`;
+  console.log(
+    `\n${options.command === "update" ? "Updating" : "Installing"} ${skillNames.join(", ")} for ${agentLabels(agentIds).join(", ")}...\n`,
+  );
 
-  console.log(`\n${action} for ${audience}...\n`);
+  const status = runShadcn(planItems(skillNames, agentIds), flags, options.cwd);
 
-  if (options.dryRun) {
-    console.log(`Would write ${countFiles(plan.length)}:\n  ${plan.map((file) => file.target).join("\n  ")}`);
-
-    if (!options.global) {
-      await pruneOtherAgents(options, skills, skillNames, agentIds, interactive);
-    }
-
+  if (status !== 0) {
+    process.exitCode = status;
     return;
   }
 
-  const { written, kept } = await installFiles(root, plan, layout, skillNames, overwrite);
+  await pruneOtherAgents(options, skills, skillNames, agentIds, interactive);
 
-  console.log(`Wrote ${countFiles(written)}.`);
-
-  if (kept.length > 0) {
-    console.log(`Kept ${countFiles(kept.length)} you already had. Replace them with --overwrite.`);
-  }
-
-  if (!options.global) {
-    await pruneOtherAgents(options, skills, skillNames, agentIds, interactive);
+  if (options.dryRun) {
+    return;
   }
 
   const catalogNames = skills.map((skill) => skill.name);
   const previousSkills = (state?.skills ?? []).filter((name) => catalogNames.includes(name));
 
-  await writeInstallState(
-    root,
-    {
-      version: (await readInstalledVersion(root, layout)) ?? releaseVersion,
-      skills: options.command === "update" ? skillNames : [...previousSkills, ...skillNames],
-      agents: agentIds,
-    },
-    layout,
-  );
+  await writeInstallState(options.cwd, {
+    version: (await readInstalledVersion(options.cwd)) ?? releaseVersion,
+    skills: options.command === "update" ? skillNames : [...previousSkills, ...skillNames],
+    agents: agentIds,
+  });
 
-  const installed = findInstalledSkills(root, skills, layout);
+  const installed = findInstalledSkills(options.cwd, skills);
   const notInstalled = catalogNames.filter((name) => !installed.includes(name));
-  const globalFlag = options.global ? " --global" : "";
 
-  if (!options.global) {
-    await keepOutOfGit(options.cwd, installed);
-  }
-
-  console.log(
-    `\nSaved your selection in ${options.global ? "~/" : ""}${layout.skillsRoot}/react-skills.json.`,
-  );
+  console.log(`\nSaved your selection in ${stateFile}.`);
 
   if (options.command === "update" && notInstalled.length > 0) {
     console.log(`More skills available: ${notInstalled.join(", ")}`);
-    console.log(`Add one with: ${command} <skill>${globalFlag}`);
+    console.log(`Add one with: ${command} <skill>`);
   }
 
-  console.log(`Update later with: ${command} update${globalFlag}\n`);
+  console.log(`Update later with: ${command} update\n`);
 }
 
 main()

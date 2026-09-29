@@ -12,12 +12,8 @@ import {
   findExistingTargets,
   findInstalledSkills,
   findPruneCandidates,
-  installFiles,
-  installLayout,
-  mergeExcludeBlock,
   parseArguments,
-  planFiles,
-  projectPaths,
+  planItems,
   readCatalog,
   readInstallState,
   removeFiles,
@@ -58,9 +54,6 @@ test("arguments select a command, skills, agents, and flags", () => {
   assert.throws(() => parseArguments(["--agent", "vscode"]), /Unknown agent: vscode/)
   assert.throws(() => parseArguments(["--agent"]), /requires a value/)
   assert.throws(() => parseArguments(["--ref", "main"]), /Unknown option/)
-  assert.equal(parseArguments(["--global"]).global, true)
-  assert.deepEqual(parseArguments(["-g", "--agent", "claude"]).agentIds, ["claude"])
-  assert.throws(() => parseArguments(["--global", "--agent", "cursor"]), /Claude Code only/)
 })
 
 test("the catalog lists skills, and every skill has one item per adapter agent", async () => {
@@ -81,100 +74,13 @@ test("the catalog lists skills, and every skill has one item per adapter agent",
   assert.throws(() => resolveSkills(["missing-skill"], skills), /Unknown skill: missing-skill/)
 })
 
-test("a plan copies each skill once plus only the selected agents' pointers", async () => {
-  const items = await readCatalog(resolve(root, "registry.json"))
-  const targets = (plan) => plan.map((file) => file.target)
-  const cursorPlan = planFiles(["build-forms"], ["cursor"], items)
-
-  assert.ok(targets(cursorPlan).includes(".agents/skills/build-forms/SKILL.md"))
-  assert.ok(targets(cursorPlan).includes(".agents/skills/VERSION"))
-  assert.ok(targets(cursorPlan).includes(".cursor/rules/build-forms.mdc"))
-  assert.ok(!targets(cursorPlan).some((target) => target.startsWith(".claude/")))
-  assert.ok(cursorPlan.every((file) => existsSync(file.source)), "every source file exists")
-  assert.equal(
-    cursorPlan.find((file) => file.target === ".cursor/rules/build-forms.mdc").source,
-    resolve(root, "skills/build-forms/adapters/cursor.mdc"),
-  )
-
-  const codexPlan = planFiles(["build-forms"], ["codex"], items)
-
-  assert.ok(targets(codexPlan).every((target) => target.startsWith(".agents/skills/")))
-  assert.equal(
-    targets(planFiles(["build-forms", "manage-server-state"], ["claude"], items))
-      .filter((target) => target === ".agents/skills/VERSION").length,
-    1,
-  )
-})
-
-test("a global plan puts the canonical skill where Claude Code reads it, without pointers", async () => {
-  const items = await readCatalog(resolve(root, "registry.json"))
-  const plan = planFiles(["build-forms"], ["claude"], items, installLayout(true))
-  const targets = plan.map((file) => file.target)
-
-  assert.ok(targets.includes(".claude/skills/build-forms/SKILL.md"))
-  assert.ok(targets.includes(".claude/skills/build-forms/references/architecture.md"))
-  assert.ok(targets.includes(".claude/skills/VERSION"))
-  assert.ok(targets.every((target) => target.startsWith(".claude/skills/")))
-  assert.equal(
-    plan.find((file) => file.target === ".claude/skills/build-forms/SKILL.md").source,
-    resolve(root, "skills/build-forms/SKILL.md"),
-  )
-})
-
-test("installing copies files, keeps existing ones unless replacing, and clears stale skill files", async () => {
-  await withProject(async (cwd) => {
-    const source = join(cwd, "source")
-    const project = join(cwd, "project")
-    const layout = installLayout(false)
-    const plan = [
-      { source: join(source, "SKILL.md"), target: ".agents/skills/a/SKILL.md" },
-      { source: join(source, "pointer.md"), target: ".claude/skills/a/SKILL.md" },
-    ]
-
-    await put(source, "SKILL.md", "v2 skill")
-    await put(source, "pointer.md", "v2 pointer")
-    await put(project, ".agents/skills/a/SKILL.md", "my edit")
-    await put(project, ".agents/skills/a/references/removed.md", "old")
-
-    assert.deepEqual(await installFiles(project, plan, layout, ["a"], false), {
-      written: 1,
-      kept: [".agents/skills/a/SKILL.md"],
-    })
-    assert.equal(await readFile(join(project, ".agents/skills/a/SKILL.md"), "utf8"), "my edit")
-
-    assert.deepEqual(await installFiles(project, plan, layout, ["a"], true), { written: 2, kept: [] })
-    assert.equal(await readFile(join(project, ".agents/skills/a/SKILL.md"), "utf8"), "v2 skill")
-    assert.equal(existsSync(join(project, ".agents/skills/a/references/removed.md")), false)
-  })
-})
-
-test("the git exclude block lists every React Skills path and replaces itself", () => {
-  const paths = projectPaths(["a"])
-
-  assert.ok(paths.includes(".agents/skills/a/"))
-  assert.ok(paths.includes(".agents/skills/VERSION"))
-  assert.ok(paths.includes(".agents/skills/react-skills.json"))
-
-  for (const agent of adapterAgents) {
-    assert.ok(paths.includes(agent.targetPath("a")), agent.id)
-  }
-
-  const userRules = "# git ls-files --others --exclude-from=.git/info/exclude\n*.local\n"
-  const once = mergeExcludeBlock(userRules, ["/.agents/skills/a/"])
-  const twice = mergeExcludeBlock(once, ["/.agents/skills/a/", "/.agents/skills/b/"])
-
-  assert.equal(
-    once,
-    `${userRules}\n# >>> React Skills: installed for this clone only\n/.agents/skills/a/\n# <<< React Skills\n`,
-  )
-  assert.equal(twice.match(/# >>> React Skills/g).length, 1)
-  assert.ok(twice.includes("/.agents/skills/b/"))
-  assert.ok(twice.includes("*.local"))
-  assert.equal(mergeExcludeBlock(twice, []), userRules)
-  assert.equal(
-    mergeExcludeBlock(once.replaceAll("\n", "\r\n"), ["/x/"]).match(/# >>> React Skills/g).length,
-    1,
-  )
+test("a plan installs each skill once plus only the selected agents' pointers", () => {
+  assert.deepEqual(planItems(["build-forms"], ["cursor"]), [
+    "barehera/react-skills/build-forms",
+    "barehera/react-skills/build-forms-cursor",
+  ])
+  assert.deepEqual(planItems(["build-forms"], ["codex"]), ["barehera/react-skills/build-forms"])
+  assert.equal(planItems(["a", "b"], ["claude", "windsurf", "codex"]).length, 6)
 })
 
 test("agents are detected from their project folders", async () => {
@@ -201,7 +107,7 @@ test("folders holding only React Skills pointers do not count as an agent", asyn
   })
 })
 
-test("install state round-trips per layout and ignores unknown agents", async () => {
+test("install state round-trips and ignores unknown agents", async () => {
   await withProject(async (cwd) => {
     assert.equal(await readInstallState(cwd), null)
     await writeInstallState(cwd, {
@@ -216,28 +122,22 @@ test("install state round-trips per layout and ignores unknown agents", async ()
     })
     await put(cwd, ".agents/skills/react-skills.json", '{"skills":["a"],"agents":["claude","vim"]}')
     assert.deepEqual((await readInstallState(cwd)).agents, ["claude"])
-    assert.equal(await readInstallState(cwd, installLayout(true)), null)
-    await writeInstallState(cwd, { version: "1.2.3", skills: ["a"], agents: ["claude"] }, installLayout(true))
-    assert.ok(existsSync(join(cwd, ".claude/skills/react-skills.json")))
   })
 })
 
-test("existing targets and installed skills come from the install root", async () => {
+test("existing targets and installed skills come from the project folder", async () => {
   await withProject(async (cwd) => {
-    const skills = [{ name: "a" }, { name: "b" }]
-    const plan = ["a", "b"].flatMap((name) => [
-      { target: `.agents/skills/${name}/SKILL.md` },
-      { target: `.cursor/rules/${name}.mdc` },
-    ])
+    const skills = [
+      { name: "a", files: [{ target: "~/.agents/skills/a/SKILL.md" }] },
+      { name: "b", files: [{ target: "~/.agents/skills/b/SKILL.md" }] },
+    ]
 
     await put(cwd, ".agents/skills/a/SKILL.md")
     await put(cwd, ".cursor/rules/a.mdc")
     await put(cwd, ".windsurf/rules/a.md")
-    await put(cwd, ".claude/skills/b/SKILL.md")
 
     assert.deepEqual(findInstalledSkills(cwd, skills), ["a"])
-    assert.deepEqual(findInstalledSkills(cwd, skills, installLayout(true)), ["b"])
-    assert.deepEqual(findExistingTargets(cwd, plan), [
+    assert.deepEqual(findExistingTargets(cwd, skills, ["a", "b"], ["cursor"]), [
       ".agents/skills/a/SKILL.md",
       ".cursor/rules/a.mdc",
     ])

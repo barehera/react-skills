@@ -9,7 +9,7 @@ Choose verified React libraries by concern.
 From your project root:
 
 ```bash
-react-skills use-preferred-react-stack
+npx --yes github:barehera/react-skills use-preferred-react-stack
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -17,9 +17,15 @@ in `.agents/skills/use-preferred-react-stack/`, plus one pointer each for Claude
 GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
 question with `--agent`, for example `--agent cursor`.
 
-With Claude Code, `--global` installs it once for every project instead. See
-the [install guide](../../README.md#install) for the one-time setup and every
-option.
+Or install it with shadcn, choosing the item for your agent:
+
+```bash
+npx shadcn@latest add barehera/react-skills/use-preferred-react-stack-cursor
+```
+
+Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
+alone, add `barehera/react-skills/use-preferred-react-stack`. See the
+[install guide](../../README.md#install) for every option.
 
 ## Use
 
@@ -43,7 +49,7 @@ Complete examples live in [examples](examples). Installation adds guidance, not 
 ## Update
 
 ```bash
-react-skills update
+npx --yes github:barehera/react-skills update
 ```
 
 This updates all installed React Skills for the agents you chose.
