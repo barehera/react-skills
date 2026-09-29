@@ -2,14 +2,13 @@
 // tested against a temporary project folder.
 
 import { existsSync } from "node:fs";
-import { copyFile, mkdir, readdir, readFile, rm, rmdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, rmdir, writeFile } from "node:fs/promises";
 import { dirname, resolve, sep } from "node:path";
 
 import {
   adapterAgents,
   agentItemName,
   agents,
-  globalSkillsRoot,
   isGeneratedPointer,
   pointerMarker,
   registryAddress,
@@ -18,16 +17,16 @@ import {
 
 export const stateFile = `${skillsRoot}/react-skills.json`;
 
-const booleanFlags = new Map([
+const passthroughFlags = new Map([
   ["--overwrite", "overwrite"],
   ["-o", "overwrite"],
   ["--prune", "prune"],
   ["--yes", "yes"],
   ["-y", "yes"],
   ["--dry-run", "dryRun"],
+  ["--silent", "silent"],
+  ["-s", "silent"],
   ["--all", "all"],
-  ["--global", "global"],
-  ["-g", "global"],
 ]);
 
 export function parseArguments(argumentList, cwd = process.cwd()) {
@@ -36,12 +35,12 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
     skillNames: [],
     agentIds: [],
     all: false,
-    global: false,
     cwd,
     overwrite: false,
     prune: false,
     yes: false,
     dryRun: false,
+    silent: false,
   };
 
   for (let index = 0; index < argumentList.length; index += 1) {
@@ -61,8 +60,8 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
       continue;
     }
 
-    if (booleanFlags.has(argument)) {
-      options[booleanFlags.get(argument)] = true;
+    if (passthroughFlags.has(argument)) {
+      options[passthroughFlags.get(argument)] = true;
       continue;
     }
 
@@ -94,10 +93,6 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
 
   options.agentIds = [...new Set(options.agentIds)];
 
-  if (options.global && options.agentIds.some((id) => id !== "claude")) {
-    throw new Error("--global installs for Claude Code only; other agents read skills from the project.");
-  }
-
   return options;
 }
 
@@ -117,16 +112,6 @@ export function parseAgentIds(value) {
   return ids;
 }
 
-// Where an install writes. A project install keeps the canonical skill in
-// `.agents/skills` and adds agent pointers; a global install has no pointers.
-export function installLayout(global) {
-  return { global, skillsRoot: global ? globalSkillsRoot : skillsRoot };
-}
-
-function layoutStateFile(layout) {
-  return `${layout.skillsRoot}/react-skills.json`;
-}
-
 export async function readCatalog(registryPath, visited = new Set()) {
   const resolvedPath = resolve(registryPath);
 
@@ -142,13 +127,8 @@ export async function readCatalog(registryPath, visited = new Set()) {
       readCatalog(resolve(dirname(resolvedPath), includePath), visited),
     ),
   );
-  // Item file paths are relative to the registry file that declares them.
-  const sourceDirectory = dirname(resolvedPath);
 
-  return [
-    ...(registry.items ?? []).map((item) => ({ ...item, sourceDirectory })),
-    ...included.flat(),
-  ];
+  return [...(registry.items ?? []), ...included.flat()];
 }
 
 // Skill items are the catalog; agent items are an install detail of a skill.
@@ -183,85 +163,15 @@ export function resolveSkills(names, skills) {
   return [...new Set(resolved)];
 }
 
-// Registry targets start with `~/`, the install root. A global install moves
-// the canonical skill folder to the one Claude Code reads.
-function installTarget(target, layout) {
-  const path = target.replace(/^~\//, "");
+export function planItems(skillNames, agentIds) {
+  const adapterIds = adapterAgents
+    .filter((agent) => agentIds.includes(agent.id))
+    .map((agent) => agent.id);
 
-  return layout.global && path.startsWith(`${skillsRoot}/`)
-    ? `${layout.skillsRoot}/${path.slice(skillsRoot.length + 1)}`
-    : path;
-}
-
-// Every file the selected skills and agent pointers install, including their
-// registry dependencies, as a local source and a target inside the root.
-export function planFiles(skillNames, agentIds, registryItems, layout = installLayout(false)) {
-  const itemsByName = new Map(registryItems.map((item) => [item.name, item]));
-  const pointerIds = layout.global
-    ? []
-    : adapterAgents.filter((agent) => agentIds.includes(agent.id)).map((agent) => agent.id);
-  const queue = skillNames.flatMap((skill) => [
-    skill,
-    ...pointerIds.map((id) => agentItemName(skill, id)),
+  return skillNames.flatMap((skill) => [
+    `${registryAddress}/${skill}`,
+    ...adapterIds.map((id) => `${registryAddress}/${agentItemName(skill, id)}`),
   ]);
-  const visited = new Set();
-  const files = [];
-
-  while (queue.length > 0) {
-    const name = queue.shift();
-
-    if (visited.has(name)) continue;
-    visited.add(name);
-
-    const item = itemsByName.get(name);
-
-    if (!item) {
-      throw new Error(`The React Skills catalog has no item named ${name}`);
-    }
-
-    queue.push(
-      ...(item.registryDependencies ?? []).map((address) =>
-        address.replace(`${registryAddress}/`, ""),
-      ),
-    );
-
-    for (const file of item.files ?? []) {
-      files.push({
-        source: resolve(item.sourceDirectory, file.path),
-        target: installTarget(file.target, layout),
-      });
-    }
-  }
-
-  return files;
-}
-
-// Replacing clears each skill's canonical folder first, so files a release
-// removed from a skill do not linger. Without replacing, existing files stay.
-export async function installFiles(root, plan, layout, skillNames, overwrite) {
-  if (overwrite) {
-    for (const skill of skillNames) {
-      await rm(resolve(root, layout.skillsRoot, skill), { recursive: true, force: true });
-    }
-  }
-
-  const kept = [];
-  let written = 0;
-
-  for (const file of plan) {
-    const target = resolve(root, file.target);
-
-    if (!overwrite && existsSync(target)) {
-      kept.push(file.target);
-      continue;
-    }
-
-    await mkdir(dirname(target), { recursive: true });
-    await copyFile(file.source, target);
-    written += 1;
-  }
-
-  return { written, kept };
 }
 
 export function agentLabels(agentIds) {
@@ -308,11 +218,9 @@ export async function detectAgents(cwd) {
   return detected;
 }
 
-export async function readInstallState(root, layout = installLayout(false)) {
-  const path = layoutStateFile(layout);
-
+export async function readInstallState(cwd) {
   try {
-    const state = JSON.parse(await readFile(resolve(root, path), "utf8"));
+    const state = JSON.parse(await readFile(resolve(cwd, stateFile), "utf8"));
 
     return {
       version: typeof state.version === "string" ? state.version : undefined,
@@ -323,12 +231,12 @@ export async function readInstallState(root, layout = installLayout(false)) {
     };
   } catch (error) {
     if (error.code === "ENOENT") return null;
-    throw new Error(`Could not read ${path}: ${error.message}`);
+    throw new Error(`Could not read ${stateFile}: ${error.message}`);
   }
 }
 
-export async function writeInstallState(root, state, layout = installLayout(false)) {
-  const path = resolve(root, layoutStateFile(layout));
+export async function writeInstallState(cwd, state) {
+  const path = resolve(cwd, stateFile);
   const content = {
     version: state.version,
     skills: [...new Set(state.skills)].sort(),
@@ -339,26 +247,33 @@ export async function writeInstallState(root, state, layout = installLayout(fals
   await writeFile(path, `${JSON.stringify(content, null, 2)}\n`, "utf8");
 }
 
-export async function readInstalledVersion(root, layout = installLayout(false)) {
+export async function readInstalledVersion(cwd) {
   try {
-    return (await readFile(resolve(root, layout.skillsRoot, "VERSION"), "utf8")).trim();
+    return (await readFile(resolve(cwd, skillsRoot, "VERSION"), "utf8")).trim();
   } catch {
     return undefined;
   }
 }
 
-export function findInstalledSkills(root, skills, layout = installLayout(false)) {
+export function findInstalledSkills(cwd, skills) {
   return skills
     .map((skill) => skill.name)
-    .filter((name) => existsSync(resolve(root, layout.skillsRoot, name, "SKILL.md")));
+    .filter((name) => existsSync(resolve(cwd, skillsRoot, name, "SKILL.md")));
 }
 
 // Files the planned install would write that already exist, so the user
-// decides once for all of them.
-export function findExistingTargets(root, plan) {
-  return plan
-    .map((file) => file.target)
-    .filter((target) => existsSync(resolve(root, target)));
+// decides once instead of answering one shadcn prompt per file.
+export function findExistingTargets(cwd, skills, skillNames, agentIds) {
+  const targets = skills
+    .filter((skill) => skillNames.includes(skill.name))
+    .flatMap((skill) => [
+      ...(skill.files ?? []).map((file) => file.target.replace(/^~\//, "")),
+      ...adapterAgents
+        .filter((agent) => agentIds.includes(agent.id))
+        .map((agent) => agent.targetPath(skill.name)),
+    ]);
+
+  return targets.filter((target) => existsSync(resolve(cwd, target)));
 }
 
 // Generated pointer files for agents the project did not select. A file that
@@ -406,32 +321,4 @@ export async function removeFiles(cwd, paths) {
       directory = dirname(directory);
     }
   }
-}
-
-// Every path installed skills may occupy in a project. Pointers for agents
-// that were not selected are listed too, so a kept pointer stays private.
-export function projectPaths(skillNames) {
-  return [
-    `${skillsRoot}/VERSION`,
-    stateFile,
-    ...skillNames.flatMap((skill) => [
-      `${skillsRoot}/${skill}/`,
-      ...adapterAgents.map((agent) => agent.targetPath(skill)),
-    ]),
-  ];
-}
-
-const excludeStart = "# >>> React Skills: installed for this clone only";
-const excludeEnd = "# <<< React Skills";
-
-// `.git/info/exclude` works like `.gitignore` but is never committed, so the
-// skills stay on this machine without changing any file the team shares.
-export function mergeExcludeBlock(content, patterns) {
-  const lines = content.split(/\r?\n/);
-  const start = lines.indexOf(excludeStart);
-  const end = start < 0 ? -1 : lines.indexOf(excludeEnd, start);
-  const kept = end < 0 ? lines : [...lines.slice(0, start), ...lines.slice(end + 1)];
-  const block = patterns.length > 0 ? [excludeStart, ...patterns, excludeEnd].join("\n") : "";
-
-  return `${[kept.join("\n").trim(), block].filter(Boolean).join("\n\n")}\n`;
 }
