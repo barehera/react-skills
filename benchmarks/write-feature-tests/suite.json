@@ -1,0 +1,9 @@
+{
+  "skill": "write-feature-tests",
+  "title": "Write Feature Tests",
+  "fixture": "fixture-write-feature-tests",
+  "transferTasks": [
+    "t5-board-move"
+  ],
+  "promoted": "lean-v1"
+}

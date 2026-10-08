@@ -1,0 +1,64 @@
+{
+  "id": "t5-bulk-selection",
+  "title": "Bulk selection toolbar",
+  "mode": "create",
+  "prompt": "Add bulk selection to the task list. Each row in `TaskList` needs a checkbox, and a header checkbox selects all visible tasks (indeterminate when only some are selected). Whenever something is selected, show a toolbar with \"N selected\" and two bulk actions: \"Mark done\" (`useBulkUpdateTaskStatusMutation`) and \"Delete\" (`useBulkDeleteTasksMutation`), which asks for confirmation first. Clear the selection after an action succeeds. Viewers (see `canEditTask`) can't use bulk actions. `DashboardPage` shows the same list in a compact density. Next quarter we'll reuse this selectable list on the members admin page, so make it reusable, and wire it into both places.",
+  "criteria": [
+    {
+      "id": "layering",
+      "weight": 3,
+      "text": "A generic selectable-list family lives outside the feature (e.g. src/components/...) and never imports feature modules, Task types, queries, mutations, or policy; it works with plain string ids (or a generic item type) so the members admin page could use it without edits. A tasks feature adapter (TaskList or a tasks-specific component) composes it and owns the task columns, the bulk mutations, and the canEditTask decision. Full credit needs both the family/adapter split and no feature imports in the family."
+    },
+    {
+      "id": "consumer-anatomy",
+      "weight": 3,
+      "text": "The consumer maps its tasks into row parts and composes each row's cells (title, status badge) as children; the family does not hardcode task columns or task fields, and does not take a `tasks`/`items` array plus `columns`/`renderRow` config to render rows itself. A closed `<SelectableList items={tasks} />` that renders title/status inside the family is a fail. Header and row checkboxes are parts the consumer places."
+    },
+    {
+      "id": "selection-ownership",
+      "weight": 3,
+      "text": "Selection is a set/array of item ids with exactly one owner (family root state, optionally controlled via value/onValueChange, or a single adapter state passed to the root). It is not keyed by row index, does not store task objects, and is not mirrored in two places (e.g. root state plus adapter state, or selectedTasks alongside selectedIds). Select-all checked/indeterminate is derived from the selection and the visible ids supplied once (an ids prop on the root or row registration), not stored as separate state and not recomputed by the consumer (no consumer-side allSelected/someSelected math). A module-global store is a fail."
+    },
+    {
+      "id": "item-identity",
+      "weight": 2,
+      "text": "Each row establishes its id once at the row boundary (e.g. `<SelectableListItem value={task.id}>`), and the row checkbox (plus any selected-row styling such as data-state=selected) derives its checked state and toggle from that boundary via context. Consumers do not pass `checked`, `selected`, `index`, or the id again to the row checkbox, and do not compute `selection.has(task.id)` in the map."
+    },
+    {
+      "id": "density-propagation",
+      "weight": 2,
+      "text": "Compact density is set once on the family root (e.g. `density=\"compact\"` exposed as a data attribute) and reaches rows, cells, header, and toolbar through named group selectors (group/... + group-data-[density=compact]/...:) and/or inherited CSS variables, or a deliberate typed slot mapping. No per-row or per-cell className patches at the DashboardPage/TaskList call sites; cloneElement is a fail. With density omitted, every part renders the base (current TaskList) look."
+    },
+    {
+      "id": "toolbar-composition",
+      "weight": 2,
+      "text": "The bulk toolbar is built from composable parts (e.g. toolbar container, selection count, action slot) that the adapter fills: it shows only while something is selected, the count comes from the family while the consumer supplies the wording, and actions are consumer-composed buttons rather than an `actions` config array or hardcoded Mark done/Delete inside the family. Each action owns its pending/disabled state (Mark done pending does not come from one family-wide loading flag that disables everything). The delete confirmation AlertDialog is controlled by adapter/root state and rendered as a persistent sibling, not inside a part that unmounts when the selection or toolbar visibility changes."
+    },
+    {
+      "id": "mutation-boundary",
+      "weight": 2,
+      "text": "The tasks adapter calls useBulkUpdateTaskStatusMutation (status \"done\") and useBulkDeleteTasksMutation with `{ projectId, taskIds }` taken from the current selection; no component touches QueryClient or query keys. The selection clears only after success (onSuccess or awaited mutateAsync), never before the request or on failure, so a failed action keeps the selection for retry. The delete dialog stays open with confirm disabled while pending (e.g. preventDefault on AlertDialogAction) and closes on success. The family exposes a way to clear selection (controlled value or a clear function) without knowing about mutations."
+    },
+    {
+      "id": "slot-props",
+      "weight": 2,
+      "text": "Every public part accepts and spreads the props of the element or primitive it renders (list/row/cell elements, Checkbox props for checkbox parts, div for the toolbar, Button for actions) with className merged last via cn and required bindings (checked, onCheckedChange, data-state) applied after the spread or composed with consumer handlers. No root-level prop bags such as rowProps/checkboxProps/toolbarProps. Labels and copy (action labels, count wording, checkbox accessible names) are passed by the consumer to the part that renders them, not through root props or context."
+    },
+    {
+      "id": "accessibility",
+      "weight": 2,
+      "text": "Every row checkbox has an accessible name tied to its item (e.g. aria-label `Select <task title>` or aria-labelledby the title cell) and the header checkbox has one (e.g. \"Select all tasks\"). Partial selection uses the Radix Checkbox `checked=\"indeterminate\"` state (aria-checked=mixed), not a visual-only icon. Buttons in the toolbar have text labels; the toolbar uses role=toolbar or the count is announced (aria-live) for full credit."
+    },
+    {
+      "id": "conventions",
+      "weight": 1,
+      "text": "Boolean-only optional JSX uses `&&` with a real boolean condition (e.g. `selectedCount > 0 &&`, not `count &&` which renders 0) and no `cond ? <X/> : null`; no routine useMemo/useCallback/React.memo since React Compiler is enabled; no module-global Zustand store or singleton selection; state machinery proportional to need."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "TaskList renders row checkboxes, the header select-all, and the bulk toolbar with both actions; viewers (canEditTask false) never see or can trigger bulk actions (hiding selection entirely for viewers is fine); DashboardPage renders the list in compact density set once; existing loading/error states still work; and the project typechecks."
+    }
+  ],
+  "rubricVersion": 2
+}

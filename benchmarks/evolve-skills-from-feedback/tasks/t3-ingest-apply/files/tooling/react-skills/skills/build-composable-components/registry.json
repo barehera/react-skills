@@ -1,0 +1,19 @@
+{
+  "name": "build-composable-components",
+  "type": "registry:item",
+  "title": "Build Composable Components",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "target": ".agents/skills/build-composable-components/SKILL.md"
+    },
+    {
+      "path": "references/styling-and-size.md",
+      "target": ".agents/skills/build-composable-components/references/styling-and-size.md"
+    },
+    {
+      "path": "examples/action-menu.tsx",
+      "target": ".agents/skills/build-composable-components/examples/action-menu.tsx"
+    }
+  ]
+}

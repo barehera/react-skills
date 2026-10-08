@@ -1,0 +1,9 @@
+{
+  "skill": "manage-server-state",
+  "title": "Manage Server State",
+  "fixture": "fixture",
+  "transferTasks": [
+    "t4-project-export"
+  ],
+  "promoted": "lean-v1"
+}

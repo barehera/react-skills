@@ -1,0 +1,9 @@
+{
+  "skill": "evolve-skills-from-feedback",
+  "title": "Evolve Skills from Feedback",
+  "fixture": "fixture",
+  "transferTasks": [
+    "t4-skill-routing"
+  ],
+  "promoted": "lean-v1"
+}

@@ -1,0 +1,69 @@
+{
+  "id": "t4-board-stack-audit",
+  "title": "Board state and library audit (seeded)",
+  "mode": "audit",
+  "prompt": "The board (`src/features/board`) feels flaky and I want to clean it up before we build swimlanes. Review it and tell me what to change and what to leave alone. Don't edit any files. Give me a prioritized list of findings. Known complaints and a few team proposals are in `docs/board-notes.md`.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "url-mirror",
+      "weight": 3,
+      "text": "Explains BOARD-7: `search`/`status` are duplicated between the persisted Zustand `useBoardStore` and the address bar via the two-way `useBoardUrlSync` effects (pushState on every keystroke, popstate re-pushing, persisted values overwriting a pasted link on load, unchecked `as BoardStatusFilter` cast). Recommends making the URL the single owner with nuqs (`useQueryState`/`useQueryStates` with typed parsers such as `parseAsString.withDefault(\"\")` and `parseAsStringLiteral`, the `nuqs/adapters/react` NuqsAdapter at the app providers, replace for typing vs push for status) and deleting the store fields and sync hook. Recommending a better hand-written sync effect is partial at most."
+    },
+    {
+      "id": "persisted-snapshot",
+      "weight": 3,
+      "text": "Explains BOARD-14: `useBoardStore` copies Query data (`tasks`) and `isFetching` (`isRefreshing`) into Zustand through effects and `persist` without `partialize` writes the task snapshot, pending flag, and filters to localStorage. Recommends TanStack Query as the only owner of tasks/fetching state (header reads count from the query or a selector of it), removing `tasks`/`isRefreshing`/setters from the store, and never persisting fetched snapshots or transient flags (persist only durable preferences via `partialize`, if anything)."
+    },
+    {
+      "id": "retry-layers",
+      "weight": 3,
+      "text": "Explains BOARD-12: `withRetry` (5 attempts with exponential backoff) inside the queryFn multiplies with TanStack Query's default retries (about 20 requests and a minute-plus delay). Recommends deleting `withRetry` and letting Query own retries (configure `retry`/`retryDelay` on the query or QueryClient). Suggesting Pacer's `AsyncRetryer` or another retry wrapper inside the queryFn is a fail."
+    },
+    {
+      "id": "toast-per-observer",
+      "weight": 3,
+      "text": "Explains BOARD-9: the `toast.error` effect lives in `useBoardTasks`, which every `BoardColumn` calls, so each observer fires its own toast, and columns render an empty list on error. Recommends notifying once from a single owner (board page / one error boundary component, or QueryCache `onError` with query meta) with a stable sonner `id`, and showing a visible error state with a retry action in the board instead of relying on the toast."
+    },
+    {
+      "id": "hand-rolled-debounce",
+      "weight": 2,
+      "text": "Flags the ref + `setTimeout` debounce in `useBoardTasks` (no cancellation on unmount, a custom repeated timer) and recommends TanStack Pacer `useDebouncedValue` from `@tanstack/react-pacer/debouncer` deriving the settled search from the URL value (Pacer is already installed). Recommending lodash or a custom `useDebounce` hook is a fail."
+    },
+    {
+      "id": "routine-memo",
+      "weight": 1,
+      "text": "Notes that React Compiler is enabled (vite.config.ts) so the `useMemo`/`useCallback` calls in `BoardFilters` are unnecessary; recommends plain functions and moving `statusOptions` to a module constant, limited to this feature (no codebase-wide memo purge)."
+    },
+    {
+      "id": "keep-one-shot-timeout",
+      "weight": 2,
+      "text": "Keeps `useFlash`: a one-shot `setTimeout` with effect cleanup is appropriate; rejects or does not adopt proposal P3 (replacing it with a debounce library). Recommending Pacer/lodash for `useFlash` is a fail."
+    },
+    {
+      "id": "keep-transport",
+      "weight": 2,
+      "text": "Keeps the existing fetch-based `src/lib/api.ts` transport; rejects or defers proposal P2 (switching to Axios) as an unrelated migration that fixes none of the complaints. Mentioning Axios once as a non-blocking note is fine; listing the migration as a recommended fix is a fail."
+    },
+    {
+      "id": "keep-viewer-context",
+      "weight": 2,
+      "text": "Keeps `ViewerContext`/`useViewer` as stable context; rejects proposal P1 (moving the viewer into Zustand). Recommending that move is a fail."
+    },
+    {
+      "id": "keep-collapsed-store",
+      "weight": 2,
+      "text": "Accepts `useCollapsedColumnsStore` as an intentional app-wide, device-level persisted preference (BOARD-3) with `partialize` and a named `reset`; does not flag it as a bug, demand per-account keys, or require converting it to a provider-scoped store. Optionally noting it as a good model for the board store is fine."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings are prioritized by user impact and tied to the backlog ids, cite files/lines, distinguish confirmed bugs from maintainability issues, give a concrete correction per finding, and include an explicit leave-alone list. No invented requirements or new libraries beyond the installed stack; no false positives presented as bugs."
+    }
+  ],
+  "rubricVersion": 1
+}

@@ -1,0 +1,9 @@
+{
+  "skill": "feature-sliced-design",
+  "title": "Feature-Sliced Design",
+  "fixture": "fixture",
+  "transferTasks": [
+    "t4-quick-switcher"
+  ],
+  "promoted": "lean-v1"
+}

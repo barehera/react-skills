@@ -29,7 +29,8 @@
     "test:skill-examples": "node --test scripts/skill-examples.test.mjs",
     "validate:pacer": "node skills/use-preferred-react-stack/scripts/verify-pacer.mjs",
     "test:rule-tests-example": "vitest run --dir skills/write-feature-tests/examples/rule-tests",
-    "test:installer": "node --test scripts/installer.test.mjs"
+    "test:installer": "node --test scripts/installer.test.mjs",
+    "bench": "node benchmarks/scripts/bench.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.5.7",

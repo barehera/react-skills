@@ -1,0 +1,39 @@
+{
+  "id": "t2-status-transitions",
+  "title": "Document it without a known reason",
+  "mode": "extend",
+  "prompt": "Please document the business logic in `src/features/tasks/status-transitions.ts` so the next developer doesn't accidentally break it.",
+  "criteria": [
+    {
+      "id": "asks-for-missing-why",
+      "weight": 3,
+      "text": "The final message asks the user for the product reason (and confirms the purpose/constraint where unclear) behind the specific non-obvious rules before writing their business blocks, naming each rule it needs a reason for. Silently writing blocks without asking is a fail."
+    },
+    {
+      "id": "no-invented-why",
+      "weight": 3,
+      "text": "No comment added to the code contains a product reason that is not stated in the prompt or the code (e.g. 'so reporting stays accurate', 'because unassigned work has no owner', 'to keep the board clean', 'to prevent skipping review'). Making no comment edits is full credit; a block with an explicit placeholder such as `Why: TBD - ask product` is 0.5; any invented Why is 0."
+    },
+    {
+      "id": "identifies-rules",
+      "weight": 2,
+      "text": "The report correctly identifies the non-obvious constraints in getAllowedNextStatuses: a done task can only reopen to in_progress (never straight to todo); an unassigned todo task cannot move at all; an unassigned in_progress task can only go back to todo. It treats `statusOrder`, the `filter`, and `canMoveTask` as self-explanatory."
+    },
+    {
+      "id": "no-narration",
+      "weight": 2,
+      "text": "No comment restating code is added: no per-branch inline comments (`// done tasks can only go to in_progress`), no JSDoc that paraphrases the signature (`Returns the allowed next statuses for a task`, `@param task`), and nothing on `statusOrder` or `canMoveTask`."
+    },
+    {
+      "id": "planned-shape",
+      "weight": 1,
+      "text": "The answer states or shows the intended shape once facts arrive: one `Business Logic` / `Why` / `Rule` block (three single English sentences) immediately above `getAllowedNextStatuses` (or one per extracted named rule), not scattered inline comments."
+    },
+    {
+      "id": "behavior-unchanged",
+      "weight": 1,
+      "text": "Runtime behavior of status-transitions.ts is unchanged (no rule loosened, tightened, or reordered); any refactor is behavior-preserving and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

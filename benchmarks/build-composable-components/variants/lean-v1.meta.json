@@ -1,0 +1,10 @@
+{
+  "id": "lean-v1",
+  "source": "path:skills/build-composable-components",
+  "note": "First manual simplification (dedupe, generic advice removed)",
+  "createdAt": "2026-10-07T15:31:30.840Z",
+  "words": {
+    "core": 1256,
+    "total": 7712
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "t2-panel-view-preferences",
+  "title": "Remembered per-panel view settings",
+  "mode": "create",
+  "prompt": "The dashboard shows one `TaskPanel` per project. Give each panel view controls in its header: a \"Hide done\" toggle and a sort choice (Title A-Z, Newest first). Clicking a task in a panel makes it that panel's open task and highlights it. Each panel remembers its own settings and its open task across page reloads, so after a reload the same task is highlighted again if it still exists. The two panels must not affect each other. Several people share the front-desk computer, so one person's saved view must never show up for someone else. Add a \"Reset view\" button that puts the panel back to its defaults. `TasksPage` also renders `TaskList` and should keep working as it does today.",
+  "criteria": [
+    {
+      "id": "store-scope",
+      "weight": 3,
+      "text": "Panel view state has one owner per panel instance: a Zustand store created per panel (`createStore` from `zustand`/`zustand/vanilla` held in a provider via `useState(() => create...)` or equivalent, read with `useStore(store, selector)`). The two panels never share memory. A module-level `create(...)` hook or singleton store shared by both panels is a fail. Lifted React state with a hand-written localStorage effect is partial credit at most."
+    },
+    {
+      "id": "persist-partialize",
+      "weight": 3,
+      "text": "Reload survival uses Zustand `persist` + `createJSONStorage` from `zustand/middleware` with `partialize` that keeps only durable values (hide-done flag, sort, open task id). Fetched Task objects/query data, transient flags, and actions are never persisted, and the list data is not copied into the store."
+    },
+    {
+      "id": "persisted-id-resolution",
+      "weight": 2,
+      "text": "The open task is stored as an id and resolved against the fresh `useTasksQuery` data on render: if the id no longer exists in the current list, nothing is highlighted and nothing breaks (the stale id may be ignored or cleared). Storing the Task object or highlighting without checking the fresh data is a fail."
+    },
+    {
+      "id": "account-scoped-key",
+      "weight": 2,
+      "text": "The storage key includes both the viewer id (from `useViewer`) and the project id, and a change of viewer or project yields a different store instance (e.g. the provider is keyed by viewer+project so it remounts, or the store is recreated) instead of reusing in-memory state from the previous person/project."
+    },
+    {
+      "id": "reset-action",
+      "weight": 2,
+      "text": "The store keeps a named `initialState` and a named `reset` action that sets state back to it (which also rewrites the persisted value); \"Reset view\" calls that action. Only calling `persist.clearStorage()`/`localStorage.removeItem` without resetting in-memory state is a fail."
+    },
+    {
+      "id": "narrow-subscriptions",
+      "weight": 1,
+      "text": "Components subscribe to individual values/actions with selectors (e.g. `usePanelView((s) => s.sort)`); no component reads the whole store object (`useStore(store)` without selector) and the context carries only the stable store handle, not the state."
+    },
+    {
+      "id": "optional-provider",
+      "weight": 2,
+      "text": "`TaskList` still works on `TasksPage` without the panel provider: either view options are passed into TaskList as props/values by the panel, or the panel-specific wrapper composes TaskList; TaskList does not call a hook that throws outside the provider. No duplicated list rendering code was copied to make this work."
+    },
+    {
+      "id": "layering",
+      "weight": 2,
+      "text": "The store, provider, and selector hooks live in the tasks feature (e.g. `src/features/tasks/model/` or similar) and the toggle/sort/reset controls use existing `components/ui` primitives (Button, DropdownMenu, Tabs, or a new generic primitive in `components/ui` named by role with no task knowledge). Sorting/hide-done filtering is a small named helper or derived value, not repeated in several components."
+    },
+    {
+      "id": "conventions",
+      "weight": 1,
+      "text": "No routine new `useMemo`/`useCallback`/`React.memo` (React Compiler is enabled); no unnecessary `skipHydration`/manual rehydrate machinery is required in this client-only Vite app (using it is fine if it works); optional JSX uses boolean `&&` conditions."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "Both dashboard panels render the Hide done toggle, sort choice, and Reset view button; clicking a row highlights it with an accessible state (e.g. `aria-current` or `data-state`) as well as styling; Newest first sorts by `createdAt`; the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

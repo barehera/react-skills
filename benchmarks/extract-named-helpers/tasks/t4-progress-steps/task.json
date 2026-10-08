@@ -1,0 +1,49 @@
+{
+  "id": "t4-progress-steps",
+  "title": "Skipped steps in the shared progress stepper (transfer)",
+  "mode": "extend",
+  "prompt": "Onboarding lets people skip checklist items, but `OnboardingProgress` shows a skipped item with a check mark as if it were done. Designers want skipped steps to get a muted indicator with a dash (–) instead of the check or number; everything else about the stepper, including the line after each step, stays exactly as it is. `ProgressSteps` (`src/components/progress-steps.tsx`) is shared with `TaskStatusSteps`, which must look exactly the same as today. Keep the stepper code easy to change.",
+  "criteria": [
+    {
+      "id": "single-step-state",
+      "weight": 3,
+      "text": "The step-state decision (complete/current/upcoming, plus skipped) is computed once by a named pure function at module scope in `progress-steps.tsx` (e.g. `getStepState(step, currentStep, skipped)` returning a string-literal union), or once per step boundary and shared through the step context. ProgressStep, ProgressStepIndicator, and ProgressStepConnector no longer each repeat raw `step < currentStep` / `step === currentStep` comparisons; the nested ternary in ProgressStep is gone. The connector may use the position-based state (e.g. the same helper without the skipped input, or a separate position value) as long as the comparison logic itself is written once."
+    },
+    {
+      "id": "family-layer-clean",
+      "weight": 3,
+      "text": "`src/components/progress-steps.tsx` stays generic: it imports nothing from `src/features/*` and knows nothing about onboarding items or task statuses; skipped arrives as a generic per-step input (e.g. a `skipped` boolean on ProgressStep or a step state supplied by the consumer). The step-state helper lives in the family file (module-private), not in `src/lib`, a `helpers.ts`, or a feature folder."
+    },
+    {
+      "id": "connector-unchanged",
+      "weight": 3,
+      "text": "Connector appearance is unchanged for skipped steps: the line after a skipped step that lies before the current step is still the primary color, exactly as before. A solution that derives the connector color from a state value where skipped no longer counts as complete (so the line turns gray) is a fail. Last-step connector still returns null."
+    },
+    {
+      "id": "skipped-rendering",
+      "weight": 2,
+      "text": "OnboardingProgress passes each item's `skipped` to its step, and skipped steps render a muted indicator containing a dash instead of the check or number. Non-skipped steps keep their previous classes, icon/number, data-state, and aria-current. The `firstOpenIndex` logic for currentStep is unchanged."
+    },
+    {
+      "id": "status-lookup",
+      "weight": 2,
+      "text": "In `TaskStatusSteps`, the let/if/else chain mapping status to the current step is replaced with simpler control flow, ideally a typed `Record<TaskStatus, number>` lookup constant (or a small named function) kept in the tasks feature file, and `done` still maps past the last index (3 / stepLabels.length) so every step renders complete. Mapping done to 2 is a fail. Its rationale comment survives at the mapping."
+    },
+    {
+      "id": "no-false-merge",
+      "weight": 2,
+      "text": "The onboarding current-step derivation and the task status mapping stay in their own features; they are not merged into one shared helper or moved into the generic family, since they encode different rules. No feature imports from the other feature."
+    },
+    {
+      "id": "private-and-proportional",
+      "weight": 2,
+      "text": "New helpers are module-private (not added to the family's export list) unless a consumer outside the module uses them. No new hook wraps a pure calculation other than the existing context readers, no useMemo/useCallback added, no new files created for single helpers. Readers like useProgressStep may return the derived state if that is where the decision lives."
+    },
+    {
+      "id": "typecheck",
+      "weight": 1,
+      "text": "Both consumers compile against the updated family and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

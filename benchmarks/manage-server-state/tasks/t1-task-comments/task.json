@@ -1,0 +1,59 @@
+{
+  "id": "t1-task-comments",
+  "title": "Task comments data layer",
+  "mode": "create",
+  "prompt": "Tasks now have comments on the backend; the contract is in `docs/api/comments.md`. The UI team builds the comments panel on the task page next sprint and needs the data layer first: load a task's comments with \"Load more\", post a comment, and delete a comment. The comment count we already show in the task list and the task header has to stay correct after someone posts or deletes a comment. Data layer only, no UI.",
+  "criteria": [
+    {
+      "id": "contract-honesty",
+      "weight": 3,
+      "text": "The Comment type models exactly what the doc and samples support: id, taskId, authorId, body, createdAt as strings (no Date conversion, no branded/UUID types); `editedAt` as `string | null` (or optional `string | null`) because a sample shows null; `source` as plain `string`, NOT a `\"web\" | \"email\"` union invented from two samples; `attachments` as `unknown[]` (or omitted/explicitly flagged) because an empty array reveals no item shape. No invented fields (no author object, updatedAt, totalCount, page numbers). Full credit needs all four judgements; inventing the source union or a typed attachment shape is at most half credit."
+    },
+    {
+      "id": "backend-pagination",
+      "weight": 3,
+      "text": "Comments load through `useInfiniteQuery`/`infiniteQueryOptions` whose page param is the opaque `nextCursor` string: the first request omits `cursor` (initialPageParam undefined or null mapped to no param), `getNextPageParam` returns `lastPage.nextCursor ?? undefined` (null ends paging). Pages are cached exactly as the backend returns them (`{ comments, nextCursor }`); no flattening inside queryFn, no page-number or `pages.length` math, no generic cursor model that renames the envelope."
+    },
+    {
+      "id": "key-design",
+      "weight": 2,
+      "text": "Comment keys come from one key factory that follows the existing `taskKeys` pattern (an `all`/root prefix plus functions), and the comments key includes `taskId` (and `limit` if the hook accepts one). Every read and every cache write/invalidation builds its key from that factory (or from the infinite option factory's typed queryKey); no inline literal key arrays anywhere. No new key library is introduced."
+    },
+    {
+      "id": "transport-reuse",
+      "weight": 2,
+      "text": "All requests go through the existing `api` wrapper from `@/lib/api` (no direct fetch, no axios, no zod or other new dependency). Dynamic path segments (`taskId`, `commentId`) are encoded with encodeURIComponent, and query params are built with URLSearchParams (or equivalent encoding) so `cursor` is omitted on the first page and encoded otherwise. Routes and methods match the doc (GET/POST `/tasks/{taskId}/comments`, DELETE `/comments/{commentId}`). Extending `api` with an optional AbortSignal in a backward-compatible way is fine; breaking existing callers is a fail."
+    },
+    {
+      "id": "count-consistency",
+      "weight": 3,
+      "text": "After a comment is created or deleted successfully, the parent task's `commentCount` is kept correct in BOTH the task detail cache (`taskKeys.detail(taskId)`) and the project task list cache that contains the task: either by patching the matching task's count via setQueryData/setQueriesData on keys from `taskKeys`, or by targeted invalidation of `taskKeys.detail(taskId)` and the project's list (`taskKeys.list(projectId)` or the `taskKeys.lists()` prefix). Updating only one of the two caches is half credit; leaving counts untouched or calling `invalidateQueries()` with no filter is a fail."
+    },
+    {
+      "id": "comments-cache-effects",
+      "weight": 2,
+      "text": "Create: the new comment becomes visible in that task's comments list (targeted invalidation of the task's comments key, or prepending to the first page while preserving the `pages`/`pageParams` structure). Delete: the comment disappears from that task's cached pages (filtering inside each page while keeping `nextCursor`) or that task's comments list is invalidated, and no other task's comments are touched. If an optimistic update is used, it cancels the affected queries, snapshots, and rolls back on error."
+    },
+    {
+      "id": "placement-naming",
+      "weight": 2,
+      "text": "Server-state code mirrors the neighbouring tasks feature layout: under `src/features/comments/server-state/` (or `src/features/tasks/server-state/`) with a keys module, `queries/` and `mutations/` folders, and one hook per operation (e.g. `useTaskCommentsQuery`/`useTaskCommentsInfiniteQuery`, `useCreateCommentMutation`, `useDeleteCommentMutation`). One vocabulary throughout; cache helpers (if any) use set/patch/invalidate/remove verbs and reserve `delete` for the backend call. No barrel index files, no global `src/api`/`src/queries` layer, no UI components."
+    },
+    {
+      "id": "mutation-inputs",
+      "weight": 1,
+      "text": "Mutation variables are object inputs that carry everything the cache effects need (taskId plus projectId or the Task for the list cache; commentId and taskId for delete). QueryClient is obtained once inside the hook (or a bound cache helper), never passed by callers; the hooks do not add generic option-forwarding parameters for component-specific reactions."
+    },
+    {
+      "id": "evidence-report",
+      "weight": 2,
+      "text": "The final message separates contract facts that are documented from those only observed in the samples (editedAt nullability, source values, attachments shape) and lists unresolved points or assumptions (e.g. newest-first ordering when prepending, where projectId comes from, absence of runtime response validation). It also lists files changed and the typecheck result."
+    },
+    {
+      "id": "typed",
+      "weight": 1,
+      "text": "The project typechecks (`npm run typecheck`) and the existing task list/header still compile unchanged or with compatible edits."
+    }
+  ],
+  "rubricVersion": 1
+}

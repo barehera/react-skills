@@ -1,0 +1,1009 @@
+<title>React Skills Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: instrument panel — controls bar, variant readouts, then two-up charts, then the run log with a detail drawer. */
+:root {
+  --bg: #f3f5f4;
+  --panel: #ffffff;
+  --ink: #18201d;
+  --muted: #5c6863;
+  --line: #d9dfdc;
+  --accent: #1f5f8b;
+  --accent-soft: #e3eef5;
+  --good: #2f7d4f;
+  --warn: #b7791f;
+  --bad: #b3423a;
+  --c-baseline: #6b7680;
+  --c-none: #b8862b;
+  --c-lean1: #1f5f8b;
+  --c-lean2: #2a8a83;
+  --c-lean3: #6a4fa3;
+  --c-lean4: #c0577a;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --radius: 6px;
+  /* chart tokens: validated reference palette (fixed order), chrome, status */
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948; --s-none: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7;
+  --st-good: #0ca30c; --st-warn: #fab219; --st-bad: #d03b3b;
+  --delta-good: #006300; --delta-bad: #b42d2d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111614; --panel: #19201d; --ink: #e5ece8; --muted: #93a19a; --line: #2c3632;
+    --accent: #6fb0dc; --accent-soft: #1c2c37; --good: #5fbf85; --warn: #e0a84a; --bad: #e07a70;
+    --c-baseline: #9aa6b0; --c-none: #dcae55; --c-lean1: #6fb0dc; --c-lean2: #5cc3b9; --c-lean3: #a88ce0; --c-lean4: #e58aa8; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767; --s-none: #898781; --grid: #2c2c2a; --axis: #383835; --delta-good: #0ca30c; --delta-bad: #e66767;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111614; --panel: #19201d; --ink: #e5ece8; --muted: #93a19a; --line: #2c3632;
+  --accent: #6fb0dc; --accent-soft: #1c2c37; --good: #5fbf85; --warn: #e0a84a; --bad: #e07a70;
+  --c-baseline: #9aa6b0; --c-none: #dcae55; --c-lean1: #6fb0dc; --c-lean2: #5cc3b9; --c-lean3: #a88ce0; --c-lean4: #e58aa8; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767; --s-none: #898781; --grid: #2c2c2a; --axis: #383835; --delta-good: #0ca30c; --delta-bad: #e66767;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45; }
+.wrap { max-width: 1920px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; display: grid; gap: 20px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; margin: 0; text-wrap: balance; }
+h1 { font-size: 26px; letter-spacing: 0.01em; }
+h2 { font-size: 17px; }
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono); font-size: 12.5px; }
+.num { font-variant-numeric: tabular-nums; }
+header.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+select, button, textarea { font: inherit; color: var(--ink); }
+select { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 8px; }
+button { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 10px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, select:focus-visible, textarea:focus-visible, tr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.readout { border-top: 3px solid var(--vc, var(--line)); background: var(--panel); border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0 0 var(--radius) var(--radius); padding: 12px 14px; display: grid; gap: 6px; }
+.readout .name { font-family: var(--font-display); font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+.readout .score { font-family: var(--font-display); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.readout .delta { font-size: 12px; font-variant-numeric: tabular-nums; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: 12px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 1100px) { .two { grid-template-columns: 1fr; } }
+#scatter svg { display: block; width: 100%; height: auto; overflow: visible; }
+.takeaway { margin: 0 0 10px; padding: 10px 12px; border-left: 3px solid var(--good); background: color-mix(in srgb, var(--good) 8%, transparent); border-radius: 0 var(--radius) var(--radius) 0; font-size: 13.5px; max-width: 90ch; }
+.howto { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; display: grid; gap: 3px; max-width: 100ch; }
+.howto b { color: var(--ink); font-weight: 500; }
+svg text { fill: var(--muted); font-family: var(--font-body); font-size: 11px; }
+.scroll-x { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.cell { display: inline-block; min-width: 44px; text-align: center; padding: 2px 6px; border-radius: 4px; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; font-size: 10.5px; padding: 1px 6px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.tag.knows { color: var(--good); }
+.tag.value { color: var(--accent); }
+.tag.lost { color: var(--bad); }
+.tag.weak { color: var(--warn); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--vc); margin-right: 6px; vertical-align: 1px; }
+tr.run { cursor: pointer; }
+tr.run:hover td { background: var(--accent-soft); }
+.chip { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); white-space: nowrap; }
+.chip.ok { color: var(--good); }
+.chip.fail { color: var(--bad); }
+.empty { padding: 32px 16px; text-align: center; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+dialog { width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 32px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink); padding: 0; }
+dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+.drawer { display: grid; gap: 16px; padding: 18px; }
+.drawer-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.crit { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.crit .id { font-family: var(--font-mono); font-size: 12px; }
+.crit .ev { grid-column: 2; font-size: 12.5px; color: var(--muted); }
+pre.code { margin: 0; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; overflow: auto; max-height: 520px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; white-space: pre; }
+pre.prose { white-space: pre-wrap; font-family: var(--font-body); font-size: 13px; max-height: 420px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.review { display: grid; gap: 8px; padding: 12px; border: 1px dashed var(--accent); border-radius: var(--radius); }
+.review textarea { width: 100%; min-height: 70px; border: 1px solid var(--line); border-radius: var(--radius); padding: 8px; background: var(--panel); }
+.verdicts { display: flex; flex-wrap: wrap; gap: 6px; }
+.verdicts button[aria-pressed="true"][data-v="good"] { border-color: var(--good); color: var(--good); }
+.verdicts button[aria-pressed="true"][data-v="meh"] { border-color: var(--warn); color: var(--warn); }
+.verdicts button[aria-pressed="true"][data-v="bad"] { border-color: var(--bad); color: var(--bad); }
+.cols3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.cols3 ul { margin: 6px 0 0; padding-left: 18px; }
+.cmp-controls { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 12px; }
+.cmp-controls select { max-width: 100%; }
+.cmp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cmp-chips button { font-size: 12px; padding: 3px 8px; }
+.cmp-chips button[aria-pressed="false"] { opacity: 0.45; }
+.cmp-cols { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.cmp-col { flex: 1 0 min(560px, calc(100vw - 48px)); min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); display: flex; flex-direction: column; }
+.cmp-head { padding: 8px 10px; border-bottom: 1px solid var(--line); display: grid; gap: 2px; border-top: 3px solid var(--vc, var(--line)); border-radius: var(--radius) var(--radius) 0 0; }
+.cmp-head .t { font-family: var(--font-display); font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+.cmp-body { overflow: auto; max-height: 70vh; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; }
+.cmp-line { display: grid; grid-template-columns: 3.2em minmax(0, 1fr); white-space: pre; }
+.cmp-line .ln { color: var(--muted); text-align: right; padding-right: 8px; user-select: none; border-right: 1px solid var(--line); }
+.cmp-line .tx { padding-left: 8px; padding-right: 8px; }
+.cmp-line.add { background: color-mix(in srgb, var(--good) 16%, transparent); }
+.cmp-line.prose .tx { white-space: pre-wrap; }
+.cmp-missing { padding: 24px 12px; color: var(--muted); font-size: 12.5px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px; }
+.tile { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 4px; background: var(--panel); }
+.tile .k { font-size: 12px; color: var(--muted); }
+.tile .v { font-family: var(--font-display); font-size: 28px; line-height: 1.1; display: flex; align-items: center; gap: 4px; }
+.tile .s { font-size: 12.5px; color: var(--muted); }
+.warn-text { color: var(--delta-bad); }
+.bar-table, .task-table, .crit-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.bar-table { min-width: 980px; }
+.bar-table th, .bar-table td, .task-table th, .task-table td, .crit-table th, .crit-table td { padding: 10px 12px; border-bottom: 1px solid var(--grid); vertical-align: middle; text-align: left; }
+.bar-table thead th, .task-table thead th, .crit-table thead th { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border-bottom: 1px solid var(--axis); white-space: nowrap; }
+.bar-table thead th small { display: block; text-transform: none; letter-spacing: 0; font-size: 11.5px; margin-top: 2px; }
+.bar-table tbody th { font-weight: 500; white-space: nowrap; }
+.bar-table td { min-width: 150px; }
+.bar-table tr.is-rec th, .bar-table tr.is-rec td { background: color-mix(in srgb, var(--st-good) 6%, transparent); }
+.name { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.chip-tag { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-weight: 400; }
+.chip-tag.rec { border-color: var(--delta-good); color: var(--delta-good); }
+.val { display: flex; gap: 8px; align-items: baseline; font-variant-numeric: tabular-nums; margin-bottom: 5px; }
+.val.end { justify-content: flex-end; }
+.val b { font-size: 15px; font-weight: 600; }
+.val b.top { text-decoration: underline; text-underline-offset: 3px; }
+.delta { font-size: 12px; font-variant-numeric: tabular-nums; }
+.delta.good { color: var(--delta-good); }
+.delta.bad { color: var(--delta-bad); }
+.track { position: relative; height: 10px; background: color-mix(in srgb, var(--grid) 70%, transparent); border-radius: 0 4px 4px 0; }
+.track.sm { height: 6px; }
+.fill { position: absolute; inset: 0 auto 0 0; background: var(--vc); border-radius: 0 4px 4px 0; }
+.ref { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); opacity: 0.6; }
+.task-table td.n, .task-table th.n { text-align: right; min-width: 110px; }
+.reps { font-size: 11px; margin-top: 4px; text-align: right; font-variant-numeric: tabular-nums; }
+.crit-table td.c, .crit-table th.c { text-align: center; white-space: nowrap; }
+.crit-table tr.group th { padding-top: 18px; font-family: var(--font-display); font-size: 14px; border-bottom: 1px solid var(--axis); }
+.crit-name { font-weight: 500; }
+.st { display: inline-flex; width: 20px; height: 20px; margin: 0 1px; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--ink); cursor: help; }
+.st-ok { background: color-mix(in srgb, var(--st-good) 30%, transparent); }
+.st-mid { background: color-mix(in srgb, var(--st-warn) 40%, transparent); }
+.st-bad { background: color-mix(in srgb, var(--st-bad) 30%, transparent); }
+.st-na { background: var(--bg); color: var(--muted); }
+.bar-table tbody th, .task-table tbody th, .crit-table tbody th { text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--ink); }
+.crit-table tr.group th { text-transform: none; letter-spacing: 0; color: var(--ink); }
+.variant-filter { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.variant-filter button { font-size: 12.5px; padding: 4px 10px; }
+.variant-filter button[aria-pressed="false"] { opacity: 0.45; }
+.note-log { display: grid; gap: 8px; }
+.note-log article { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; }
+@media (prefers-reduced-motion: no-preference) { tr.run td { transition: background 120ms; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" id="eyebrow">React Skills · skill benchmark</div>
+      <h1 id="page-title">React Skills Bench</h1>
+      <div class="muted" id="generated">Veri yükleniyor…</div>
+    </div>
+    <div class="controls">
+      <label class="muted" for="suite">Skill</label>
+      <select id="suite"></select>
+      <label class="muted" for="iter">İterasyon</label>
+      <select id="iter"></select>
+      <label class="muted" for="task">Görev</label>
+      <select id="task"><option value="all">Tümü</option></select>
+    </div>
+  </header>
+  <div class="variant-filter" id="variant-filter" aria-label="Gösterilen sürümler"></div>
+
+  <section class="panel" aria-labelledby="catalog-title">
+    <div class="panel-head">
+      <h2 id="catalog-title">Tüm skill'ler</h2>
+      <span class="muted">Her skill'in orijinali (baseline) ve önerilen sade sürümü. Satıra tıklayınca o skill açılır.</span>
+    </div>
+    <div class="scroll-x" id="catalog"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="summary-title">
+    <div class="panel-head"><h2 id="summary-title">Sonuç</h2></div>
+    <p class="takeaway" id="takeaway"></p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="bars-title">
+    <div class="panel-head">
+      <h2 id="bars-title">Sürümler yan yana</h2>
+      <span class="muted">Her satır bir skill sürümü. İnce dikey çizgi, orijinal skill'in (baseline) değeri.</span>
+    </div>
+    <div class="scroll-x" id="bars"></div>
+    <ul class="howto">
+      <li><b>Kalite</b>: kör grader'ın 0–100 puanı, hepsinin çalıştığı ortak görevlerde. <b>Uzun çubuk daha iyi.</b> ±5 puanlık fark tesadüf olabilir.</li>
+      <li><b>Transfer</b>: skill'in örneklerine hiç benzemeyen görevdeki puan; skill ilkeyi mi, örneği mi öğretiyor onu gösterir.</li>
+      <li><b>Tutarlılık</b>: aynı görev iki kez yapıldığında aynı dosya ve bileşen adları çıkıyor mu. <b>Uzun çubuk daha iyi.</b></li>
+      <li><b>Skill uzunluğu</b> ve <b>bağlam</b>: modelin okuduğu metin ve harcadığı token. <b>Kısa çubuk daha iyi.</b></li>
+    </ul>
+  </section>
+
+  <section class="panel" aria-labelledby="tasks-title">
+    <div class="panel-head">
+      <h2 id="tasks-title">Görev bazında kalite</h2>
+      <span class="muted">Her hücre o sürümün o görevdeki ortalama puanı; küçük sayılar tek tek tekrarlar.</span>
+    </div>
+    <div class="scroll-x" id="task-table"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="matrix-title">
+    <div class="panel-head">
+      <h2 id="matrix-title">Kriterler: neyi kim yaptı?</h2>
+      <span class="legend">
+        <span><span class="st st-ok">✓</span> tam</span>
+        <span><span class="st st-mid">◐</span> kısmen</span>
+        <span><span class="st st-bad">✕</span> yok</span>
+        <span class="muted">· her ikon bir tekrar; üzerine gelince grader'ın gerekçesi</span>
+      </span>
+    </div>
+    <div class="scroll-x" id="matrix"></div>
+  </section>
+
+  <section class="panel" id="texts" aria-labelledby="texts-title">
+    <div class="panel-head">
+      <h2 id="texts-title">Skill metni: önce / sonra</h2>
+      <span class="muted">Soldaki sürüm referans; sağda yeşil satırlar referansta olmayan metin.</span>
+    </div>
+    <div class="cmp-controls">
+      <label class="muted" for="txt-file">Dosya</label>
+      <select id="txt-file"></select>
+      <label class="muted" for="txt-left">Sol</label>
+      <select id="txt-left"></select>
+      <label class="muted" for="txt-right">Sağ</label>
+      <select id="txt-right"></select>
+    </div>
+    <div class="cmp-cols" id="txt-cols"></div>
+  </section>
+
+  <section class="panel" id="compare">
+    <div class="panel-head">
+      <h2>Kod karşılaştırma</h2>
+      <span class="muted">Aynı dosyanın her iterasyondaki hali yan yana. Yeşil satırlar referanstan farklı.</span>
+    </div>
+    <div class="cmp-controls">
+      <label class="muted" for="cmp-task">Görev</label>
+      <select id="cmp-task"></select>
+      <label class="muted" for="cmp-file">Dosya</label>
+      <select id="cmp-file"></select>
+      <label class="muted" for="cmp-ref">Referans</label>
+      <select id="cmp-ref"></select>
+      <label class="muted"><input type="checkbox" id="cmp-sync" checked> Kaydırmayı eşle</label>
+    </div>
+    <div class="cmp-controls">
+      <span class="muted">Variant</span><div class="cmp-chips" id="cmp-variants"></div>
+      <span class="muted">Tekrar</span><div class="cmp-chips" id="cmp-reps"></div>
+    </div>
+    <div class="cmp-cols" id="cmp-cols"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Çalıştırmalar</h2>
+      <span class="muted">Satıra tıklayınca kod, grader kanıtı ve inceleme notun açılır.</span>
+    </div>
+    <div class="scroll-x" id="runs"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>İterasyon günlüğü</h2></div>
+    <div class="note-log" id="log"></div>
+  </section>
+</div>
+
+<dialog id="drawer" aria-label="Çalıştırma detayı"><div class="drawer" id="drawer-body"></div></dialog>
+
+<script>
+const state = { data: null, iteration: null, task: "all", reviews: {}, db: null, userId: null, canWrite: true, runId: null, fileTab: null }
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]))
+const mean = (xs) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN
+const fmt = (x, d = 1) => Number.isFinite(x) ? x.toLocaleString("tr-TR", { minimumFractionDigits: d, maximumFractionDigits: d }) : "–"
+// Variant identity follows the validated reference palette in a fixed order;
+// a variant past the eighth slot folds into the neutral gray, never a cycled hue.
+const SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7", "--s8"]
+function variantColor(id) {
+  if (id === "none") return "var(--s-none)"
+  const ids = ["baseline", ...Object.keys(state.data.variants).filter((v) => v !== "baseline").sort()]
+  const i = ids.indexOf(id)
+  return i >= 0 && i < SERIES.length ? `var(${SERIES[i]})` : "var(--s-none)"
+}
+function variantWords(id) {
+  if (id === "none") return { core: 0, total: 0 }
+  return state.data.variants[id]?.words ?? { core: NaN, total: NaN }
+}
+function heat(v) {
+  if (!Number.isFinite(v)) return "transparent"
+  const c = v >= 0.75 ? "var(--good)" : v >= 0.4 ? "var(--warn)" : "var(--bad)"
+  const pct = Math.round(18 + 30 * (v >= 0.75 ? v : 1 - v))
+  return `color-mix(in srgb, ${c} ${pct}%, transparent)`
+}
+let TRANSFER_TASK = null
+const NOISE = 5
+const TASK_TR = {
+  "t1-task-actions": "T1 · Satır aksiyon menüsü",
+  "t2-assignee-picker": "T2 · Atanan kişi seçici",
+  "t3-timeline-audit": "T3 · Timeline denetimi",
+  "t4-tabs-size": "T4 · Tabs boyut ve stil",
+  "t5-bulk-selection": "T5 · Toplu seçim (transfer)",
+}
+const taskName = (id) => TASK_TR[id] ?? state.data.tasks.find((t) => t.id === id)?.title ?? id
+const CRIT_TR = {
+  layering: "Katman ayrımı (generic ↔ feature)",
+  "persistent-overlay": "Dialog, menü kapanınca da yaşıyor",
+  "composition-over-switches": "Boolean switch yerine kompozisyon",
+  "slot-props": "Her parça kendi prop'larını alıyor",
+  "action-state": "Bekleme durumu ilgili aksiyonda",
+  "size-propagation": "Boyut kökte bir kez veriliyor",
+  "mutation-lifecycle": "Silme akışı doğru (bekler, sonra kapanır)",
+  "primitive-contract": "Primitive sözleşmesi korunuyor",
+  "instance-isolation": "Her örneğin durumu ayrı",
+  conventions: "Repo kuralları (&&, gereksiz memo yok)",
+  "wired-and-typed": "Ekranlara bağlandı, tip kontrolü geçti",
+  "item-anatomy-open": "Öğe görünümü tüketicide",
+  "collection-mode": "Liste tek yoldan geçiyor",
+  "state-gating": "Yükleniyor / hata / boş durumları",
+  "controlled-optional-value": "Temizlenebilir controlled değer",
+  "item-identity": "Öğe kimliği bir kez veriliyor",
+  "no-edits": "Hiçbir dosyayı değiştirmedi",
+  "global-store": "Global store hatasını buldu",
+  "prop-bags": "Prop torbalarını buldu",
+  "closed-anatomy": "Kapalı öğe görünümünü buldu",
+  "title-in-context": "Başlığın context'te taşınmasını buldu",
+  "id-spread-order": "id / className sıra hatasını buldu",
+  "index-prop": "Index prop'unu buldu",
+  "leaf-size-patches": "Tekrarlanan boyut sınıflarını buldu",
+  "remove-layout-switch": "Kullanılmayan layout'u sil dedi",
+  "keep-compact-variant": "Backlog'daki variant'ı korudu",
+  "keep-extension-hook": "Extension hook'u korudu",
+  "remove-test-only-export": "Test-only export'u sil dedi",
+  "narrow-dom-id-helper": "Export'u daralt dedi (silme değil)",
+  "ternary-null": "Ternary-null kuralını uyguladı",
+  "report-quality": "Rapor öncelikli ve net",
+  "root-owned-config": "size / variant kökte bir kez",
+  "css-propagation": "CSS ile yayılım (context değil)",
+  "defaults-preserved": "Diğer ekranlar aynı görünüyor",
+  "consumer-cleanup": "Sayfadaki class yamaları temizlendi",
+  "slot-mapping": "Her parça kendi stilini eşliyor",
+  "class-structure": "Sınıf listeleri düzenli",
+  "typed-api": "Tipli size / variant API",
+  "scope-discipline": "Kapsam dışına çıkmadı",
+  "consumer-anatomy": "Satır görünümü tüketicide",
+  "selection-ownership": "Seçim tek yerde, id ile",
+  "density-propagation": "Yoğunluk kökte bir kez veriliyor",
+  "toolbar-composition": "Toolbar ve aksiyonlar birleştirilebilir",
+  "mutation-boundary": "Mutation sınırı doğru",
+  accessibility: "Erişilebilirlik",
+}
+const critName = (id) => CRIT_TR[id] ?? id.replaceAll("-", " ")
+function scoreIcon(score, na, tip) {
+  if (na) return `<span class="st st-na" title="${esc("uygulanamaz" + (tip ? ": " + tip : ""))}">–</span>`
+  const [cls, glyph, word] = score >= 1 ? ["st-ok", "✓", "tam"] : score > 0 ? ["st-mid", "◐", "kısmen"] : ["st-bad", "✕", "yok"]
+  return `<span class="st ${cls}" role="img" aria-label="${word}" title="${esc(word + (tip ? ": " + tip : ""))}">${glyph}</span>`
+}
+const COMBINED = "tümü"
+function combinedIteration() {
+  const iters = state.data.iterations
+  return {
+    iteration: COMBINED,
+    variants: [...new Set(iters.flatMap((i) => i.variants))],
+    tasks: [...new Set(iters.flatMap((i) => i.tasks))],
+    reps: Math.max(0, ...iters.map((i) => i.reps)),
+    note: "Bütün iterasyonlardaki çalıştırmalar birlikte. Skorlar önce görev içinde, sonra görevler arasında ortalanır.",
+    runs: iters.flatMap((i) => i.runs.map((r) => ({ ...r, iteration: i.iteration }))),
+  }
+}
+function currentIteration() {
+  if (state.iteration === COMBINED) return state.combined
+  return state.data.iterations.find((i) => i.iteration === state.iteration)
+}
+function filteredRuns(iteration) { return iteration.runs.filter((r) => (state.task === "all" || r.task === state.task) && isVisible(r.variant)) }
+function variantsOf(iteration) {
+  const order = ["baseline", ...iteration.variants.filter((v) => v !== "baseline" && v !== "none"), "none"]
+  return order.filter((v) => iteration.variants.includes(v) && isVisible(v))
+}
+
+async function load() {
+  try {
+    state.index = await (await fetch("data/index.json", { cache: "no-store" })).json()
+  } catch {
+    document.getElementById("generated").textContent = "data/index.json okunamadı."
+    return
+  }
+  let saved = null
+  try { saved = localStorage.getItem("bench.suite") } catch {}
+  const ids = state.index.suites.map((suite) => suite.id)
+  const first = ids.includes(saved) ? saved : ids.includes("build-composable-components") ? "build-composable-components" : ids[0]
+  const suiteSel = document.getElementById("suite")
+  suiteSel.innerHTML = state.index.suites.map((suite) => `<option value="${esc(suite.id)}">${esc(suite.title)}</option>`).join("")
+  suiteSel.onchange = () => loadSuite(suiteSel.value)
+  await loadSuite(first)
+}
+
+async function loadSuite(id) {
+  try {
+    state.data = await (await fetch(`data/${id}.json`, { cache: "no-store" })).json()
+  } catch {
+    document.getElementById("generated").textContent = `data/${id}.json okunamadı.`
+    return
+  }
+  state.suite = id
+  try { localStorage.setItem("bench.suite", id) } catch {}
+  document.getElementById("suite").value = id
+  state.task = "all"
+  state.visible = null
+  state.runId = null
+  cmp.task = null
+  cmp.file = null
+  cmp.variants = null
+  cmp.reps = null
+  const models = [...new Set(state.data.iterations.map((i) => i.model).filter(Boolean))]
+  document.getElementById("eyebrow").textContent = `${state.data.suite?.skill ?? id} · ${models.join(", ") || "henüz çalıştırılmadı"}`
+  document.getElementById("page-title").textContent = state.data.suite?.title ?? id
+  const iters = state.data.iterations
+  state.combined = combinedIteration()
+  state.iteration = iters.length > 1 ? COMBINED : iters.at(-1)?.iteration ?? null
+  const iterSel = document.getElementById("iter")
+  iterSel.innerHTML = (iters.length > 1 ? `<option value="${COMBINED}">Tümü (birleşik)</option>` : "") + iters.map((i) => `<option value="${esc(i.iteration)}">${esc(i.iteration)}</option>`).join("") || `<option>—</option>`
+  iterSel.value = state.iteration ?? ""
+  iterSel.onchange = () => { state.iteration = iterSel.value; render() }
+  const taskSel = document.getElementById("task")
+  taskSel.innerHTML = `<option value="all">Tümü</option>` + state.data.tasks.map((t) => `<option value="${esc(t.id)}">${esc(t.title)}</option>`).join("")
+  taskSel.onchange = () => { state.task = taskSel.value; render() }
+  document.getElementById("generated").textContent = `Son güncelleme ${new Date(state.data.generatedAt).toLocaleString("tr-TR")}`
+  try { const saved = JSON.parse(localStorage.getItem(`bench.visible.${id}`) ?? "null"); if (Array.isArray(saved)) state.visible = new Set(saved) } catch {}
+  renderCatalog()
+  renderVariantFilter()
+  render()
+  initCompare()
+  initTexts()
+}
+
+function renderCatalog() {
+  const rows = state.index.suites.map((suite) => {
+    const words = suite.variantWords ?? {}
+    const base = suite.variants?.baseline
+    // Before any run, show the newest drafted candidate so its word cut is visible.
+    const pick = suite.promoted ?? Object.entries(suite.variants ?? {})
+      .filter(([v]) => v !== "baseline" && v !== "none")
+      .sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0))[0]?.[0]
+      ?? Object.keys(words).filter((v) => v !== "baseline" && v !== "none").sort().at(-1)
+    const best = pick ? suite.variants?.[pick] : null
+    const baseWords = words.baseline
+    const bestWords = pick ? words[pick] : null
+    const shorter = baseWords && bestWords ? Math.round((1 - bestWords / baseWords) * 100) : null
+    const measured = best?.score != null
+    const status = suite.promoted
+      ? `<span class="chip-tag${measured ? " rec" : ""}">uygulandı: ${esc(suite.promoted)}${measured ? "" : " · ölçülmedi"}</span>`
+      : measured ? `<span class="chip-tag">benchmark edildi</span>`
+      : suite.tasks > 0 ? `<span class="chip-tag">görevler hazır</span>` : `<span class="chip-tag">hazırlanıyor</span>`
+    return `<tr class="run" data-suite="${esc(suite.id)}" tabindex="0">
+      <th scope="row">${esc(suite.title)}<div class="muted mono">${esc(suite.id)}</div></th>
+      <td>${status}</td>
+      <td class="n">${baseWords ? baseWords.toLocaleString("tr-TR") : "–"}</td>
+      <td class="n">${base?.score != null ? fmt(base.score) : "–"}</td>
+      <td>${pick ? `<span class="dot" style="--vc:var(--s5)"></span>${esc(pick)}` : "–"}</td>
+      <td class="n">${bestWords ? bestWords.toLocaleString("tr-TR") : "–"}${shorter != null ? ` <span class="delta good">−%${shorter}</span>` : ""}</td>
+      <td class="n">${best?.score != null ? fmt(best.score) : "–"}</td>
+      <td class="n">${suite.tasks ?? 0}</td>
+      <td class="mono">${esc((suite.models ?? []).join(", ") || "–")}</td>
+    </tr>`
+  }).join("")
+  document.getElementById("catalog").innerHTML = `<table class="task-table"><thead><tr><th scope="col">Skill</th><th scope="col">Durum</th><th scope="col" class="n">Baseline kelime</th><th scope="col" class="n">Baseline puan</th><th scope="col">Önerilen / taslak sürüm</th><th scope="col" class="n">Kelime</th><th scope="col" class="n">Puan</th><th scope="col" class="n">Görev</th><th scope="col">Model</th></tr></thead><tbody>${rows}</tbody></table>`
+  for (const tr of document.querySelectorAll("#catalog tr[data-suite]")) {
+    if (tr.dataset.suite === state.suite) tr.classList.add("is-rec")
+    tr.onclick = () => loadSuite(tr.dataset.suite)
+    tr.onkeydown = (event) => { if (event.key === "Enter") loadSuite(tr.dataset.suite) }
+  }
+}
+
+const txt = { file: "SKILL.md", left: "baseline", right: null }
+function initTexts() {
+  const files = state.data.variantFiles ?? {}
+  const variants = allVariantOrder().filter((v) => files[v])
+  txt.right = state.data.suite?.promoted && files[state.data.suite.promoted] ? state.data.suite.promoted : variants.filter((v) => v !== "baseline").at(-1) ?? "baseline"
+  txt.left = files.baseline ? "baseline" : variants[0]
+  txt.file = "SKILL.md"
+  const options = variants.map((v) => `<option value="${esc(v)}">${esc(v)}</option>`).join("")
+  for (const [id, key] of [["txt-left", "left"], ["txt-right", "right"]]) {
+    const el = document.getElementById(id)
+    el.innerHTML = options
+    el.value = txt[key] ?? ""
+    el.onchange = () => { txt[key] = el.value; renderTexts() }
+  }
+  document.getElementById("txt-file").onchange = (event) => { txt.file = event.target.value; renderTexts() }
+  renderTexts()
+}
+function renderTexts() {
+  const files = state.data.variantFiles ?? {}
+  const el = document.getElementById("txt-cols")
+  if (!files[txt.left] || !files[txt.right]) { el.innerHTML = `<div class="empty">Bu skill için karşılaştırılacak iki sürüm yok.</div>`; return }
+  const paths = [...new Set([...Object.keys(files[txt.left]), ...Object.keys(files[txt.right])])].sort((a, b) => (a === "SKILL.md" ? -1 : b === "SKILL.md" ? 1 : a.localeCompare(b)))
+  const fileSel = document.getElementById("txt-file")
+  if (!paths.includes(txt.file)) txt.file = paths[0]
+  fileSel.innerHTML = paths.map((p) => `<option value="${esc(p)}">${esc(p)}${files[txt.left][p] == null ? " · yalnız sağda" : files[txt.right][p] == null ? " · yalnız solda" : ""}</option>`).join("")
+  fileSel.value = txt.file
+  const words = (v) => Object.values(files[v]).reduce((sum, text) => sum + text.split(/\s+/).filter(Boolean).length, 0)
+  const leftText = files[txt.left][txt.file]
+  const rightText = files[txt.right][txt.file]
+  const col = (variant, text, diff) => {
+    if (text == null) return `<article class="cmp-col" style="--vc:${variantColor(variant)}"><div class="cmp-head"><div class="t"><span>${esc(variant)}</span></div></div><div class="cmp-missing">Bu sürümde bu dosya yok (birleştirilmiş ya da kaldırılmış olabilir).</div></article>`
+    const lines = text.split("\n")
+    const stat = diff ? `+${diff.added} / −${diff.removed} satır` : "referans"
+    return `<article class="cmp-col" style="--vc:${variantColor(variant)}"><div class="cmp-head"><div class="t"><span><span class="dot" style="--vc:${variantColor(variant)}"></span>${esc(variant)}</span><span class="muted mono">${stat}</span></div><div class="muted mono">${text.split(/\s+/).filter(Boolean).length.toLocaleString("tr-TR")} kelime bu dosyada · ${words(variant).toLocaleString("tr-TR")} kelime toplam</div></div><div class="cmp-body">${lines.map((line, i) => `<div class="cmp-line prose${diff && !diff.kept[i] ? " add" : ""}"><span class="ln">${i + 1}</span><span class="tx">${esc(line) || " "}</span></div>`).join("")}</div></article>`
+  }
+  const diff = leftText != null && rightText != null ? lineDiff(leftText.split("\n"), rightText.split("\n")) : null
+  el.innerHTML = col(txt.left, leftText, null) + col(txt.right, rightText, diff)
+}
+
+function renderVariantFilter() {
+  const el = document.getElementById("variant-filter")
+  const all = allVariantOrder()
+  el.innerHTML = `<span class="muted">Gösterilen sürümler</span>${all.map((v) => `<button data-fv="${esc(v)}" aria-pressed="${isVisible(v)}"><span class="dot" style="--vc:${variantColor(v)}"></span>${esc(v)}</button>`).join("")}<button data-fv="*">Tümü</button>`
+  for (const b of el.querySelectorAll("button")) b.onclick = () => {
+    const v = b.dataset.fv
+    if (v === "*") state.visible = new Set(all)
+    else { state.visible ??= new Set(all); state.visible.has(v) ? state.visible.delete(v) : state.visible.add(v) }
+    try { localStorage.setItem(`bench.visible.${state.suite}`, JSON.stringify([...state.visible])) } catch {}
+    cmp.variants = null
+    renderVariantFilter(); render(); renderCompare()
+  }
+}
+
+function render() {
+  renderSummary()
+  renderBars()
+  renderTaskTable()
+  renderLog()
+  const iteration = currentIteration()
+  if (!iteration) {
+    for (const id of ["matrix", "runs"]) document.getElementById(id).innerHTML = `<div class="empty">Henüz çalıştırma yok. İlk iterasyon tamamlanınca burada görünecek.</div>`
+    return
+  }
+  renderMatrix(iteration)
+  renderRuns(iteration)
+}
+
+// One row of numbers per variant, every variant measured on the same tasks.
+function variantStats() {
+  TRANSFER_TASK = state.data.suite?.transferTasks?.[0] ?? null
+  const runs = allRuns().filter((r) => r.grade)
+  const variants = allVariantOrder().filter((v) => runs.some((r) => r.variant === v))
+  const coreTasks = state.data.tasks.map((t) => t.id).filter((t) => t !== TRANSFER_TASK && variants.every((v) => runs.some((r) => r.variant === v && r.task === t)))
+  const taskMean = (v, t) => mean(runs.filter((r) => r.variant === v && r.task === t).map((r) => r.grade.score))
+  return {
+    coreTasks,
+    rows: variants.map((v) => {
+      const own = runs.filter((r) => r.variant === v)
+      const cons = (state.data.consistency ?? []).filter((c) => c.variant === v)
+      return {
+        id: v,
+        quality: mean(coreTasks.map((t) => taskMean(v, t)).filter(Number.isFinite)),
+        transfer: taskMean(v, TRANSFER_TASK),
+        consistency: cons.length ? mean(cons.map((c) => c.score)) * 100 : NaN,
+        words: variantWords(v).total,
+        context: mean(own.filter((r) => coreTasks.includes(r.task)).map((r) => (r.usage?.context_tokens ?? 0) / 1000)),
+        iterations: [...new Set(own.map((r) => r.iteration))].sort(),
+        runs: own.length,
+      }
+    }),
+  }
+}
+
+function recommended(rows) {
+  const base = rows.find((r) => r.id === "baseline")
+  if (!base) return null
+  return rows
+    .filter((r) => r.id !== "baseline" && r.id !== "none" && r.quality >= base.quality - NOISE)
+    .sort((a, b) => b.quality - a.quality || a.words - b.words)[0] ?? null
+}
+
+function renderSummary() {
+  const { rows, coreTasks } = variantStats()
+  const base = rows.find((r) => r.id === "baseline")
+  const none = rows.find((r) => r.id === "none")
+  const best = recommended(rows)
+  const takeaway = document.getElementById("takeaway")
+  const tiles = document.getElementById("tiles")
+  if (!base || !best) {
+    takeaway.textContent = base ? `Henüz hiçbir sade sürüm orijinalin (${fmt(base.quality)}) ±${NOISE} puan yakınında değil.` : "Henüz baseline sonucu yok."
+    tiles.innerHTML = ""
+    return
+  }
+  const shorter = Math.round((1 - best.words / base.words) * 100)
+  let text = `<b>${esc(best.id)}</b> şu an önerilen sürüm. Orijinal skill'den <b>%${shorter} daha kısa</b>, kod kalitesi <b>${fmt(best.quality)}</b> (orijinal ${fmt(base.quality)}). Aynı görevi tekrar ettiğinde <b>%${Math.round(best.consistency)}</b> oranında aynı yapıyı kuruyor (orijinal %${Math.round(base.consistency)}).`
+  if (none) text += ` Skill olmadan model ${fmt(none.quality)} alıyor; yani skill yaklaşık <b>${fmt(base.quality - none.quality, 0)} puan</b> kazandırıyor.`
+  if (Number.isFinite(best.transfer) && Number.isFinite(base.transfer) && best.transfer < base.transfer - NOISE) {
+    text += ` <span class="warn-text">Dikkat: örneğe benzemeyen transfer görevinde ${fmt(best.transfer)} alıyor (orijinal ${fmt(base.transfer)}).</span>`
+  }
+  takeaway.innerHTML = text + ` <span class="muted">Kalite ${coreTasks.map((t) => t.split("-")[0].toUpperCase()).join(", ")} görevlerinin ortalaması.</span>`
+  const tile = (k, v, s, color) => `<div class="tile"${color ? ` style="--vc:${color}"` : ""}><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`
+  tiles.innerHTML = [
+    tile("Önerilen sürüm", `<span class="dot" style="--vc:${variantColor(best.id)}"></span>${esc(best.id)}`, `${best.words.toLocaleString("tr-TR")} kelime · ${best.iterations.join(", ")}`),
+    tile("Kod kalitesi", fmt(best.quality), `orijinal ${fmt(base.quality)}${none ? ` · skill yok ${fmt(none.quality)}` : ""}`),
+    tile("Skill kısalması", `%${shorter}`, `${base.words.toLocaleString("tr-TR")} → ${best.words.toLocaleString("tr-TR")} kelime`),
+    tile("Tutarlılık", `%${Math.round(best.consistency)}`, `orijinal %${Math.round(base.consistency)}`),
+    tile("Transfer görevi", fmt(best.transfer), `orijinal ${fmt(base.transfer)}`),
+  ].join("")
+}
+
+function renderBars() {
+  const { rows: allRows } = variantStats()
+  const el = document.getElementById("bars")
+  const base = allRows.find((r) => r.id === "baseline")
+  const rows = allRows.filter((r) => isVisible(r.id))
+  if (!rows.length) { el.innerHTML = `<div class="empty">Puanlanmış çalıştırma yok.</div>`; return }
+  const best = recommended(allRows)
+  const maxOf = (key) => Math.max(1, ...rows.map((r) => r[key]).filter(Number.isFinite))
+  const cols = [
+    { key: "quality", title: "Kalite", sub: "ortak görevler · 0–100", max: 100, better: "high", show: (x) => fmt(x), unit: "puan" },
+    { key: "transfer", title: "Transfer", sub: "örneğe benzemeyen görev", max: 100, better: "high", show: (x) => fmt(x), unit: "puan" },
+    { key: "consistency", title: "Tutarlılık", sub: "tekrarlar aynı yapıyı kuruyor mu", max: 100, better: "high", show: (x) => `%${Math.round(x)}`, unit: "puan" },
+    { key: "words", title: "Skill uzunluğu", sub: "kelime · kısa daha iyi", max: maxOf("words"), better: "low", show: (x) => Math.round(x).toLocaleString("tr-TR"), unit: "%" },
+    { key: "context", title: "Bağlam", sub: "bin token · az daha iyi", max: maxOf("context"), better: "low", show: (x) => `${Math.round(x)}k`, unit: "%" },
+  ]
+  const delta = (col, v, b, isBase) => {
+    if (isBase) return `<span class="delta muted">orijinal</span>`
+    if (!Number.isFinite(v) || !Number.isFinite(b)) return ""
+    if (col.unit === "%") {
+      const p = (v / b - 1) * 100
+      if (Math.abs(p) < 3) return `<span class="delta muted">≈ aynı</span>`
+      const good = col.better === "low" ? p < 0 : p > 0
+      return `<span class="delta ${good ? "good" : "bad"}">${p > 0 ? "+" : "−"}%${Math.abs(Math.round(p))}</span>`
+    }
+    const d = v - b
+    if (Math.abs(d) <= NOISE) return `<span class="delta muted">≈ aynı</span>`
+    const good = col.better === "high" ? d > 0 : d < 0
+    return `<span class="delta ${good ? "good" : "bad"}">${d > 0 ? "+" : "−"}${fmt(Math.abs(d), col.key === "consistency" ? 0 : 1)}</span>`
+  }
+  const head = `<tr><th scope="col">Sürüm</th>${cols.map((c) => `<th scope="col">${c.title}<small>${c.sub}</small></th>`).join("")}</tr>`
+  const body = rows.map((r) => {
+    const tags = [
+      r.id === "baseline" ? `<span class="chip-tag">orijinal</span>` : "",
+      r.id === "none" ? `<span class="chip-tag">skill yok</span>` : "",
+      best && r.id === best.id ? `<span class="chip-tag rec">önerilen</span>` : "",
+    ].join("")
+    const cells = cols.map((c) => {
+      const v = r[c.key]
+      const b = base?.[c.key]
+      const pct = Number.isFinite(v) ? Math.max(0, Math.min(100, (v / c.max) * 100)) : 0
+      const ref = Number.isFinite(b) && r.id !== "baseline" ? `<span class="ref" style="left:calc(${(b / c.max) * 100}% - 1px)" title="orijinal: ${esc(c.show(b))}"></span>` : ""
+      return `<td title="${esc(`${r.id} · ${c.title}: ${Number.isFinite(v) ? c.show(v) : "ölçülmedi"}${Number.isFinite(b) ? ` (orijinal ${c.show(b)})` : ""}`)}">
+        <div class="val"><b>${Number.isFinite(v) ? c.show(v) : "–"}</b>${delta(c, v, b, r.id === "baseline")}</div>
+        <div class="track">${Number.isFinite(v) ? `<span class="fill" style="width:${pct}%;--vc:${variantColor(r.id)}"></span>` : ""}${ref}</div>
+      </td>`
+    }).join("")
+    return `<tr class="${best && r.id === best.id ? "is-rec" : ""}"><th scope="row"><div class="name"><span class="dot" style="--vc:${variantColor(r.id)}"></span>${esc(r.id)}${tags}</div><div class="muted mono">${r.iterations.join(", ")} · ${r.runs} çalıştırma</div></th>${cells}</tr>`
+  }).join("")
+  el.innerHTML = `<table class="bar-table"><thead>${head}</thead><tbody>${body}</tbody></table>`
+}
+
+function renderTaskTable() {
+  const runs = allRuns().filter((r) => r.grade)
+  const variants = variantOrder().filter((v) => runs.some((r) => r.variant === v))
+  const tasks = state.data.tasks.filter((t) => runs.some((r) => r.task === t.id))
+  if (!tasks.length) { document.getElementById("task-table").innerHTML = `<div class="empty">Bu skill için henüz puanlanmış çalıştırma yok.</div>`; return }
+  const head = `<tr><th scope="col">Görev</th>${variants.map((v) => `<th scope="col" class="n"><span class="dot" style="--vc:${variantColor(v)}"></span>${esc(v)}</th>`).join("")}</tr>`
+  const body = tasks.map((t) => {
+    const cells = variants.map((v) => {
+      const rs = runs.filter((r) => r.task === t.id && r.variant === v).sort((a, b) => a.iteration.localeCompare(b.iteration) || a.rep - b.rep)
+      return { v, rs, m: mean(rs.map((r) => r.grade.score)) }
+    })
+    const top = Math.max(...cells.map((c) => c.m).filter(Number.isFinite))
+    return `<tr><th scope="row">${esc(taskName(t.id))}</th>${cells.map((c) => c.rs.length
+      ? `<td class="n"><div class="val end"><b class="${c.m === top ? "top" : ""}">${fmt(c.m)}</b></div><div class="track sm"><span class="fill" style="width:${c.m}%;--vc:${variantColor(c.v)}"></span></div><div class="reps muted">${c.rs.map((r) => fmt(r.grade.score, 0)).join(" · ")}</div></td>`
+      : `<td class="n muted">çalışmadı</td>`).join("")}</tr>`
+  }).join("")
+  document.getElementById("task-table").innerHTML = `<table class="task-table"><thead>${head}</thead><tbody>${body}</tbody></table>`
+}
+
+function renderMatrix(iteration) {
+  const variants = variantsOf(iteration)
+  const tasks = state.data.tasks.filter((t) => iteration.tasks.includes(t.id) && (state.task === "all" || state.task === t.id))
+  const leans = variants.filter((v) => v !== "baseline" && v !== "none")
+  let html = `<table class="crit-table"><thead><tr><th scope="col">Kriter</th>${variants.map((v) => `<th scope="col" class="c"><span class="dot" style="--vc:${variantColor(v)}"></span>${esc(v)}</th>`).join("")}<th scope="col">Ne anlama geliyor</th></tr></thead><tbody>`
+  for (const task of tasks) {
+    html += `<tr class="group"><th colspan="${variants.length + 2}" scope="rowgroup">${esc(taskName(task.id))}</th></tr>`
+    for (const c of task.criteria) {
+      const means = {}
+      const cells = variants.map((v) => {
+        const rs = iteration.runs.filter((r) => r.task === task.id && r.variant === v && r.grade).sort((a, b) => a.iteration.localeCompare(b.iteration) || a.rep - b.rep)
+        const marks = rs.map((r) => r.grade.criteria.find((x) => x.id === c.id)).filter(Boolean)
+        means[v] = mean(marks.filter((x) => !x.na).map((x) => x.score))
+        return `<td class="c">${marks.length ? marks.map((x, i) => scoreIcon(x.score, x.na, `${rs[i].iteration} r${rs[i].rep} — ${x.evidence}`)).join("") : `<span class="muted">·</span>`}</td>`
+      })
+      const tags = []
+      const none = means.none, base = means.baseline
+      if (Number.isFinite(none) && none >= 0.85) tags.push(`<span class="tag knows">Model zaten biliyor</span>`)
+      if (Number.isFinite(none) && Number.isFinite(base) && base - none >= 0.3) tags.push(`<span class="tag value">Skill sayesinde</span>`)
+      const lost = leans.filter((v) => Number.isFinite(means[v]) && Number.isFinite(base) && means[v] - base <= -0.25)
+      if (lost.length) tags.push(`<span class="tag lost">Gerileyen: ${lost.map(esc).join(", ")}</span>`)
+      if (variants.every((v) => !Number.isFinite(means[v]) || means[v] < 0.5)) tags.push(`<span class="tag weak">Kimse yapamıyor</span>`)
+      html += `<tr><th scope="row" title="${esc(c.text)}"><span class="crit-name">${esc(critName(c.id))}</span> <span class="muted mono">×${c.weight}</span></th>${cells.join("")}<td>${tags.join(" ")}</td></tr>`
+    }
+  }
+  document.getElementById("matrix").innerHTML = html + `</tbody></table>`
+}
+
+const verdictLabel = { good: "İyi", meh: "Orta", bad: "Kötü" }
+function reviewKey(run) { return `${run.iteration}__${run.runId}` }
+function runKey(run) { return `${run.iteration}::${run.runId}` }
+
+function renderRuns(iteration) {
+  const runs = filteredRuns(iteration).slice().sort((a, b) => a.task.localeCompare(b.task) || variantsOf(iteration).indexOf(a.variant) - variantsOf(iteration).indexOf(b.variant) || a.rep - b.rep)
+  if (!runs.length) { document.getElementById("runs").innerHTML = `<div class="empty">Bu filtrede çalıştırma yok.</div>`; return }
+  const showIter = iteration.iteration === COMBINED
+  document.getElementById("runs").innerHTML = `<table><thead><tr>${showIter ? "<th>İter.</th>" : ""}<th>Görev</th><th>Variant</th><th class="n">Tekrar</th><th>Model</th><th class="n">Skor</th><th class="n">/10</th><th>Typecheck</th><th class="n">dk</th><th class="n">Bağlam token</th><th class="n">Skill okuma</th><th>Bayraklar</th><th>Senin notun</th></tr></thead><tbody>
+  ${runs.map((r) => {
+    const flags = Object.entries(r.checks?.static ?? {}).filter(([, n]) => n > 0).map(([k, n]) => `<span class="chip">${esc(k)} ${n}</span>`).join(" ")
+    const review = state.reviews[reviewKey(r)]
+    return `<tr class="run" tabindex="0" data-run="${esc(runKey(r))}">
+      ${showIter ? `<td class="mono">${esc(r.iteration)}</td>` : ""}
+      <td>${esc(state.data.tasks.find((t) => t.id === r.task)?.title ?? r.task)}</td>
+      <td><span class="dot" style="--vc:${variantColor(r.variant)}"></span>${esc(r.variant)}</td>
+      <td class="n">${r.rep}</td>
+      <td class="mono">${esc(String(r.modelActual || r.model || "").replace("claude-", ""))}</td>
+      <td class="n">${r.grade ? fmt(r.grade.score) : "–"}</td>
+      <td class="n">${r.grade ? r.grade.overall : "–"}</td>
+      <td>${r.checks?.typecheck?.ok ? `<span class="chip ok">geçti</span>` : `<span class="chip fail">${r.checks?.typecheck?.errorCount ?? "?"} hata</span>`}</td>
+      <td class="n">${fmt(r.wallMs / 60000)}</td>
+      <td class="n">${(r.usage?.context_tokens ?? 0).toLocaleString("tr-TR")}</td>
+      <td class="n">${r.variant === "none" ? "—" : (r.skillReads?.length ?? 0)}</td>
+      <td>${flags || `<span class="muted">—</span>`}</td>
+      <td>${review ? `<span class="chip">${esc(verdictLabel[review.verdict] ?? "")}${review.note ? " · not" : ""}</span>` : `<span class="muted">—</span>`}</td>
+    </tr>`
+  }).join("")}</tbody></table>`
+  for (const tr of document.querySelectorAll("tr.run")) {
+    tr.onclick = () => openRun(tr.dataset.run)
+    tr.onkeydown = (e) => { if (e.key === "Enter") openRun(tr.dataset.run) }
+  }
+}
+
+function renderLog() {
+  const items = []
+  for (const it of state.data.iterations.slice().reverse()) {
+    items.push(`<article><div class="eyebrow">${esc(it.iteration)} · ${esc(it.model ?? "")} · ${esc(it.variants.join(", "))} · ${it.reps} tekrar</div><div>${esc(it.note || "Not yok.")}</div></article>`)
+  }
+  for (const [id, meta] of Object.entries(state.data.variants)) {
+    items.push(`<article style="border-color:${variantColor(id)}"><div class="eyebrow">variant ${esc(id)} · ${esc(meta.source)} · ${meta.words?.core ?? "?"} / ${meta.words?.total ?? "?"} kelime</div><div>${esc(meta.note || "")}</div></article>`)
+  }
+  document.getElementById("log").innerHTML = items.join("") || `<div class="empty">Henüz kayıt yok.</div>`
+}
+
+function openRun(runId) {
+  state.runId = runId
+  state.fileTab = null
+  renderDrawer()
+  const dialog = document.getElementById("drawer")
+  if (!dialog.open) dialog.showModal()
+}
+
+function renderDrawer() {
+  const run = currentIteration()?.runs.find((r) => runKey(r) === state.runId)
+  if (!run) return
+  const task = state.data.tasks.find((t) => t.id === run.task)
+  const g = run.grade
+  const files = Object.keys(run.output ?? {})
+  state.fileTab ??= files.find((f) => f.endsWith(".tsx")) ?? files[0] ?? "REPORT"
+  const review = state.reviews[reviewKey(run)] ?? {}
+  const crit = g ? task.criteria.map((c) => {
+    const x = g.criteria.find((y) => y.id === c.id)
+    const val = x?.na ? NaN : x?.score
+    return `<div class="crit">${scoreIcon(x?.score ?? 0, x?.na)}<div><span class="crit-name">${esc(critName(c.id))}</span> <span class="muted mono">${esc(c.id)} × ${c.weight}</span></div><div class="ev">${esc(x?.evidence ?? "")}</div></div>`
+  }).join("") : `<div class="muted">Bu çalıştırma henüz puanlanmadı.</div>`
+  const tabContent = state.fileTab === "REPORT" ? `<pre class="code prose">${esc(run.report || "(boş)")}</pre>` : `<pre class="code">${esc(run.output?.[state.fileTab] ?? "")}</pre>`
+  document.getElementById("drawer-body").innerHTML = `
+    <div class="drawer-head">
+      <div>
+        <div class="eyebrow">${esc(run.iteration)} · ${esc(task?.title)} · tekrar ${run.rep}${g ? ` · rubrik v${g.rubricVersion ?? 1}` : ""}</div>
+        <h2><span class="dot" style="--vc:${variantColor(run.variant)}"></span>${esc(run.variant)} · ${g ? fmt(g.score) : "–"} puan · ${g ? g.overall : "–"}/10</h2>
+        <div class="muted mono">${esc(run.model ?? "")} · ${fmt(run.wallMs / 60000)} dk · ${run.turns ?? "?"} tur · typecheck ${run.checks?.typecheck?.ok ? "geçti" : "kaldı"} · +${run.checks?.linesAdded ?? 0}/−${run.checks?.linesRemoved ?? 0} satır</div>
+      </div>
+      <button id="close">Kapat</button>
+    </div>
+    <section class="review" aria-label="İnceleme notun">
+      <div class="eyebrow">Senin değerlendirmen — bir sonraki iterasyonda Claude bunu okur</div>
+      <div class="verdicts">${Object.entries(verdictLabel).map(([k, label]) => `<button data-v="${k}" aria-pressed="${review.verdict === k}">${label}</button>`).join("")}</div>
+      <textarea id="note" placeholder="Bu çıktıda neyi beğendin, neyi beğenmedin?">${esc(review.note ?? "")}</textarea>
+      <div class="controls"><button id="save">Kaydet</button><span class="muted" id="save-status">${state.db ? "" : "İnceleme kaydı bu görünümde kullanılamıyor."}</span></div>
+    </section>
+    ${g ? `<div class="cols3">
+      <div><h3>Güçlü yanlar</h3><ul>${(g.strengths ?? []).map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>
+      <div><h3>Sorunlar</h3><ul>${(g.problems ?? []).map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>
+      <div><h3>Rubrik dışı değer</h3><p class="muted">${esc(g.beyond || "—")}</p></div>
+    </div>` : ""}
+    <section><h3>Kriterler</h3>${crit}</section>
+    <section style="display:grid;gap:8px">
+      <h3>Çıktı</h3>
+      <div class="tabs">${["REPORT", ...files].map((f) => `<button data-tab="${esc(f)}" aria-pressed="${f === state.fileTab}" class="mono">${esc(f === "REPORT" ? "Son mesaj" : f)}</button>`).join("")}<button id="compare-this">Bu dosyayı tüm iterasyonlarla karşılaştır →</button></div>
+      ${tabContent}
+      ${run.checks?.typecheck?.errors?.length ? `<pre class="code">${esc(run.checks.typecheck.errors.join("\n"))}</pre>` : ""}
+      ${run.checks?.deleted?.length ? `<div class="muted">Silinen dosyalar: ${esc(run.checks.deleted.join(", "))}</div>` : ""}
+      <div class="muted mono">Okunan skill dosyaları: ${esc((run.skillReads ?? []).join(", ") || "—")}</div>
+    </section>`
+  document.getElementById("close").onclick = () => document.getElementById("drawer").close()
+  for (const b of document.querySelectorAll("[data-tab]")) b.onclick = () => { state.fileTab = b.dataset.tab; renderDrawer() }
+  document.getElementById("compare-this").onclick = () => compareFromRun(run, state.fileTab)
+  let verdict = review.verdict ?? null
+  for (const b of document.querySelectorAll(".verdicts button")) b.onclick = () => {
+    verdict = b.dataset.v
+    for (const o of document.querySelectorAll(".verdicts button")) o.setAttribute("aria-pressed", String(o === b))
+  }
+  document.getElementById("save").onclick = () => saveReview(run, verdict, document.getElementById("note").value)
+}
+
+async function saveReview(run, verdict, note) {
+  const status = document.getElementById("save-status")
+  if (!state.db || !state.canWrite) { status.textContent = "Bu görünümde kaydedilemiyor."; return }
+  status.textContent = "Kaydediliyor…"
+  try {
+    await state.db.collection("reviews").doc(reviewKey(run)).set({
+      iteration: run.iteration, runId: run.runId, verdict: verdict ?? "", note: note.trim(), by: state.userId ?? "", at: new Date().toISOString(),
+    })
+    status.textContent = "Kaydedildi."
+  } catch (e) {
+    if (e?.code === "invalid_argument") { state.canWrite = false; status.textContent = "Bu görünümde yazma iznin yok." }
+    else status.textContent = "Kaydedilemedi, tekrar dene."
+  }
+}
+
+// ---------------------------------------------------------------- code comparison
+
+const REPORT_FILE = "__report__"
+const BASE_REF = "__base__"
+const cmp = { task: null, file: null, ref: BASE_REF, variants: null, reps: null }
+
+function allVariantOrder() {
+  const ids = Object.keys(state.data.variants).filter((v) => v !== "baseline").sort()
+  return ["baseline", ...ids, "none"]
+}
+function isVisible(v) { return !state.visible || state.visible.has(v) }
+function variantOrder() { return allVariantOrder().filter(isVisible) }
+function variantOrderUnused() {
+  const ids = Object.keys(state.data.variants).filter((v) => v !== "baseline").sort()
+  return ["baseline", ...ids, "none"]
+}
+function allRuns() { return state.combined?.runs ?? [] }
+function runText(run, file) { return file === REPORT_FILE ? run.report ?? "" : run.output?.[file] }
+
+function filesForTask(taskId) {
+  const counts = {}
+  for (const run of allRuns().filter((r) => r.task === taskId)) {
+    for (const path of Object.keys(run.output ?? {})) counts[path] = (counts[path] ?? 0) + 1
+  }
+  const base = state.data.tasks.find((t) => t.id === taskId)?.baseFiles ?? {}
+  return Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([path, n]) => ({ path, n, inBase: path in base }))
+}
+
+function initCompare() {
+  const taskSel = document.getElementById("cmp-task")
+  taskSel.innerHTML = state.data.tasks.map((t) => `<option value="${esc(t.id)}">${esc(t.title)}</option>`).join("")
+  cmp.task ??= state.data.tasks[0]?.id
+  taskSel.value = cmp.task
+  taskSel.onchange = () => { cmp.task = taskSel.value; cmp.file = null; renderCompare() }
+  document.getElementById("cmp-file").onchange = (e) => { cmp.file = e.target.value; cmp.ref = BASE_REF; renderCompare() }
+  document.getElementById("cmp-ref").onchange = (e) => { cmp.ref = e.target.value; renderCompare() }
+  document.getElementById("cmp-sync").onchange = () => renderCompare()
+  renderCompare()
+}
+
+function lineDiff(refLines, lines) {
+  const a = refLines.map((l) => l.trim()), b = lines.map((l) => l.trim())
+  const n = a.length, m = b.length
+  if (n * m > 6e6) return null
+  const w = m + 1, dp = new Uint32Array((n + 1) * w)
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) {
+    dp[i * w + j] = a[i] === b[j] ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1])
+  }
+  const kept = new Uint8Array(m)
+  let i = 0, j = 0
+  while (i < n && j < m) {
+    if (a[i] === b[j]) { kept[j] = 1; i++; j++ }
+    else if (dp[(i + 1) * w + j] >= dp[i * w + j + 1]) i++
+    else j++
+  }
+  return { kept, added: m - dp[0], removed: n - dp[0] }
+}
+
+function renderCompare() {
+  if (!state.data) return
+  const task = state.data.tasks.find((t) => t.id === cmp.task)
+  const files = filesForTask(cmp.task)
+  const fileSel = document.getElementById("cmp-file")
+  const isReview = task?.mode === "audit"
+  if (!cmp.file) cmp.file = isReview || !files.length ? REPORT_FILE : files[0].path
+  fileSel.innerHTML = `<option value="${REPORT_FILE}">Son mesaj (rapor)</option>` + files.map((f) => `<option value="${esc(f.path)}">${esc(f.path)} · ${f.n} çalıştırma${f.inBase ? " · başlangıçta var" : " · yeni dosya"}</option>`).join("")
+  fileSel.value = cmp.file
+
+  const runs = allRuns().filter((r) => r.task === cmp.task)
+  const variants = variantOrder().filter((v) => runs.some((r) => r.variant === v))
+  const reps = [...new Set(runs.map((r) => r.rep))].sort()
+  cmp.variants ??= new Set(variants)
+  cmp.reps ??= new Set([reps[0]])
+  document.getElementById("cmp-variants").innerHTML = variants.map((v) => `<button data-v="${esc(v)}" aria-pressed="${cmp.variants.has(v)}"><span class="dot" style="--vc:${variantColor(v)}"></span>${esc(v)}</button>`).join("")
+  document.getElementById("cmp-reps").innerHTML = reps.map((r) => `<button data-r="${r}" aria-pressed="${cmp.reps.has(r)}">r${r}</button>`).join("")
+  for (const b of document.querySelectorAll("#cmp-variants button")) b.onclick = () => { cmp.variants.has(b.dataset.v) ? cmp.variants.delete(b.dataset.v) : cmp.variants.add(b.dataset.v); renderCompare() }
+  for (const b of document.querySelectorAll("#cmp-reps button")) b.onclick = () => { const r = Number(b.dataset.r); cmp.reps.has(r) ? cmp.reps.delete(r) : cmp.reps.add(r); renderCompare() }
+
+  const order = variantOrder()
+  const shown = runs
+    .filter((r) => cmp.variants.has(r.variant) && cmp.reps.has(r.rep))
+    .sort((a, b) => order.indexOf(a.variant) - order.indexOf(b.variant) || a.iteration.localeCompare(b.iteration) || a.rep - b.rep)
+  const baseText = cmp.file === REPORT_FILE ? null : task?.baseFiles?.[cmp.file]
+  const columns = [
+    ...(baseText != null ? [{ key: BASE_REF, title: "Başlangıç", sub: "fixture'daki hali", text: baseText, color: "var(--line)" }] : []),
+    ...shown.map((r) => ({
+      key: runKey(r),
+      title: r.variant,
+      sub: `${r.iteration} · r${r.rep} · ${r.grade ? fmt(r.grade.score) + " puan · " + r.grade.overall + "/10" : "puansız"}`,
+      text: runText(r, cmp.file),
+      color: variantColor(r.variant),
+    })),
+  ]
+
+  const refSel = document.getElementById("cmp-ref")
+  if (!columns.some((c) => c.key === cmp.ref)) cmp.ref = columns.find((c) => c.text != null)?.key ?? ""
+  refSel.innerHTML = columns.filter((c) => c.text != null).map((c) => `<option value="${esc(c.key)}">${esc(c.title)} ${esc(c.key === BASE_REF ? "" : c.sub.split(" · ").slice(0, 2).join(" "))}</option>`).join("") + `<option value="">Fark gösterme</option>`
+  refSel.value = cmp.ref
+  const refText = columns.find((c) => c.key === cmp.ref)?.text
+  const refLines = refText != null ? refText.split("\n") : null
+
+  const el = document.getElementById("cmp-cols")
+  if (!shown.length) { el.innerHTML = `<div class="empty">Bu seçimde bu dosyayı üreten çalıştırma yok.</div>`; return }
+  el.innerHTML = columns.map((c) => {
+    if (c.text == null) {
+      return `<article class="cmp-col" style="--vc:${c.color}"><div class="cmp-head"><div class="t"><span>${esc(c.title)}</span></div><div class="muted mono">${esc(c.sub)}</div></div><div class="cmp-missing">Bu çalıştırma bu dosyayı oluşturmadı veya değiştirmedi.</div></article>`
+    }
+    const lines = c.text.split("\n")
+    const diff = refLines && c.key !== cmp.ref ? lineDiff(refLines, lines) : null
+    const stat = diff ? `+${diff.added} / −${diff.removed} satır` : c.key === cmp.ref ? "referans" : ""
+    const prose = cmp.file === REPORT_FILE ? " prose" : ""
+    const body = lines.map((line, i) => `<div class="cmp-line${prose}${diff && !diff.kept[i] ? " add" : ""}"><span class="ln">${i + 1}</span><span class="tx">${esc(line) || " "}</span></div>`).join("")
+    return `<article class="cmp-col" style="--vc:${c.color}"><div class="cmp-head"><div class="t"><span><span class="dot" style="--vc:${c.color}"></span>${esc(c.title)}</span><span class="muted mono">${esc(stat)}</span></div><div class="muted mono">${esc(c.sub)}</div></div><div class="cmp-body">${body}</div></article>`
+  }).join("")
+
+  if (document.getElementById("cmp-sync").checked) {
+    const bodies = [...el.querySelectorAll(".cmp-body")]
+    let syncing = false
+    for (const b of bodies) b.onscroll = () => {
+      if (syncing) return
+      syncing = true
+      for (const o of bodies) if (o !== b) o.scrollTop = b.scrollTop
+      requestAnimationFrame(() => { syncing = false })
+    }
+  }
+}
+
+function compareFromRun(run, file) {
+  cmp.task = run.task
+  cmp.file = file === "REPORT" ? REPORT_FILE : file
+  cmp.ref = BASE_REF
+  cmp.variants = null
+  cmp.reps = new Set([run.rep])
+  document.getElementById("cmp-task").value = run.task
+  document.getElementById("drawer").close()
+  renderCompare()
+  document.getElementById("compare").scrollIntoView({ behavior: "smooth", block: "start" })
+}
+
+async function initDb() {
+  if (!window.claude?.use) return
+  const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")])
+  if (!db) return
+  state.db = db
+  state.userId = user ? await user.id() : null
+  db.collection("reviews").onSnapshot((snap) => {
+    state.reviews = Object.fromEntries(snap.docs.filter((d) => d.exists).map((d) => [d.id, d.data()]))
+    if (currentIteration()) renderRuns(currentIteration())
+  }, () => {})
+}
+
+load().then(initDb)
+</script>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Forms"
+  short_description: "Build composable, accessible React form systems"
+  default_prompt: "Use $build-forms to design or refactor this React form with composable shadcn-style field slots, repository-native validation, and independent workflow orchestration."

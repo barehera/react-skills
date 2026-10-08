@@ -1,0 +1,49 @@
+{
+  "id": "t1-rename-lock",
+  "title": "Rename with a done-task lock",
+  "mode": "create",
+  "prompt": "People need to rename a task from its detail page. Add a Rename button to `TaskDetailHeader` that asks for the new title with `window.prompt` and saves it with `useRenameTaskMutation`. Viewers can't rename (`canEditTask`), and a blank title is ignored. Product has also decided that nobody, not even owners, may rename a task once its status is done: finance prints done task titles on client invoices, and a renamed task no longer matches the invoice the client already received. Please document that rule so nobody removes it later.",
+  "criteria": [
+    {
+      "id": "single-block-at-owner",
+      "weight": 3,
+      "text": "The done-lock is documented by exactly one `Business Logic:` / `Why:` / `Rule:` block placed immediately above the declaration that owns the rule (e.g. a `canRenameTask` function in features/tasks/policy.ts, or an equivalent named feature-level function, hook, or const). The block is not inside a function body or JSX, and the rule is not documented twice (e.g. once in policy and again at the button)."
+    },
+    {
+      "id": "supplied-rationale",
+      "weight": 3,
+      "text": "`Business Logic` states the user-visible policy (done tasks cannot be renamed); `Why` gives the reason the user supplied (done titles appear on client invoices / a rename would no longer match the invoice), not a technical reason; `Rule` states the invariant a refactor must keep (done tasks stay non-renamable for every role, owners included). No extra rationale is invented (e.g. audit trails, compliance, data integrity, sync issues)."
+    },
+    {
+      "id": "block-format",
+      "weight": 2,
+      "text": "The block is a `/** ... */` comment with exactly the three labelled lines, each a single English sentence; no extra prose paragraphs, bullet lists, @param tags, or ticket history inside it."
+    },
+    {
+      "id": "obvious-uncommented",
+      "weight": 2,
+      "text": "Apart from that one block, the change adds no comments: the blank-title check, the canEditTask/viewer check, pending/disabled state, the prompt call, and derived booleans (e.g. `const canRename = ...`, `const isDone = ...`) carry no comments and no second Business Logic block."
+    },
+    {
+      "id": "feature-layer",
+      "weight": 2,
+      "text": "The done-lock decision lives in the tasks feature (policy.ts or another file under src/features/tasks), not in src/components/ui or another generic component; no primitive gains a product comment or product condition."
+    },
+    {
+      "id": "placeholder-replaced",
+      "weight": 1,
+      "text": "The `{/* Actions will go here (viewer: ...) */}` placeholder in TaskDetailHeader is replaced by the feature, not kept beside it, and no new inline narration (e.g. `// call the mutation`, `{/* rename button */}`) is added."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "Comments outside the change are left alone: no repository-wide comment cleanup (task-list.tsx TODO and the use-delete-task-mutation JSDoc are untouched), and the existing canDeleteTask block keeps its Business Logic and Why text (adding a Rule line to it is acceptable; rewriting its Why is a fail)."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "TaskDetailHeader shows Rename only to viewers allowed by canEditTask and never enables it for done tasks (hidden or disabled), trims and ignores blank input, calls useRenameTaskMutation with `{ task, title }`, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

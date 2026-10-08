@@ -1,0 +1,59 @@
+{
+  "id": "t3-nudge-rate-limit",
+  "title": "Rate-limited assignee nudge",
+  "mode": "create",
+  "prompt": "Assignees miss tasks, so owners and editors want a \"Nudge\" button that reminds the assignee. Put it on every assigned task in the `TaskList` rows and in `TaskDetailHeader`; it calls `useNudgeAssigneeMutation`. During the beta people spammed it, so allow at most 3 nudges per task every 10 minutes from this browser. The list row and the detail header for the same task share that allowance. Confirm with a toast when a nudge is sent. When the limit is reached, don't send anything; tell the person when they can nudge again. Viewers (see `canEditTask`) and unassigned tasks don't get the button.",
+  "criteria": [
+    {
+      "id": "pacer-rate-limiter",
+      "weight": 3,
+      "text": "The allowance uses TanStack Pacer's rate limiter (`RateLimiter` or `useRateLimiter`) imported from an installed, existing path (preferably `@tanstack/react-pacer/rate-limiter`; a guessed path like `.../ratelimiter` fails typecheck and fails this criterion) with limit 3 and a 10-minute window (600000 ms). Hand-rolled timestamp arrays, setTimeout loops, localStorage counters, or lodash throttle are a fail."
+    },
+    {
+      "id": "shared-budget",
+      "weight": 3,
+      "text": "Exactly one limiter exists per task id and both the list row and the detail header use it (e.g. a lazily filled `Map<taskId, RateLimiter>` owned by a tasks-feature module or a provider-scoped registry/store). A `useRateLimiter` per component instance (two separate budgets, reset on remount) or a limiter created per click/render is a fail."
+    },
+    {
+      "id": "limit-feedback",
+      "weight": 2,
+      "text": "When the limit is reached no request is sent, and the person is told when they can nudge again, using the limiter's own state (e.g. `getMsUntilNextWindow()`/remaining-in-window or the `onReject` callback) rather than a separately tracked timer. The success toast is shown after the mutation succeeds, not when the click is accepted."
+    },
+    {
+      "id": "notifications",
+      "weight": 2,
+      "text": "Uses `toast` from `sonner` with the Toaster already mounted in `Providers` (no second `<Toaster />`, no `alert`). Each event produces one notification from one owner (the nudge action handler or mutate callbacks, not a render/effect watching mutation state in several components); a failed request gives recoverable feedback (error toast and/or visible button state) and the button shows its own pending state."
+    },
+    {
+      "id": "query-boundary",
+      "weight": 2,
+      "text": "The request goes through the provided `useNudgeAssigneeMutation`; no component builds requests, touches QueryClient, or adds a retry layer (no Pacer `AsyncRetryer`, custom retry loop, or `retry` option bolted on) around the nudge."
+    },
+    {
+      "id": "single-feature-hook",
+      "weight": 2,
+      "text": "The nudge behavior (limiter lookup, mutation, toasts, permission check) lives in one tasks-feature hook or component (e.g. `useNudgeAssignee(task)` / `<NudgeAssigneeButton task={task} />`) reused by both the row and the header; the two call sites do not duplicate the logic. The button UI uses the existing `components/ui/button` and nothing task-specific is added to `components/ui`."
+    },
+    {
+      "id": "client-only-note",
+      "weight": 1,
+      "text": "The final message (or a code comment) states that the browser limiter is a UX guard only and the server must enforce the real limit, and names the chosen libraries with the installed versions checked."
+    },
+    {
+      "id": "permissions",
+      "weight": 1,
+      "text": "The button is absent for viewers (`canEditTask(viewer)` false) and for tasks with `assigneeId === null`, in both the row and the header, using the existing policy function rather than re-implementing the role check."
+    },
+    {
+      "id": "conventions",
+      "weight": 1,
+      "text": "No routine new `useMemo`/`useCallback`/`React.memo` (React Compiler is enabled); optional JSX uses boolean `&&` conditions (no `cond ? <X/> : null`)."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "Nudge appears on assigned task rows and in TaskDetailHeader for owners/editors, sends via the mutation, enforces the shared 3-per-10-minutes allowance, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

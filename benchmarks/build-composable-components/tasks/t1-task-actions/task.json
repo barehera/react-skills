@@ -1,0 +1,64 @@
+{
+  "id": "t1-task-actions",
+  "title": "Task row actions menu",
+  "mode": "create",
+  "prompt": "Add row actions to tasks. Each row in `TaskList` needs a \"⋯\" menu with Rename, Duplicate, and Delete. Delete asks for confirmation before calling `useDeleteTaskMutation`, and only people allowed by `canDeleteTask` may delete. Rename can use `window.prompt` for the new title for now. The same actions also go into `TaskDetailHeader`, at a larger size. Build it as a reusable component and wire it into both places.",
+  "criteria": [
+    {
+      "id": "layering",
+      "weight": 3,
+      "text": "Generic, reusable menu family lives outside the feature (e.g. src/components/...) and never imports feature modules, queries, mutations, or policy. A tasks feature adapter composes it and owns the task-specific items, mutations, and the canDeleteTask decision. Full credit needs both the family/adapter split and no feature imports in the family."
+    },
+    {
+      "id": "persistent-overlay",
+      "weight": 3,
+      "text": "The delete confirmation dialog is rendered outside the transient dropdown content (a persistent sibling controlled by root/adapter state), so closing the menu does not unmount it. Rendering AlertDialog inside DropdownMenuContent/DropdownMenuItem is a fail. When delete is not allowed, the dialog is not mounted either (capability composed explicitly, not auto-mounted)."
+    },
+    {
+      "id": "composition-over-switches",
+      "weight": 2,
+      "text": "Capabilities are chosen by composing or omitting item parts (e.g. `{canDelete && <DeleteItem/>}`), not by boolean switch props on the root such as showDelete/canDelete/hideRename that select children inside the family."
+    },
+    {
+      "id": "slot-props",
+      "weight": 2,
+      "text": "Each public part accepts the props of the primitive it renders (trigger, content, items forward primitive props and className; labels are children). No root-level prop bags such as triggerProps/contentProps/itemProps, and no displayed copy passed through root props/context."
+    },
+    {
+      "id": "action-state",
+      "weight": 2,
+      "text": "Pending/disabled state belongs to the action that runs it (e.g. delete confirm disabled while deleting; duplicate shows its own pending) rather than one family-wide loading flag that disables everything."
+    },
+    {
+      "id": "size-propagation",
+      "weight": 2,
+      "text": "The larger size is a root-level `size` (or equivalent) set once and propagated to connected parts via data attributes / named groups / CSS variables or a deliberate mapping, not per-item className patches at the call site. Omitting size renders like the base primitives."
+    },
+    {
+      "id": "mutation-lifecycle",
+      "weight": 2,
+      "text": "Delete runs through the existing mutation hook without touching query keys/QueryClient in components; the dialog stays open while pending (e.g. preventDefault on AlertDialogAction + mutateAsync/then close, or mutation callbacks that survive unmount) and closes on success; failure leaves a recoverable state."
+    },
+    {
+      "id": "primitive-contract",
+      "weight": 2,
+      "text": "Wrapped primitives keep their contract: props are spread, consumer className merged last via cn, consumer event handlers composed rather than replaced, required bindings (controlled open, generated ids) applied after the spread. Trigger keeps an accessible name."
+    },
+    {
+      "id": "instance-isolation",
+      "weight": 1,
+      "text": "Each menu instance has isolated state (one per row): no module-global store or shared singleton state that would couple rows."
+    },
+    {
+      "id": "conventions",
+      "weight": 1,
+      "text": "Repository conventions: boolean-only optional JSX uses `&&` (no `cond ? <X/> : null`); no routine useMemo/useCallback/React.memo since React Compiler is enabled; no unnecessary Zustand/context machinery for a simple menu."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "Both TaskList rows and TaskDetailHeader use the new actions (detail header at the larger size), viewer permissions respected in both, and the project typechecks (see checks in CHANGES.patch context / no obvious type errors)."
+    }
+  ],
+  "rubricVersion": 2
+}

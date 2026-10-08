@@ -1,0 +1,10 @@
+{
+  "id": "lean-v5",
+  "source": "author:lean-v4 aggressive rewrite",
+  "note": "Aggressive rewrite of lean-v4: 3 references (composition, state-styling-and-effects, review-and-testing), React 19 ref-as-prop, derived state not stored, mutateAsync success effects, controllable helper, overlay rule for any conditionally rendered content, count wording via function child, IDs-to-root for totals, controlled-only Roster example",
+  "createdAt": "2026-10-07T17:56:23.125Z",
+  "words": {
+    "core": 1842,
+    "total": 4456
+  }
+}

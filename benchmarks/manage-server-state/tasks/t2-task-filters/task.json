@@ -1,0 +1,49 @@
+{
+  "id": "t2-task-filters",
+  "title": "Filtered task list",
+  "mode": "extend",
+  "prompt": "The task list needs filtering. The backend now accepts `status`, `assigneeId`, and `search` on the project tasks endpoint (see `docs/api/tasks.md`). `TaskList` should take the active filters from its parent, `ProjectTasksPage`; the filter controls themselves are being built separately, so the page can keep passing no filters for now. While a new search is loading, keep showing the previous results instead of the loading text. Deleting a task must still remove it from the list instantly, and rename and duplicate must keep refreshing the list, also when filters are active.",
+  "criteria": [
+    {
+      "id": "key-completeness",
+      "weight": 3,
+      "text": "The list query key includes the projectId and every filter that changes the response (status, assigneeId, search) in a serializable form. Equivalent inputs are normalized before building the key and the request: search is trimmed and an empty/whitespace search is dropped, unset filters are omitted (or consistently undefined), so `{}` , `{ search: \"\" }` and `{ search: \"  \" }` produce the same key and request."
+    },
+    {
+      "id": "prefix-hierarchy",
+      "weight": 2,
+      "text": "Filtered keys extend the existing hierarchy (e.g. `[...taskKeys.list(projectId), filters]` or a `taskKeys.list(projectId, filters)` whose prefix is `taskKeys.list(projectId)`), so `taskKeys.all`, `taskKeys.lists()` and the per-project prefix still match every filtered variant. Rename's and duplicate's existing list invalidations therefore reach all filtered lists of the project (verify by reading their keys); if the key shape changed, those mutations were updated accordingly."
+    },
+    {
+      "id": "optimistic-all-variants",
+      "weight": 3,
+      "text": "`useDeleteTaskMutation` keeps its instant removal for every cached list variant of the project, not only the unfiltered one: it cancels the project's list queries by prefix, snapshots each matching cache entry (e.g. `getQueriesData`), removes the task from each (e.g. `setQueriesData` with the project prefix), restores every snapshot on error, and still invalidates the project's lists on settle. Keeping the old exact-key `setQueryData(taskKeys.list(projectId))` when that no longer matches filtered keys is a fail; switching to invalidate-only (no instant removal) is half credit."
+    },
+    {
+      "id": "request-encoding",
+      "weight": 2,
+      "text": "The request URL is built from the normalized filters with URLSearchParams (or equivalent encoding), omitting unset values, through the existing `api` wrapper; `assigneeId` unassigned maps to the documented `none` value (or the type/report makes that mapping explicit); the projectId path segment is encoded or otherwise safely interpolated. No raw string concatenation of `search`."
+    },
+    {
+      "id": "previous-results",
+      "weight": 1,
+      "text": "Changing filters keeps the previous results on screen: the list query uses `placeholderData: keepPreviousData` (the convention already used by `useMembersQuery`) or an equivalent, and `TaskList` does not fall back to the \"Loading tasks…\" text while placeholder data is shown (optionally it signals background fetching)."
+    },
+    {
+      "id": "api-compat",
+      "weight": 2,
+      "text": "`useTasksQuery` stays the single list hook, extended compatibly (optional filters argument/object) or with every call site updated in the same change; no parallel `useFilteredTasksQuery` duplicating the request logic. Unrelated code is not migrated: `useTaskQuery`, the detail key, and the rename/duplicate hooks change only where key shape requires it; no new key library, zod, axios, or folder restructure."
+    },
+    {
+      "id": "typed-filters",
+      "weight": 1,
+      "text": "A `TaskFilters` (or similarly named) type lives in the tasks feature, reuses `TaskStatus` for status, and types all three filters as optional; it is used by the hook, the key, and `TaskList`'s props (one definition, not redeclared per file)."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "`TaskList` accepts optional filters and passes them to the query; `ProjectTasksPage` compiles and renders the unfiltered list without changes in behaviour; existing loading and error states still work; the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

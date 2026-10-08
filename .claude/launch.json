@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bench-dashboard",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["benchmarks/scripts/serve-dashboard.mjs"],
+      "port": 4321
+    }
+  ]
+}

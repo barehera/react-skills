@@ -1,0 +1,84 @@
+{
+  "id": "t3-notifications-audit",
+  "title": "Notifications server-state audit (seeded)",
+  "mode": "audit",
+  "prompt": "Notifications have been flaky since launch; the open bugs are in `docs/backlog.md`. Review the notifications data layer in `src/features/notifications` (and the components that use it) against the API contract in `docs/api/notifications.md`. Tell me what to fix, in priority order. Don't edit any files.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "key-missing-inputs",
+      "weight": 3,
+      "text": "Finds that query keys omit inputs that change the response: `notificationKeys.unreadCount()` has no projectId although `useUnreadCountQuery` fetches per project (explains NOTIF-3: switching projects shows the previous project's count), and `useNotificationsQuery` keys only by projectId although `filter` changes the response. Recommends putting projectId (and filter) into the keys and updating mark-all-read's invalidation accordingly. Full credit needs both omissions; one is half credit."
+    },
+    {
+      "id": "finite-infinite-collision",
+      "weight": 3,
+      "text": "Finds that the finite `useNotificationsQuery` (one page object) and the infinite `useNotificationsFeedQuery` (`{ pages, pageParams }`) share the same key `notificationKeys.list(projectId)`, so when the bell and the notifications page are mounted together each reads the other's data shape (e.g. `data.pages` undefined). Recommends distinct keys for finite and infinite variants."
+    },
+    {
+      "id": "backend-pagination",
+      "weight": 2,
+      "text": "Finds that the feed paginates with page numbers (`page=` param, `initialPageParam: 1`, `allPages.length + 1`, page-size heuristic) while the contract is cursor-based (`nextCursor`, `page` ignored), so \"Load more\" refetches the first page and duplicates items. Recommends `initialPageParam` with no cursor, sending `cursor`, and `getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined`."
+    },
+    {
+      "id": "drift-throws",
+      "weight": 3,
+      "text": "Finds that `parseNotification` throws on any type outside a hardcoded three-value union, which the contract says will grow; one unknown type rejects the whole page and the bell/page go blank (NOTIF-5). Recommends treating type as an open string (e.g. known values plus string) with a generic UI fallback, and reporting schema drift (warn/log) while returning the data instead of throwing. Recommending a stricter validator that still rejects the response is a fail."
+    },
+    {
+      "id": "auth-refetch",
+      "weight": 2,
+      "text": "Finds that auth gating relies only on `enabled`, which does not stop the imperative `refetch()` behind the bell's Refresh button, so a signed-out user still sends the request and gets a 401 (NOTIF-7). Recommends gating the queryFn itself (e.g. `skipToken` when not authenticated, or a shared authenticated-query wrapper that combines auth with the caller's `enabled`), and/or not exposing Refresh when signed out."
+    },
+    {
+      "id": "override-replaces-identity",
+      "weight": 2,
+      "text": "Flags that `useNotificationsQuery` accepts `Partial<UseQueryOptions>` and spreads it after the base options, so callers can replace `queryKey`, `queryFn`, or the auth `enabled` gate. Recommends a narrow typed override (e.g. Pick of enabled/select/refetchInterval/placeholderData) with `enabled` combined with the auth condition rather than replaced."
+    },
+    {
+      "id": "optimistic-shape",
+      "weight": 2,
+      "text": "Finds that `useMarkNotificationReadMutation` applies one page-shaped updater via `setQueriesData({ queryKey: notificationKeys.all })`, which also matches the infinite feed (`{ pages }`) and the unread count (`{ count }`), so `page.notifications.map` throws (or corrupts caches). Recommends targeting each cache shape separately (finite page, infinite pages, and optionally decrementing the count) with its own updater."
+    },
+    {
+      "id": "cancel-before-snapshot",
+      "weight": 1,
+      "text": "Notes that the optimistic update does not cancel in-flight queries (`cancelQueries`) before snapshotting and writing, so a refetch can overwrite the optimistic state or the snapshot can be stale."
+    },
+    {
+      "id": "broad-invalidation",
+      "weight": 2,
+      "text": "Flags `onSettled: () => queryClient.invalidateQueries()` with no filter, which refetches every active query in the app (tasks, members) after each click. Recommends targeted invalidation of the affected notification list(s) and the project's unread count."
+    },
+    {
+      "id": "component-cache-write",
+      "weight": 2,
+      "text": "Flags that `NotificationBell` writes the cache directly with a literal key `[\"notifications\", \"unread\"]` that does not match `notificationKeys.unreadCount()` (`\"unread-count\"`), so the write lands in a dead entry, and that components should not touch QueryClient/keys. Recommends removing it (the mutation already invalidates the count) or moving the effect into the mutation/cache layer using the key factory."
+    },
+    {
+      "id": "keep-transport",
+      "weight": 2,
+      "text": "Does NOT present migrating to axios, adding Query Key Factory, adding zod, or restructuring folders as required fixes; the existing `api` fetch wrapper and the `notificationKeys` factory pattern are kept. Mentioning optional runtime validation as a low-priority suggestion is fine; listing a library migration among the prioritized fixes is a fail."
+    },
+    {
+      "id": "keep-unread-count-endpoint",
+      "weight": 2,
+      "text": "Keeps the separate unread-count query; does NOT recommend deriving the unread count from the loaded notification pages (the feed is paginated and the contract says the count covers the whole project). Recommending that derivation is a fail."
+    },
+    {
+      "id": "keep-mark-all-effects",
+      "weight": 1,
+      "text": "Does not call `useMarkAllReadMutation`'s two targeted invalidations (list + unread count) over-broad or wrong in themselves; at most notes they must follow the corrected keys (projectId in the count key, distinct finite/infinite keys)."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings are prioritized by user impact (outage/data-mixing bugs first), cite files and lines, map backlog items NOTIF-3/5/7 to their root causes, distinguish confirmed bugs from maintainability issues, cite the API contract where relevant, and give a concrete correction for each. No invented requirements; no false positives presented as bugs."
+    }
+  ],
+  "rubricVersion": 1
+}

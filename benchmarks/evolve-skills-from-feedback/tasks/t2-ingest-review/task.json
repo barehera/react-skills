@@ -1,0 +1,59 @@
+{
+  "id": "t2-ingest-review",
+  "title": "Review incoming JSON feedback (seeded)",
+  "mode": "audit",
+  "prompt": "The North team sent feedback on our component skill: `tooling/react-skills/feedback/incoming/north-team-action-menu.json`. Our editable skill source is in `tooling/react-skills/`. Go through their feedback against the current skill and tell me what we should take, what we shouldn't, and why. Don't change anything yet; I want to decide first.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited, created, moved, or deleted (CHANGES.patch is empty or only trivial non-source noise). The incoming JSON file is untouched."
+    },
+    {
+      "id": "decision-ledger",
+      "weight": 3,
+      "text": "The report gives exactly one decision for each of N1-N6 (none skipped or merged), each using a verdict from a fixed vocabulary equivalent to accepted / adapted / already-covered / project-only / needs-evidence / rejected, with a one-line reason; every accepted or adapted item names its destination (core SKILL.md rule, reference, example, validator, or no change). A loose prose essay without a per-item decision gets at most 0.5."
+    },
+    {
+      "id": "already-covered-version",
+      "weight": 2,
+      "text": "N2 (root size prop) is marked already-covered (no new rule), citing the current SKILL.md rule 3 and/or styling reference AND noting that the report was written against 1.9.0 while the current source is 2.0.1 (CHANGELOG 2.0.0 added the rule). Marking it accepted and proposing to add a size rule is a fail."
+    },
+    {
+      "id": "boundary-violation",
+      "weight": 3,
+      "text": "N3 is rejected (or adapted into something that keeps the decision in the adapter) because making the composable family call useViewer/canDelete would make a family import feature policy, violating the layer boundary; the report says the permission check stays in the feature adapter, which composes `{canDelete && <DeleteItem/>}`. Accepting N3 as proposed is a fail."
+    },
+    {
+      "id": "needs-evidence",
+      "weight": 2,
+      "text": "N4 is marked needs-evidence (not accepted as a universal test requirement, not silently dropped), noting that the evidence field is empty/impressionistic, and names the exact artifact that would resolve it (e.g. a reproduction prompt, a diff without tests where tests were expected, or a review comment). Mentioning that tests belong to a test-writing companion skill is a bonus, not required."
+    },
+    {
+      "id": "project-only",
+      "weight": 2,
+      "text": "N5 (features/<feature>/menus location, ellipsis labels) is marked project-only/local convention with a recommendation to put it in the North team's own repo instructions, and the report does not propose moving families into features (which would contradict the skill's layer placement)."
+    },
+    {
+      "id": "scoped-rules",
+      "weight": 2,
+      "text": "The report refuses to adopt the two universal 'never' proposals as written: N6 is adapted with an explicit scope (only when React Compiler is enabled, consistent with technology-stack.md saying projects differ) or routed to the stack/companion guidance, not added as 'never use useMemo/useCallback'; and N1's 'never render any dialog in a component' is narrowed to the real rule (an overlay must not live inside transient menu content that unmounts on close; render it as a persistent sibling controlled by adapter/root state). Full credit needs both."
+    },
+    {
+      "id": "accepted-placement",
+      "weight": 2,
+      "text": "N1 is accepted or adapted as a composable-family rule with a concrete destination (short rule in SKILL.md and/or the example/reference showing the dialog as a sibling of the menu), an observable acceptance check or fresh-task forward test, and it notes the evidence is strong (code excerpt, accepted fix, reproduced on three menus)."
+    },
+    {
+      "id": "input-handling",
+      "weight": 1,
+      "text": "Treats the JSON as valid feedback without asking the North team to rewrite it in another format, maps its items onto findings, and marks anything not supported by evidence as an assumption rather than confirmed behavior. Optional: suggests normalizing/preserving it in the canonical Markdown format when the decisions are applied."
+    },
+    {
+      "id": "report-quality",
+      "weight": 1,
+      "text": "The answer is concise and ordered so the user can decide (e.g. a table with item, decision, destination, reason), with open questions only where a product choice is genuinely the user's; no invented findings beyond N1-N6 presented as the team's claims."
+    }
+  ],
+  "rubricVersion": 1
+}

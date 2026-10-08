@@ -1,0 +1,9 @@
+{
+  "skill": "build-forms",
+  "title": "Build Forms",
+  "fixture": "fixture-build-forms",
+  "transferTasks": [
+    "t4-workspace-wizard"
+  ],
+  "promoted": "lean-v1"
+}

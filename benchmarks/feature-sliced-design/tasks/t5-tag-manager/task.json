@@ -1,0 +1,49 @@
+{
+  "id": "t5-tag-manager",
+  "title": "Google Tag Manager integration",
+  "mode": "create",
+  "prompt": "Marketing wants Google Tag Manager in the app. Load the GTM container (its ID is in the `VITE_GTM_ID` env var) only once the user has given analytics consent; `src/app/consent.ts` already tracks that, and nothing may load before consent. Then send `task_renamed` and `task_deleted` events with the task id and project id whenever those actions succeed, wherever in the app they happen. If no container ID is configured, everything should work as it does today.",
+  "criteria": [
+    {
+      "id": "integration-boundary",
+      "weight": 3,
+      "text": "All GTM-specific code (dataLayer setup and typing, script injection, push) lives in one vendor-named integration module/folder (e.g. `src/lib/integrations/gtm/...`, `src/shared/integrations/gtm/...`, or `src/lib/gtm.ts`) exposing a narrow API such as `loadGtm(containerId)` and `pushDataLayerEvent(name, payload)`. It imports nothing from `src/features`, contains no task event names or Task types, and makes no consent decisions about specific features."
+    },
+    {
+      "id": "app-starts-integration",
+      "weight": 2,
+      "text": "The app layer (src/app: App, Providers, or an app-level module) decides when GTM starts: it checks `hasAnalyticsConsent()` and subscribes with `onConsentChange`, loads the container at most once (idempotent guard), unsubscribes on cleanup, and does nothing at module import time. No script is injected before consent, and loading is not triggered from a feature component or `src/components/ui`."
+    },
+    {
+      "id": "feature-owns-events",
+      "weight": 3,
+      "text": "The `task_renamed`/`task_deleted` event names and payload shape `{ taskId, projectId }` are defined in the tasks slice (e.g. `features/tasks/model/task-analytics.ts` or inside the mutation hooks) and sent from ONE place per action, typically the mutation hooks' `onSuccess`, so both TaskList and TaskDetailHeader are covered without duplicate tracking calls in each component. `task_deleted` is not sent from the optimistic `onMutate` or on failure."
+    },
+    {
+      "id": "env-boundary",
+      "weight": 2,
+      "text": "`VITE_GTM_ID` is read at one typed config boundary (e.g. `src/config/env.ts`, `src/lib/config/env.ts`, or one function in the app/integration module), an empty or missing value disables GTM without errors, and `import.meta.env` is not read in several places."
+    },
+    {
+      "id": "no-global-buckets",
+      "weight": 1,
+      "text": "No new catch-all folders or modules are created for this (`src/analytics/`, `src/constants/`, `src/types/`, `src/utils/`, a global `events.ts` listing every product event), and no `index.ts` re-export barrels or `export *`."
+    },
+    {
+      "id": "dependency-direction",
+      "weight": 2,
+      "text": "Imports point downward only: features may import the integration's push API (or a thin shared analytics port), the app imports the integration loader, and the integration imports neither app nor features. The tasks components do not import from `src/app` (e.g. consent) to decide tracking."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "No unrelated files moved or renamed, no packages added (no react-gtm or similar dependency); existing mutation cache behavior (optimistic delete, rollback, invalidation) is unchanged."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "With consent and an ID, GTM's standard snippet behavior is reproduced (dataLayer initialized with `gtm.start`/`gtm.js` and `https://www.googletagmanager.com/gtm.js?id=...` injected once); events reach `window.dataLayer` after successful rename/delete from either screen; `window.dataLayer` is typed via a `declare global` (no scattered `any`); without an ID nothing loads; the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

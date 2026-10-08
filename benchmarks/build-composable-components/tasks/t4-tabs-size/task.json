@@ -1,0 +1,49 @@
+{
+  "id": "t4-tabs-size",
+  "title": "Tabs size and line variant",
+  "mode": "extend",
+  "prompt": "Designers want our Tabs (`src/components/ui/tabs.tsx`, shadcn) to support sizes (`sm`, `default`, `lg`) and a `line` style, chosen once per tabs group. The settings page fakes both with classes on the list and every trigger; move it to the new API. Other screens must look exactly the same as today.",
+  "criteria": [
+    {
+      "id": "root-owned-config",
+      "weight": 3,
+      "text": "`size` and `variant` are set once on the Tabs root (not repeated on each trigger) and reach TabsList/TabsTrigger (and TabsContent if relevant)."
+    },
+    {
+      "id": "css-propagation",
+      "weight": 3,
+      "text": "Propagation uses DOM mechanisms: data attributes on the root plus named group selectors (e.g. group/tabs + group-data-[size=lg]/tabs:) and/or inherited CSS variables. React context used only if justified for non-DOM needs; context purely for styling is partial credit at best. cloneElement is a fail."
+    },
+    {
+      "id": "defaults-preserved",
+      "weight": 3,
+      "text": "With size/variant omitted, every part renders exactly the previous base classes (ProjectTabs unchanged visually); existing base classes are not rewritten or lost; Radix props (orientation, activationMode, disabled etc.) still pass through."
+    },
+    {
+      "id": "consumer-cleanup",
+      "weight": 2,
+      "text": "Settings page uses `<Tabs size=\"lg\" variant=\"line\">` (or equivalent) and drops the per-trigger patch classes; only genuine page layout classes remain (e.g. width/justify)."
+    },
+    {
+      "id": "slot-mapping",
+      "weight": 2,
+      "text": "Each slot maps the semantic values to its own styles (list container vs trigger target/typography vs line underline). The line variant has a distinct active state (for example an underline) and keeps the base focus-visible and disabled styles. Hover or muted-inactive treatment is not required, because neither the base Tabs nor the old settings page has one."
+    },
+    {
+      "id": "class-structure",
+      "weight": 1,
+      "text": "Long class lists are grouped by concern as ordered `cn(...)` arguments (base first, variants grouped, consumer className last) or a typed CVA; not one unreadable string per slot."
+    },
+    {
+      "id": "typed-api",
+      "weight": 2,
+      "text": "A shared typed size/variant type (or CVA VariantProps) drives the API; invalid values are type errors; defaults are explicit."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "Change stays focused: no unrelated primitives rewritten, no new dependencies, no speculative extra sizes/variants beyond the request; typechecks."
+    }
+  ],
+  "rubricVersion": 2
+}

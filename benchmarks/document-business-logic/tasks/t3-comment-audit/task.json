@@ -1,0 +1,59 @@
+{
+  "id": "t3-comment-audit",
+  "title": "Task row comment review (seeded)",
+  "mode": "audit",
+  "prompt": "The comments in `src/features/tasks/components/task-row.tsx` have gotten out of hand. Review them and tell me which to remove, which to keep, and which to rewrite (and how). Don't edit any files. Our product decisions are written down in `docs/product-rules.md`.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "rewrite-in-progress-essay",
+      "weight": 3,
+      "text": "The 'ok so this part is important!!!' essay above `canDelete` is recognized as a real product rule (PR-7) and the report proposes replacing it with exactly one `Business Logic` / `Why` / `Rule` block (not keeping the essay beside it) whose Why is the PR-7 reason (deleting an in-progress task discards tracked, uninvoiced billable hours) and whose Rule is that in-progress tasks cannot be deleted from the list. Using the essay's timer/404/'talk to Dana' story as the Why is a fail."
+    },
+    {
+      "id": "block-at-owner",
+      "weight": 2,
+      "text": "The proposed block sits at the declaration that owns the rule: above TaskRow, or above an extracted named function/const (e.g. `canDeleteFromList` in features/tasks/policy.ts or a module-level helper), with each label one English sentence. Keeping it as an inline comment inside the component body scores 0.5 at most."
+    },
+    {
+      "id": "remove-history",
+      "weight": 2,
+      "text": "Recommends removing the ACME-212 history paragraph (old behavior, where the code used to live, 'until the old dashboard is migrated') and the commented-out Duplicate `<Button>` as change history / disabled code."
+    },
+    {
+      "id": "remove-narration",
+      "weight": 2,
+      "text": "Recommends removing `// get the viewer` (restates the next line) and the `window.confirm blocks the event loop...` comment in handleDelete (narrates framework/event mechanics)."
+    },
+    {
+      "id": "invented-technical-why",
+      "weight": 2,
+      "text": "Flags the opacity comment ('so users don't click them, because the click handler fires twice in Safari...') as CSS/technical narration with an invented product reason and recommends removing it; if the report suggests documenting the de-emphasis at all, it uses PR-9 rather than the Safari story. Keeping the Safari rationale is a fail."
+    },
+    {
+      "id": "remove-obvious-block",
+      "weight": 2,
+      "text": "Recommends removing the Business Logic / Why / Rule block on `isDoneStatus`, because it wraps an obvious derived value in the three headings."
+    },
+    {
+      "id": "keep-license-and-suppression",
+      "weight": 2,
+      "text": "Keeps the copyright/license header and the `eslint-disable-next-line jsx-a11y/no-autofocus -- ...` suppression; recommending removal of either, or rewriting either into a business block, is a fail."
+    },
+    {
+      "id": "keep-a11y-labels-api-doc",
+      "weight": 2,
+      "text": "Keeps the screen-reader note on the sr-only status span, the `// ---- Labels / Row ----` section labels, and the JSDoc on `onDelete` (a public prop contract). Recommending removal of any of these, or converting them into Business Logic blocks, costs credit (0.5 if one is mishandled, 0 if two or more)."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "The report is organized as remove / keep / rewrite (or equivalent), cites each comment by line or quote, gives the replacement text for rewrites, stays within task-row.tsx (no repository-wide cleanup presented as required), and invents no product rules beyond docs/product-rules.md."
+    }
+  ],
+  "rubricVersion": 1
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Preferred React Stack"
+  short_description: "Choose verified React libraries by concern"
+  default_prompt: "Use $use-preferred-react-stack to choose libraries for shareable search, persisted preferences, and failure notices after checking the installed stack."

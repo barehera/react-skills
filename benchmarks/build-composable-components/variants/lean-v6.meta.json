@@ -1,0 +1,10 @@
+{
+  "id": "lean-v6",
+  "source": "editor:lean-v5+it4 fixes",
+  "note": "lean-v5 + 5 fixes: audit step 7 reports ternary/non-boolean && and repeated class patches as findings; report order keeps small findings; test-only export replaced by behavior tests; context only for portaled slots (DOM slots read the root group); composition file reuses the generic role name verbatim",
+  "createdAt": "2026-10-07T23:12:35.035Z",
+  "words": {
+    "core": 1851,
+    "total": 4545
+  }
+}

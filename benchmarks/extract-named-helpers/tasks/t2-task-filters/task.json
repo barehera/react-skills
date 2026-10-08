@@ -1,0 +1,54 @@
+{
+  "id": "t2-task-filters",
+  "title": "Task filters hook tidy-up with a reset action",
+  "mode": "extend",
+  "prompt": "The task board filters (`useTaskFilters` and `TaskFilterBar`, used by `TaskBoard`) are getting hard to follow. We also need a \"Reset filters\" button in the filter bar that clears the status and assignee filters but keeps whatever is typed in search; only show it when a status or assignee filter is active. Add the button and tidy up the filter code while you're there. Saved filters in localStorage must keep working exactly as they do today, including \"Unassigned\" versus \"Any assignee\".",
+  "criteria": [
+    {
+      "id": "pure-module-scope",
+      "weight": 3,
+      "text": "The stored-filter parsing (status list sanitizing and assignee restore), the status toggle transform, and the task matching rule are pure functions at module scope (outside `useTaskFilters`) with every input passed explicitly. The hook still owns useState, the localStorage read in the lazy initializer, and the persistence effect. At least two of these three decisions are extracted; leaving all inline is a fail."
+    },
+    {
+      "id": "functional-updater",
+      "weight": 3,
+      "text": "toggleStatus and the new reset still go through `setFilters((previous) => helper(previous, ...))` (or an equivalent updater that receives the current value); no next state is precomputed from the render-time `filters` snapshot and passed as a value."
+    },
+    {
+      "id": "null-vs-undefined",
+      "weight": 3,
+      "text": "The assignee distinction is preserved everywhere: `null` means unassigned only and `undefined` means any assignee in parsing (a stored null restores null, a missing key restores undefined), in task matching (`undefined` skips the check, `null` matches tasks with `assigneeId === null`), in the select value mapping both ways, and reset sets `undefined`. No `??`, `||`, truthiness, or `== null` check collapses the two."
+    },
+    {
+      "id": "toggle-semantics",
+      "weight": 2,
+      "text": "Toggle behavior is unchanged: removing a selected status removes it; adding the last missing status collapses the list to `[]` (no status filter); order of statuses otherwise preserved. The extracted transform returns a new object (no mutation of `previous` or its array) and is named as a copy/transform (to/with/create prefix or a clearly pure verb), not `handle`/`reset`-as-mutation."
+    },
+    {
+      "id": "reset-feature",
+      "weight": 2,
+      "text": "The filter bar shows a \"Reset filters\" button only when statuses are non-empty or assigneeId is not undefined (search text alone does not show it); clicking it sets statuses to [] and assigneeId to undefined while keeping query, and the change persists through the existing effect. The visibility flag is a named boolean (local value or `is`/`has` predicate), and the hook exposes a focused action (e.g. `resetFilters`)."
+    },
+    {
+      "id": "select-mapping",
+      "weight": 2,
+      "text": "The two-way mapping between the assignee filter and the select's string value (`__any`/`__none`/member id) is expressed as a pair of small named transforms or a single named mapping in `task-filter-bar.tsx`, replacing the nested ternary and the if/else chain in onChange; the onChange callback reduces to one call. The mapping stays module-private in the filter bar (it is a UI encoding, not domain logic)."
+    },
+    {
+      "id": "no-hook-or-memo-wrappers",
+      "weight": 2,
+      "text": "No new hook is created around a pure calculation (e.g. no `useVisibleTasks` that only filters), no useMemo/useCallback/React.memo is added (React Compiler is enabled), and the hook's effect dependency list and storage key are unchanged."
+    },
+    {
+      "id": "placement",
+      "weight": 2,
+      "text": "Extracted helpers stay module-private (no `export`) in the file whose code they came from (`use-task-filters.ts`, `task-filter-bar.tsx`) or, if shared by both, in one tasks-feature module. No `helpers.ts`/`utils.ts`, no file per tiny helper, nothing moved into `src/lib` or `src/components`. Simple one-caller expressions such as `search` normalization or `hasActiveFilters` may stay inline."
+    },
+    {
+      "id": "typecheck",
+      "weight": 1,
+      "text": "TaskBoard is wired to the new reset action, existing props still work, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

@@ -1,0 +1,54 @@
+{
+  "id": "t4-quick-switcher",
+  "title": "Cross-feature quick switcher",
+  "mode": "create",
+  "prompt": "Power users want a quick switcher. Pressing Cmd+K (Ctrl+K on Windows) anywhere in the app should open a search box that finds the current project's tasks by title and its members by name or email. Choosing a task opens it, the same as clicking it in the list. Choosing a member narrows the task list to the tasks assigned to that member, with an obvious way to clear that filter. Hook it into `AppShell`.",
+  "criteria": [
+    {
+      "id": "composition-above-slices",
+      "weight": 3,
+      "text": "The switcher that combines tasks and members is owned above both feature slices: in the app layer (e.g. `src/app/quick-switcher.tsx`) or a new composing layer such as `src/widgets/quick-switcher/` or `src/pages/...`. Neither `src/features/tasks` nor `src/features/members` imports the other for this, and the switcher is NOT a new same-layer feature slice (e.g. `src/features/quick-switcher` or `src/features/search`) importing both features, nor a `src/components/...` module importing features. Any of those is a fail."
+    },
+    {
+      "id": "feature-owned-pieces",
+      "weight": 2,
+      "text": "Task-specific matching/rendering (title, status) and member-specific rendering (name, email, avatar) stay with their owning slice, e.g. `features/tasks/.../task-switcher-items.tsx` and `features/members/.../member-switcher-items.tsx` exposed at direct paths, or the composing module uses only each slice's existing query hooks plus thin rendering. No Task/Member knowledge lands in `src/components/ui`, `src/hooks`, or `src/lib`."
+    },
+    {
+      "id": "generic-primitive",
+      "weight": 2,
+      "text": "The overlay shell is a business-agnostic primitive in `src/components/ui` (e.g. a shadcn-style `dialog.tsx` built on radix-ui Dialog and/or a `CommandDialog` added to `command.tsx`), named by role, forwarding props, with an accessible title; it knows nothing about tasks, members, or the shortcut's meaning."
+    },
+    {
+      "id": "app-owned-state",
+      "weight": 2,
+      "text": "AppShell (app layer) owns the open-task and assignee-filter state and passes them down: the switcher reports choices via callbacks, and TaskList gains an explicit input (e.g. `assigneeId` prop) rather than reading switcher state from a module-global store or a new context defined inside a feature. The switcher is mounted once."
+    },
+    {
+      "id": "server-state-reuse",
+      "weight": 2,
+      "text": "Uses the existing `useTasksQuery` and `useMembersQuery` (members searched with the typed text, debounced or deferred) from their owning slices, or adds any new query only in the owning slice's server-state; no fetching code, query keys, or QueryClient usage inside the switcher or components/ui; no duplicate copies of the task list query."
+    },
+    {
+      "id": "shortcut-placement",
+      "weight": 1,
+      "text": "The Cmd/Ctrl+K listener is registered once (with cleanup) beside the switcher that owns it, or in a focused, business-agnostic module named for its purpose; it is not a switcher-specific hook dropped into the generic `src/hooks` bucket."
+    },
+    {
+      "id": "direct-paths",
+      "weight": 2,
+      "text": "Cross-slice imports use the `@/` alias with direct implementation paths; same-slice imports are relative; no new `index.ts` re-export barrels or `export *`."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "No unrelated files moved or renamed (no wholesale introduction of shared/, entities/ or renaming of components/ui), no new packages; feature changes are limited to what the switcher needs (e.g. the TaskList filter input and optional switcher item parts)."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "Cmd/Ctrl+K opens (and toggles or Escape closes) the switcher; typing finds tasks by title and members by name/email; choosing a task opens it via AppShell's existing open-task state; choosing a member filters TaskList by `assigneeId` with a visible clear control; cmdk filtering is reconciled with server search (e.g. `shouldFilter={false}` or explicit value strings); the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

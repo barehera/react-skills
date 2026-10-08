@@ -1,0 +1,59 @@
+{
+  "id": "t2-assignee-picker",
+  "title": "Searchable assignee picker",
+  "mode": "create",
+  "prompt": "Replace the placeholder in `TaskAssigneeField` with a proper assignee picker: a button that opens a searchable popover listing project members from `useMembersQuery`. Show loading, error, and no-results states. Each member shows an avatar (initials fallback), name, and email, and the selected member gets a check mark. The parent controls the value, which can be cleared back to unassigned (`undefined`). We'll reuse this picker for choosing reviewers later, so make it reusable.",
+  "criteria": [
+    {
+      "id": "layering",
+      "weight": 3,
+      "text": "A generic picker family (outside the tasks/members features) has no knowledge of useMembersQuery, Member-specific fetching, or task policy; a feature adapter (assignee field) runs the query and composes the family. The family is reusable for reviewers without edits."
+    },
+    {
+      "id": "item-anatomy-open",
+      "weight": 3,
+      "text": "The consumer owns each option's visible anatomy (avatar, name, email, check indicator) through composable item parts: either the consumer maps the array inside structural list slots, or the family enumerates through a render callback. A closed `<Results/>`/`renderItem`-free component that hardcodes avatar/name/email inside the family is a fail."
+    },
+    {
+      "id": "collection-mode",
+      "weight": 2,
+      "text": "The members array is passed in exactly one mode: either the consumer maps it, or the root owns it (for loading/error/empty gating) and enumerates it; never passed to the root AND mapped again by the consumer from the same external array."
+    },
+    {
+      "id": "state-gating",
+      "weight": 2,
+      "text": "Loading, error, and empty states are focused, replaceable parts (or adapter branches) and do not render alongside stale results incorrectly; consumers do not have to repeat `!loading && !error && items.map` logic in multiple places."
+    },
+    {
+      "id": "controlled-optional-value",
+      "weight": 3,
+      "text": "The picker supports a controlled value where `undefined` (unassigned) is a valid controlled value: controlledness is determined by prop presence (e.g. `'value' in props` / hasOwnProperty) or the component is controlled-only by design with value typed `string | undefined` and onValueChange required; clearing to undefined does not flip it into uncontrolled mode. A clear/unassign affordance exists."
+    },
+    {
+      "id": "item-identity",
+      "weight": 1,
+      "text": "Each option establishes its identity once (value/id on the item boundary); nested parts such as the check indicator derive selection from that boundary rather than receiving repeated `selected`/`index` props computed by the consumer."
+    },
+    {
+      "id": "slot-props",
+      "weight": 2,
+      "text": "Trigger, content, input, list, and item parts accept their primitive's props (Button/PopoverContent/CommandInput/CommandItem); no triggerProps/contentProps/itemProps bags; placeholder and labels are passed to the part that renders them."
+    },
+    {
+      "id": "primitive-contract",
+      "weight": 2,
+      "text": "Builds on the existing Popover and Command primitives, preserving their keyboard/ARIA behavior (cmdk filtering is disabled or reconciled with server search via shouldFilter={false} or equivalent); className merged last; required bindings applied after spreads."
+    },
+    {
+      "id": "conventions",
+      "weight": 1,
+      "text": "Optional JSX uses `&&` only with boolean conditions; nullable values are compared explicitly (`src != null &&`, `items.length > 0 &&`) and no `cond ? <X/> : null`; no routine manual memoization (React Compiler enabled); no module-global store; state machinery proportional to need (no unrequested uncontrolled mode)."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "TaskAssigneeField uses the picker with the existing props contract, search is wired to useMembersQuery, and the code typechecks."
+    }
+  ],
+  "rubricVersion": 2
+}

@@ -1,0 +1,49 @@
+{
+  "id": "t2-task-checklist",
+  "title": "Checklist and repeat schedule on task edit",
+  "mode": "extend",
+  "prompt": "Task editing (`EditTaskScreen`) needs two additions. First, a checklist: people can add items, tick them off, edit their text, remove them, and move them up or down. Empty items are not allowed and a task can have at most 20. Second, a \"Repeats\" checkbox: when it is ticked, show a \"Repeat every\" choice (Day, Week, Month) that is required while the task repeats. `useUpdateTaskMutation` already accepts `checklist` and `repeatEvery`; leave `repeatEvery` out of the request entirely when the task does not repeat. Start from the task's current checklist and schedule.",
+  "criteria": [
+    {
+      "id": "reuse-foundation",
+      "weight": 3,
+      "text": "The new checkbox field is added as a reusable family next to the existing ones in `src/features/form/components/` (e.g. `checkbox-field.tsx`) and is built on the existing `CompoundFieldRoot` / `useCompoundField` / `CompoundFieldLabel|Description|Error` and `composeRefs`, not a second `useController` + `useId` + ARIA implementation. It imports nothing from the tasks feature, and its root restricts names to boolean-valued paths (e.g. `FieldPathByValue<T, boolean>`). Checklist text and the Repeat every choice reuse the existing Input and Select families. Writing raw `<input>`/`register` markup or a task-specific checkbox component instead is a fail."
+    },
+    {
+      "id": "checkbox-contract",
+      "weight": 2,
+      "text": "The checkbox Control renders the repository `Checkbox` primitive, maps the primitive's checked state to the form's boolean (e.g. `onCheckedChange={(checked) => onChange(checked === true)}`), binds id, `checked`, disabled, ref and blur from the field root, and composes (not replaces) a consumer `onCheckedChange`. The label targets the control (htmlFor = control id or a wrapping label) and the family exposes its parts (root/label/control/description/error, optionally layout/content) as separate slots rather than `labelProps`/`layoutProps` bags."
+    },
+    {
+      "id": "field-array-identity",
+      "weight": 3,
+      "text": "The checklist uses React Hook Form `useFieldArray` (on the existing typed form's control). Rows use `key={field.id}` (never the index); index is used only in field paths such as `checklist.${index}.text` / `checklist.${index}.done`. Add, remove, and move use the field-array methods (`append`, `remove`, `move`/`swap`) so values, errors, and focus do not drift after remove or reorder."
+    },
+    {
+      "id": "array-controls",
+      "weight": 2,
+      "text": "Add, remove, move up, and move down are repository `Button`s with `type=\"button\"` and accessible names that identify the row (e.g. `aria-label` with the item's position or text) when they are icon-only or repeated; move up is disabled on the first row and move down on the last; Add is disabled (or hidden) at 20 items, and the schema also enforces `max(20)` and non-empty (trimmed) item text with readable messages. New items append with defaults `{ text: \"\", done: false }` (focusing the new input is a plus)."
+    },
+    {
+      "id": "conditional-value",
+      "weight": 3,
+      "text": "The Repeat every select is rendered only while Repeats is ticked (watched narrowly, e.g. `useWatch({ name: \"repeats\" })`). Required-while-repeating lives in the schema (e.g. `superRefine`/`refine` with a path on the repeat field, or a discriminated union), not in component code. When not repeating, the object passed to the mutation has no `repeatEvery` value (key absent or `undefined`), achieved deliberately by a schema transform, an explicit mapping in the submit handler, or `shouldUnregister` on that field; a stale choice left over from an earlier tick must not leak into the request. Whether a hidden choice is kept as a draft or cleared is stated (comment or handoff). Passing the raw form values with a stale `repeatEvery` is a fail."
+    },
+    {
+      "id": "cohesive-feature-form",
+      "weight": 2,
+      "text": "The schema, inferred type, defaults, and the Day/Week/Month option metadata are extended inside the existing `task-form.ts` (no new `schemas/`, `types/`, or `constants/` folders); `getTaskFormDefaults` maps the task's `checklist` and `repeatEvery` (null -> not repeating) into form defaults; the feature still has one typed Form root, one `useForm` call, and the new sections call `useTaskForm()` instead of receiving `form`/`control` props from the screen."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "Existing field families, `form.tsx`, the title/status section, and the submit footer are not rewritten (additive edits only, e.g. a new family file or a small export); new UI is split into focused section components (e.g. checklist section, schedule section) rather than inlining everything into `EditTaskScreen`; no new dependencies."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "`EditTaskScreen` shows the checklist and the Repeats / Repeat every controls, submits `checklist` and (only when repeating) `repeatEvery` through `useUpdateTaskMutation`, keeps its `{ task, onSaved }` props, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}
