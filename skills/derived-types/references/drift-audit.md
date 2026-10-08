@@ -26,6 +26,9 @@ Substitute the owner's field names and literals into each search.
 | --- | --- | --- |
 | Prop fields that match record fields | `rg -n "^\s*(estimatedArrival\|status\|carrier)\??:" src/features src/components` | a redeclared field; derive it |
 | Hand-written props in feature code | `rg -n "(type\|interface) \w+Props\b" src/features` | check each field against its owner |
+| Helper and hook parameters typed loosely | `rg -n "\((status\|estimatedArrival)\??: (string\|number)" src/features` | a redeclared field in a signature; derive it |
+| Loose hook state | `rg -n "useState<string" src/features` | state that should hold a derived union |
+| Primitive callbacks cast to a union | `rg -n "onValueChange=.*\bas\b" src` | narrow with a type guard instead |
 | Record casts | `rg -n "\bas [A-Z]\w*(\[\])?" src`, ignoring import aliases | a missing parse or silenced drift |
 | `any` | `rg -n ":\s*any\b\|as any\|<any>" src` | lost inference |
 | Suppressions and non-null | `rg -n "@ts-ignore\|@ts-expect-error\|\w!\." src` | silenced drift |
@@ -39,10 +42,11 @@ Substitute the owner's field names and literals into each search.
 
 Apply the placement test to the file that holds the type:
 
-- Feature adapter: derive from the owner (`Pick`, indexed access,
-  `satisfies Record<...>`, `(typeof X)[number]`).
-- Primitive or composable family: a UI-vocabulary prop (`value: Date | string`)
-  is `owned on purpose`; a record import is a layer violation to remove.
+- Feature component, hook, or helper: derive from the owner (`Pick`, indexed
+  access, `satisfies Record<...>`, `(typeof X)[number]`, a type guard).
+- Reusable component, hook, or helper: a UI or platform type
+  (`value: Date | string`) is `owned on purpose`; a record import is a layer
+  violation to remove.
 - Left manual, with a reason: a third-party type you do not control, a value
   that is genuinely transformed before display, or `unknown` data before its
   schema parse.
@@ -52,10 +56,10 @@ Apply the placement test to the file that holds the type:
 1. Owners first. Give each fact one schema-inferred type beside its schema,
    delete parallel DTOs, and parse unknown data at the boundary. Fixing the
    owner first makes the compiler list every drifted consumer.
-2. Feature adapters next. Replace redeclared props with `Pick` or indexed
-   access, string-keyed maps with `satisfies`, and casts or annotations with
-   inference. Convert or format at the edge where the compiler points.
-3. Reusable components last. Remove record imports, extend
+2. Feature code next. Replace redeclared props and parameters with `Pick` or
+   indexed access, string-keyed maps with `satisfies`, casts on primitive
+   callbacks with type guards, and annotations with inference. Convert or format at the edge where the compiler points.
+3. Reusable code last. Remove record imports, extend
    `ComponentProps<...>` with `Omit` for replaced keys, drop props types
    exported just in case, and make a component generic only when values flow
    back to the consumer.

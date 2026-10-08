@@ -1,0 +1,17 @@
+---
+name: derived-types
+description: Keep React and TypeScript types single-sourced across components, hooks, and helpers so a changed field reaches every consumer through the compiler. Use when a prop, hook parameter, helper signature, map, callback, or constant restates a type already owned by a response schema, form schema, store, primitive, or constant (a `createdAt: string` prop, a `getLabel(status: string)` helper, a copied status union, a `Record<string, ...>` map); when code needs `as`, `any`, `!`, or `String(x)` to pass data; when a primitive callback returns `string` that must become a union; when deciding whether reusable code owns its types, derives them, or becomes generic; or when auditing a codebase for type drift without overengineering.
+---
+
+Read and follow `.agents/skills/derived-types/SKILL.md`, and the references,
+examples, and companion routing it names, before starting.
+
+Purpose: Derive component, hook, and helper types from one owner.
+
+- Inspect the repository before changing it; preserve a coherent existing
+  structure and treat the bundled examples as references, never as templates.
+- Keep primitives, composable families, and feature adapters in separate
+  layers with dependencies pointing downward only.
+- Route work the skill does not own to the companion skill it names.
+- Report `React Skills v<version>` from `.agents/skills/VERSION` in the
+  final handoff.

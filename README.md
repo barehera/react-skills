@@ -40,7 +40,7 @@ the layer model, and responsibility boundaries.
 | [Evolve Skills from Feedback](skills/evolve-skills-from-feedback/README.md) | Capture evidence from real projects and turn it into validated, durable skill improvements. |
 | [Feature-Sliced Design](skills/feature-sliced-design/README.md) | Design, migrate, and audit scalable React application structure around feature ownership, runtime boundaries, and direct imports. |
 | [Extract Named Helpers](skills/extract-named-helpers/README.md) | Extract focused helpers without needless indirection. |
-| [Derive Component Types](skills/derive-component-types/README.md) | Derive component and hook types from one owner so props follow server, form, and store changes. |
+| [Derived Types](skills/derived-types/README.md) | Derive component, hook, and helper types from one owner so they follow server, form, and store changes. |
 | [Use Preferred React Stack](skills/use-preferred-react-stack/README.md) | Choose verified React libraries by concern. |
 | [Write Feature Tests](skills/write-feature-tests/README.md) | Lock product rules with reusable case tables and a baked-defaults contract. |
 

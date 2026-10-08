@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/item"
 
 import { Timestamp } from "../../../components/ui/timestamp"
+import { shipmentStatusLabels } from "../model/shipment-status"
 import type { Shipment } from "../server-state/types"
 
 type ShipmentRowProps = {
@@ -21,15 +22,13 @@ type ShipmentRowProps = {
 
 type BadgeVariant = NonNullable<ComponentProps<typeof Badge>["variant"]>
 
-const shipmentStatusBadges = {
-  pending: { label: "Pending", variant: "outline" },
-  in_transit: { label: "In transit", variant: "secondary" },
-  delivered: { label: "Delivered", variant: "default" },
-} satisfies Record<Shipment["status"], { label: string; variant: BadgeVariant }>
+const shipmentStatusVariants = {
+  pending: "outline",
+  in_transit: "secondary",
+  delivered: "default",
+} satisfies Record<Shipment["status"], BadgeVariant>
 
 export function ShipmentRow({ shipment }: ShipmentRowProps) {
-  const statusBadge = shipmentStatusBadges[shipment.status]
-
   return (
     <Item variant="outline">
       <ItemContent>
@@ -38,7 +37,9 @@ export function ShipmentRow({ shipment }: ShipmentRowProps) {
       </ItemContent>
       <ItemActions>
         <Timestamp value={shipment.estimatedArrival} />
-        <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
+        <Badge variant={shipmentStatusVariants[shipment.status]}>
+          {shipmentStatusLabels[shipment.status]}
+        </Badge>
       </ItemActions>
     </Item>
   )
