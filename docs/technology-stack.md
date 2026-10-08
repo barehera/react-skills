@@ -136,7 +136,7 @@ Use and extend the existing skill that owns the concern:
 | evidence capture, finding evaluation, and durable skill improvements | `evolve-skills-from-feedback` |
 | library selection, verified import paths, and integration prerequisites | `use-preferred-react-stack` |
 | extraction thresholds, helper signatures, naming, and hook/helper separation | `extract-named-helpers` |
-| type ownership across layers: derived feature props, owned reusable props, and drift without casts | `derive-component-types` |
+| type ownership across layers: derived feature props, hook and helper signatures, owned reusable contracts, and drift without casts | `derived-types` |
 | product-rule case tables, rule-change test discipline, and baked-defaults contracts | `write-feature-tests` |
 
 A new skill may compose these capabilities, but it must route to the owning

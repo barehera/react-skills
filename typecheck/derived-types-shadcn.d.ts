@@ -38,3 +38,37 @@ declare module "@/components/ui/item" {
     props: React.ComponentProps<"div">
   ): React.ReactElement
 }
+
+declare module "@/components/ui/toggle-group" {
+  import type * as React from "react"
+
+  type ToggleGroupVariantProps = {
+    variant?: "default" | "outline" | null
+    size?: "default" | "sm" | "lg" | null
+    disabled?: boolean
+  }
+
+  type ToggleGroupSingleProps = {
+    type: "single"
+    value?: string
+    defaultValue?: string
+    onValueChange?: (value: string) => void
+  }
+
+  type ToggleGroupMultipleProps = {
+    type: "multiple"
+    value?: string[]
+    defaultValue?: string[]
+    onValueChange?: (value: string[]) => void
+  }
+
+  export function ToggleGroup(
+    props: Omit<React.ComponentProps<"div">, "defaultValue"> &
+      ToggleGroupVariantProps &
+      (ToggleGroupSingleProps | ToggleGroupMultipleProps)
+  ): React.ReactElement
+  export function ToggleGroupItem(
+    props: Omit<React.ComponentProps<"button">, "value"> &
+      Pick<ToggleGroupVariantProps, "variant" | "size"> & { value: string }
+  ): React.ReactElement
+}

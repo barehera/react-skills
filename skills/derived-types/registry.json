@@ -1,0 +1,177 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "derived-types",
+      "type": "registry:item",
+      "title": "Derived Types",
+      "description": "Derive component, hook, and helper types from one owner so they follow server, form, and store changes.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/agents/openai.yaml"
+        },
+        {
+          "path": "references/drift-audit.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/references/drift-audit.md"
+        },
+        {
+          "path": "examples/shipment-tracking/src/components/ui/timestamp.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/components/ui/timestamp.tsx"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/components/shipment-list.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/components/shipment-list.tsx"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/components/shipment-row.tsx",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/components/shipment-row.tsx"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/model/shipment-status.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/model/shipment-status.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/model/use-shipment-status-filter.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/model/use-shipment-status-filter.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/server-state/api.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/server-state/api.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/server-state/queries/keys.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/server-state/queries/keys.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/server-state/queries/options.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/server-state/queries/options.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/server-state/queries/use-shipments-query.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/server-state/queries/use-shipments-query.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/server-state/schemas.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/server-state/schemas.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/features/shipments/server-state/types.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/features/shipments/server-state/types.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/server-state/api.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/server-state/api.ts"
+        },
+        {
+          "path": "examples/shipment-tracking/src/server-state/utils.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/derived-types/examples/shipment-tracking/src/server-state/utils.ts"
+        }
+      ],
+      "docs": "Installs instructions, references, examples, and metadata; does not install runtime dependencies or application source."
+    },
+    {
+      "name": "derived-types-claude",
+      "type": "registry:item",
+      "title": "Derived Types for Claude Code",
+      "description": "Claude Code pointer that loads the Derived Types skill.",
+      "registryDependencies": [
+        "barehera/react-skills/derived-types"
+      ],
+      "files": [
+        {
+          "path": "adapters/claude.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/derived-types/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "derived-types",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "derived-types-cursor",
+      "type": "registry:item",
+      "title": "Derived Types for Cursor",
+      "description": "Cursor pointer that loads the Derived Types skill.",
+      "registryDependencies": [
+        "barehera/react-skills/derived-types"
+      ],
+      "files": [
+        {
+          "path": "adapters/cursor.mdc",
+          "type": "registry:file",
+          "target": "~/.cursor/rules/derived-types.mdc"
+        }
+      ],
+      "meta": {
+        "skill": "derived-types",
+        "agent": "cursor"
+      }
+    },
+    {
+      "name": "derived-types-copilot",
+      "type": "registry:item",
+      "title": "Derived Types for GitHub Copilot",
+      "description": "GitHub Copilot pointer that loads the Derived Types skill.",
+      "registryDependencies": [
+        "barehera/react-skills/derived-types"
+      ],
+      "files": [
+        {
+          "path": "adapters/copilot.instructions.md",
+          "type": "registry:file",
+          "target": "~/.github/instructions/derived-types.instructions.md"
+        }
+      ],
+      "meta": {
+        "skill": "derived-types",
+        "agent": "copilot"
+      }
+    },
+    {
+      "name": "derived-types-windsurf",
+      "type": "registry:item",
+      "title": "Derived Types for Windsurf",
+      "description": "Windsurf pointer that loads the Derived Types skill.",
+      "registryDependencies": [
+        "barehera/react-skills/derived-types"
+      ],
+      "files": [
+        {
+          "path": "adapters/windsurf.md",
+          "type": "registry:file",
+          "target": "~/.windsurf/rules/derived-types.md"
+        }
+      ],
+      "meta": {
+        "skill": "derived-types",
+        "agent": "windsurf"
+      }
+    }
+  ]
+}

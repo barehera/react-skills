@@ -3,10 +3,10 @@ trigger: glob
 globs: "**/*.{ts,tsx}"
 ---
 
-Read and follow `.agents/skills/derive-component-types/SKILL.md`, and the references,
+Read and follow `.agents/skills/derived-types/SKILL.md`, and the references,
 examples, and companion routing it names, before starting.
 
-Purpose: Derive component types from one owner without casts.
+Purpose: Derive component, hook, and helper types from one owner.
 
 - Inspect the repository before changing it; preserve a coherent existing
   structure and treat the bundled examples as references, never as templates.

@@ -35,7 +35,7 @@ const skillGlobs = {
   "evolve-skills-from-feedback": ["**/.agents/feedback/**/*.md", "**/skills/**/SKILL.md"],
   "feature-sliced-design": ["**/src/**/*.{ts,tsx}", "**/app/**/*.{ts,tsx}"],
   "extract-named-helpers": ["**/*.{ts,tsx}"],
-  "derive-component-types": ["**/*.{ts,tsx}"],
+  "derived-types": ["**/*.{ts,tsx}"],
   "use-preferred-react-stack": ["**/*.{ts,tsx}", "**/package.json"],
   "write-feature-tests": ["**/*.test.{ts,tsx}", "**/tests/**/*.{ts,tsx}"],
 };

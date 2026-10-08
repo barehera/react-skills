@@ -1,0 +1,4 @@
+interface:
+  display_name: "Derived Types"
+  short_description: "Derive component, hook, and helper types from one owner"
+  default_prompt: "Use $derived-types to type these components, hooks, and helpers from the types that own their data, keep reusable code in its own UI vocabulary, and remove redeclared types and casts."

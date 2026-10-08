@@ -27,8 +27,8 @@
     "skills/build-forms/examples/typed-feature-form/src/**/*.tsx",
     "skills/build-composable-components/examples/layered-family/src/**/*.ts",
     "skills/build-composable-components/examples/layered-family/src/**/*.tsx",
-    "skills/derive-component-types/examples/shipment-tracking/src/**/*.ts",
-    "skills/derive-component-types/examples/shipment-tracking/src/**/*.tsx",
+    "skills/derived-types/examples/shipment-tracking/src/**/*.ts",
+    "skills/derived-types/examples/shipment-tracking/src/**/*.tsx",
     "skills/document-business-logic/examples/**/*.tsx",
     "skills/extract-named-helpers/examples/**/*.ts",
     "skills/write-feature-tests/examples/**/*.ts",
@@ -36,6 +36,6 @@
     "skills/use-preferred-react-stack/examples/**/*.tsx",
     "typecheck/build-forms-shadcn.d.ts",
     "typecheck/build-composable-components-shadcn.d.ts",
-    "typecheck/derive-component-types-shadcn.d.ts"
+    "typecheck/derived-types-shadcn.d.ts"
   ]
 }
