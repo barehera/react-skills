@@ -6,11 +6,14 @@ import { type FieldPathByValue, type FieldValues } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { composeRefs } from "@/lib/compose-refs"
 import {
+  CompactField,
   CompoundFieldDescription,
   CompoundFieldError,
   CompoundFieldLabel,
   CompoundFieldRoot,
   useCompoundField,
+  type CompactFieldProps,
+  type CompactFieldSlotProps,
   type CompoundFieldDescriptionProps,
   type CompoundFieldErrorProps,
   type CompoundFieldLabelProps,
@@ -81,5 +84,41 @@ export function InputFieldControl({
         if (!event.defaultPrevented) field.controlOnChange(event)
       }}
     />
+  )
+}
+
+export type InputFieldProps<
+  TFieldValues extends FieldValues,
+  TName extends FieldPathByValue<TFieldValues, string>,
+> = CompactFieldProps<TFieldValues, TName> &
+  InputFieldControlProps & {
+    slotProps?: CompactFieldSlotProps
+  }
+
+export function InputField<
+  TFieldValues extends FieldValues,
+  TName extends FieldPathByValue<TFieldValues, string>,
+>({
+  control,
+  description,
+  disabled,
+  label,
+  name,
+  shouldUnregister,
+  slotProps,
+  ...inputProps
+}: InputFieldProps<TFieldValues, TName>) {
+  return (
+    <CompactField
+      control={control}
+      description={description}
+      disabled={disabled}
+      label={label}
+      name={name}
+      shouldUnregister={shouldUnregister}
+      slotProps={slotProps}
+    >
+      <InputFieldControl {...inputProps} />
+    </CompactField>
   )
 }

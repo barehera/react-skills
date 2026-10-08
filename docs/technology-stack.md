@@ -28,7 +28,7 @@ invitation to make canonical React Skills examples technology-agnostic.
 | --- | --- | --- |
 | UI runtime | React with TypeScript | Use typed function components and current React APIs. |
 | UI primitives | shadcn/ui and Radix | Extend existing primitives and preserve their props, refs, accessibility, focus, and composition contracts. |
-| Component API | Compound components | Give each visible part its natural primitive props; roots own only shared bindings and state. |
+| Component API | Compound components | Give each visible part its natural primitive props; roots own only shared bindings and state. Form fields add one compact adapter per control whose typed `slotProps` configure those same slots (`build-forms`). |
 | Styling | Tailwind CSS with the repository `cn` convention | Preserve primitive classes, variants, named groups, and consumer `className` overrides. |
 | Form state | React Hook Form | Own submitted values, validation lifecycle, field registration, errors, reset, and submission. |
 | Runtime validation | Zod | Define schemas at trust boundaries and infer TypeScript values when the schema is authoritative. |
@@ -181,6 +181,12 @@ retain scoped vanilla stores. Placement remains owned by `feature-sliced-design`
 The `components/ui` placement of generic families and the benchmark-driven
 rewrite of `build-composable-components` are recorded in
 [the 2026-10-08 decision ledger](skill-feedback/2026-10-08-decisions.md).
+
+Compact field adapters with typed `slotProps` as the default form-field API,
+and the rule that an incumbent typed form factory wins over the skill's own
+example API, are recorded in
+[the build-forms decision ledger](skill-feedback/2026-10-08-build-forms-decisions.md).
+General composable families keep slots instead of prop bags.
 
 The Vitest addition for unit and contract tests is recorded in
 [the rule-tests decision ledger](skill-feedback/2026-09-24-decisions.md). It

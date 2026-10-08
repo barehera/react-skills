@@ -1,25 +1,19 @@
 "use client"
 
+import { useWatch } from "react-hook-form"
+
 import {
+  InputField,
   InputFieldControl,
   InputFieldDescription,
   InputFieldError,
   InputFieldLabel,
   InputFieldRoot,
 } from "@/components/ui/input-field"
-import {
-  SelectFieldContent,
-  SelectFieldControl,
-  SelectFieldDescription,
-  SelectFieldError,
-  SelectFieldItem,
-  SelectFieldLabel,
-  SelectFieldRoot,
-  SelectFieldTrigger,
-  SelectFieldValue,
-} from "@/components/ui/select-field"
+import { SelectField } from "@/components/ui/select-field"
 import {
   PROPOSAL_SURFACES,
+  PROPOSAL_TITLE_MAX_LENGTH,
   useProposalForm,
 } from "../proposal-form"
 
@@ -30,10 +24,15 @@ export function ProposalDetails() {
     <section aria-labelledby="proposal-details-title">
       <h2 id="proposal-details-title">Proposal details</h2>
 
+      {/* The counter shares the label row, so this field composes the slots. */}
       <InputFieldRoot control={form.control} name="title">
-        <InputFieldLabel>Title (required)</InputFieldLabel>
+        <div className="flex items-baseline justify-between gap-2">
+          <InputFieldLabel>Title (required)</InputFieldLabel>
+          <ProposalTitleLength />
+        </div>
         <InputFieldControl
           required
+          maxLength={PROPOSAL_TITLE_MAX_LENGTH}
           placeholder="Returns automation pilot"
         />
         <InputFieldDescription>
@@ -42,35 +41,36 @@ export function ProposalDetails() {
         <InputFieldError />
       </InputFieldRoot>
 
-      <InputFieldRoot control={form.control} name="owner">
-        <InputFieldLabel>Owner (required)</InputFieldLabel>
-        <InputFieldControl
-          required
-          autoCapitalize="words"
-          autoComplete="name"
-        />
-        <InputFieldError />
-      </InputFieldRoot>
+      <InputField
+        control={form.control}
+        name="owner"
+        label="Owner (required)"
+        required
+        autoCapitalize="words"
+        autoComplete="name"
+      />
 
-      <SelectFieldRoot control={form.control} name="surface">
-        <SelectFieldLabel>Primary surface (required)</SelectFieldLabel>
-        <SelectFieldControl required>
-          <SelectFieldTrigger>
-            <SelectFieldValue placeholder="Choose a surface" />
-          </SelectFieldTrigger>
-          <SelectFieldContent align="start">
-            {PROPOSAL_SURFACES.map((surface) => (
-              <SelectFieldItem key={surface.value} value={surface.value}>
-                {surface.label}
-              </SelectFieldItem>
-            ))}
-          </SelectFieldContent>
-        </SelectFieldControl>
-        <SelectFieldDescription>
-          Choose where customers will encounter the proposal.
-        </SelectFieldDescription>
-        <SelectFieldError />
-      </SelectFieldRoot>
+      <SelectField
+        control={form.control}
+        name="surface"
+        label="Primary surface (required)"
+        description="Choose where customers will encounter the proposal."
+        required
+        options={PROPOSAL_SURFACES}
+        placeholder="Choose a surface"
+        slotProps={{ selectContent: { align: "start" } }}
+      />
     </section>
+  )
+}
+
+function ProposalTitleLength() {
+  const form = useProposalForm()
+  const title = useWatch({ control: form.control, name: "title" })
+
+  return (
+    <span aria-hidden="true">
+      {title.length}/{PROPOSAL_TITLE_MAX_LENGTH}
+    </span>
   )
 }

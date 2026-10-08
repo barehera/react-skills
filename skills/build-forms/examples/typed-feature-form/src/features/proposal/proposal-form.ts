@@ -2,8 +2,13 @@ import * as z from "zod"
 
 import { createForm } from "@/components/ui/form"
 
+export const PROPOSAL_TITLE_MAX_LENGTH = 80
+
 export const proposalSchema = z.object({
-  title: z.string().min(3, "Use a recognizable title."),
+  title: z
+    .string()
+    .min(3, "Use a recognizable title.")
+    .max(PROPOSAL_TITLE_MAX_LENGTH, "Shorten the title to 80 characters."),
   owner: z.string().min(2, "Add the proposal owner."),
   surface: z.enum(["web", "mobile", "embedded"]),
 })

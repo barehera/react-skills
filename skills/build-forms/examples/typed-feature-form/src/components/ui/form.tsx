@@ -222,14 +222,16 @@ function containsSlot(children: React.ReactNode, slot: React.ElementType): boole
   return found
 }
 
+export type CompoundFieldLayoutProps = Omit<
+  React.ComponentProps<typeof Field>,
+  "children" | "data-disabled" | "data-invalid" | "defaultValue" | "id"
+>
+
 export type CompoundFieldRootProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
 > = UseControllerProps<TFieldValues, TName> &
-  Omit<
-    React.ComponentProps<typeof Field>,
-    "children" | "data-disabled" | "data-invalid" | "id"
-  > & {
+  CompoundFieldLayoutProps & {
     children: React.ReactNode
     id?: string
   }
@@ -339,5 +341,59 @@ export function CompoundFieldError(props: CompoundFieldErrorProps) {
       id={`${field.controlId}-error`}
       errors={[field.error]}
     />
+  )
+}
+
+export type CompactFieldProps<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+> = Pick<
+  UseControllerProps<TFieldValues, TName>,
+  "control" | "disabled" | "name" | "shouldUnregister"
+> & {
+  label: React.ReactNode
+  description?: React.ReactNode
+}
+
+export type CompactFieldSlotProps = {
+  field?: CompoundFieldLayoutProps
+  fieldLabel?: Omit<CompoundFieldLabelProps, "children">
+  fieldDescription?: Omit<CompoundFieldDescriptionProps, "children">
+  fieldError?: CompoundFieldErrorProps
+}
+
+export function CompactField<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+>({
+  children,
+  control,
+  description,
+  disabled,
+  label,
+  name,
+  shouldUnregister,
+  slotProps,
+}: CompactFieldProps<TFieldValues, TName> & {
+  children: React.ReactNode
+  slotProps?: CompactFieldSlotProps
+}) {
+  return (
+    <CompoundFieldRoot
+      {...slotProps?.field}
+      control={control}
+      disabled={disabled}
+      name={name}
+      shouldUnregister={shouldUnregister}
+    >
+      <CompoundFieldLabel {...slotProps?.fieldLabel}>{label}</CompoundFieldLabel>
+      {children}
+      {description ? (
+        <CompoundFieldDescription {...slotProps?.fieldDescription}>
+          {description}
+        </CompoundFieldDescription>
+      ) : null}
+      <CompoundFieldError {...slotProps?.fieldError} />
+    </CompoundFieldRoot>
   )
 }
