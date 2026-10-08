@@ -19,170 +19,177 @@ React Skills code lives in one of three layers: primitives (shadcn/Radix and
 stores), and feature adapters (screens, schemas, typed forms, queries,
 mutations, product rules). Dependencies point downward only.
 
-This skill owns the field-family layer under `features/form` and the typed
+This skill owns the field-family layer under `components/ui` and the typed
 feature form in the adapter. Field families never import a feature schema,
 mutation, or product rule; the feature's `<feature>-form.ts` and screen own
 those and connect them to server state through `$manage-server-state`.
 
 ## Required workflow
 
-1. Read repository instructions and inspect React, form-library, validator,
-   shadcn or Radix, styling, compiler, feature-placement, and test conventions.
-2. Trace existing fields, schemas, submit handlers, server-state hooks, dynamic
+1. Read repository instructions and inspect the form library, validator,
+   shadcn or Radix primitives, styling, feature placement, and tests. Trace
+   existing fields, schemas, submit handlers, server-state hooks, dynamic
    collections, workflow navigation, and consumers before changing structure.
-3. Classify the task as `create`, `extend`, `refactor`, or `audit`.
-4. Write a short form model:
-   - form state and schema owner;
-   - field root responsibilities;
-   - control, label, description, error, content, and item slots;
-   - conditional and repeated-field ownership;
-   - workflow/navigation owner;
-   - surrounding Card, Dialog, Sheet, or other container owner;
-   - submission and remote-state owner.
-5. Audit each wrapped primitive's props, ref, events, value contract, disabled
-   behavior, ARIA, focus, keyboard behavior, semantic input type, autocomplete,
-   mobile input hints, constraints, defaults, and portal boundaries.
-6. Implement a shared field foundation, then compose control-specific families
+   Classify the task as `create`, `extend`, `refactor`, or `audit`.
+2. Write a short form model: the form state and schema owner; the field root's
+   responsibilities; the control, label, description, error, content, and item
+   slots; and the owners of conditional and repeated fields, workflow
+   navigation, any surrounding Card, Dialog, or Sheet, and submission and
+   remote state.
+3. Audit each wrapped primitive's props, ref, events, value contract, disabled
+   behavior, ARIA, focus, keyboard behavior, semantic input type,
+   autocomplete, mobile hints, constraints, defaults, and portal boundaries.
+4. Implement a shared field foundation, then compose control-specific families
    from it. Keep each cohesive family discoverable from one module.
-7. Exercise omission, reordering, custom layout, conditional slots, two form
-   instances, validation failure, reset, submission success/failure, dynamic
-   add/remove/reorder, and every workflow transition relevant to the task.
-8. Run repository formatting, lint, typecheck, interaction tests, and build in
-   proportion to risk. Report preserved contracts and unresolved assumptions.
+5. Run the [extension tests](references/review-and-testing.md#extension-tests)
+   the task touches: omission, reordering, custom layout, two form instances,
+   validation failure, reset, submit success and failure, dynamic
+   add/remove/reorder, and workflow transitions.
+6. Run the repository's format, lint, typecheck, interaction tests, and build
+   in proportion to risk. Report preserved contracts and unresolved
+   assumptions.
 
 ## Core contracts
 
-- Keep form state separate from workflow navigation. A Stepper owns step value,
-  ordering, and navigation. A Form owns values, validation, and submission. A
-  feature adapter may validate the active step and then call `stepper.next()`.
+Ownership:
+
+- A Form owns values, validation, and submission; a Stepper owns step value,
+  order, and navigation. A feature adapter may validate the active step and
+  then call `stepper.next()`.
 - Keep independently responsible components independent even when one renders
   around another. Never create fused `StepperForm`, `FormStepper`, `CardForm`,
   `DialogForm`, or similar APIs. Render the separate Stepper, Form, Card,
   Dialog, or Sheet components in the feature composition; each retains its own
   state, props, context, and behavior.
-- Put registration, generated IDs, invalid/disabled state, and accessibility
-  relationships on the field root or shared field foundation.
-- Give every public part the compatible props of the primitive it renders.
+- Schema definitions, cross-field business validation, submit mutations,
+  notifications, routing, and cache synchronization stay outside visual field
+  slots.
+
+Field families:
+
+- Registration, generated IDs, invalid/disabled state, and accessibility
+  relationships live once on the field root or shared field foundation.
+- Every public part takes the compatible props of the primitive it renders.
   Expose `SelectFieldTrigger`, `SelectFieldContent`, and similar slots instead
   of tunneling their contracts through `triggerProps`, `contentProps`,
   `labelProps`, or other parent prop bags.
-- Preserve consumer refs by composing them with the form-library ref. Compose
-  observational handlers before applying authoritative bindings. Keep helpers
-  shared by multiple field families outside any one Input or Select module.
+- Consumers omit, reorder, wrap, and conditionally render slots. An optional
+  compact field may provide common anatomy only when it is implemented from
+  the same open slots.
+- Compose consumer refs with the form-library ref, and observational handlers
+  before authoritative bindings. Helpers shared by several field families live
+  outside any one Input or Select module.
 - Keep control-specific primitive providers around only the slots that require
   them. Field label, description, and error slots stay outside a Radix Select
   provider; trigger, value, content, and items stay inside an explicit
   `SelectFieldControl` boundary.
-- Include description and error IDs in `aria-describedby` only when the
-  corresponding slot exists. While invalid, also bind `aria-errormessage` only
-  to a visible error slot. Keep label association and error focus correct.
+- `aria-describedby` lists the description ID only when that slot renders and
+  the error ID only while invalid with an error slot rendered;
+  `aria-errormessage` points to that visible error slot only while invalid.
 - Preserve native `required` and reflect required state on custom interactive
-  controls. Keep semantic `type`, valid `autocomplete`, `inputMode`,
-  `enterKeyHint`, capitalization, spellcheck, and native constraint props on
-  the Control slot; never guess one universal value for unrelated fields.
-- Let consumers omit, reorder, wrap, and conditionally render slots. An
-  optional compact field component may provide common anatomy only when it is
-  implemented from the same open slots.
-- Keep schema definitions, cross-field business validation, submit mutations,
-  notifications, routing, and cache synchronization outside visual field slots.
-- Keep a consuming feature's form contract cohesive. Co-locate its schema,
-  inferred values, defaults, option metadata, and typed Form/hook in a focused
-  `<feature>-form.ts` module by default. Split an artifact only when it becomes
-  independently reusable or the module stops being cohesive. Keep product
-  artifacts out of the shared `features/form` foundation.
-- For a form with several descendant sections, create a feature-typed Form and
-  hook once. Let the typed Form root call React Hook Form's `useForm` exactly
-  once. Pass `resolver`, `defaultValues`, `mode`, and other `UseFormProps`
-  directly to that root, and let descendants call the typed hook instead of
-  creating another form instance or receiving `UseFormReturn` props. Keep the
-  factory generic: the consuming feature still chooses those options.
-- When external, non-field properties are needed across several form
-  descendants, bind an optional second properties type in `createForm` and pass
-  one `properties` object to the root. Create one scoped vanilla Zustand store
-  per mounted root and expose a typed selector hook. Keep React Hook Form values
-  in React Hook Form, carry only the stable Zustand `StoreApi` through the
-  provider, and never use a module-global store or the removed
-  `zustand/context` API. Keep React Hook Form's resolver `context` option
-  separate from these form-wide properties.
-- Use stable field-array identity from the form library. Never use array index
-  as the React key or repeat positional identity through nested field parts.
-- Keep conditional values deliberately: unregister only when product semantics
-  say a hidden field must be removed from the submitted model.
+  controls. Semantic `type`, valid `autocomplete`, `inputMode`,
+  `enterKeyHint`, capitalization, spellcheck, and native constraints stay
+  Control-slot props chosen per field; never guess one universal value for
+  unrelated fields.
+- Field-array React keys use the form library's stable field identity, never
+  the array index, and nested field parts do not repeat positional identity.
+- Unregister a conditional field only when product semantics say the hidden
+  value must leave the submitted model.
 - Reuse repository-native `Field`, `Label`, `Input`, `Select`, `Textarea`,
   `RadioGroup`, `Checkbox`, `Button`, and error primitives rather than
-  restyling raw DOM controls. Preserve semantic elements such as `form`,
-  `fieldset`, `section`, and headings when no UI primitive replaces them.
+  restyling raw DOM controls. Keep semantic `form`, `fieldset`, `section`, and
+  headings where no UI primitive replaces them.
+
+Feature form:
+
+- Co-locate a consuming feature's schema, inferred values, defaults, option
+  metadata, and typed Form/hook in one `<feature>-form.ts`. Split an artifact
+  out only when it becomes independently reusable or the module stops being
+  cohesive. Product artifacts stay out of the shared `components/ui`
+  foundation.
+- For a form with several descendant sections, create a feature-typed Form and
+  hook once. The typed Form root calls React Hook Form's `useForm` exactly once
+  and takes `resolver`, `defaultValues`, `mode`, and other `UseFormProps`
+  directly; descendants call the typed hook instead of creating another form
+  instance or receiving `UseFormReturn` props. The factory stays generic: the
+  consuming feature chooses those options.
+- When several descendants need external, non-field properties, bind an
+  optional second properties type in `createForm` and pass one `properties`
+  object to the root. The root creates one scoped vanilla Zustand store per
+  mount and exposes a typed selector hook; its provider carries only the
+  stable `StoreApi`. Values stay in React Hook Form. Never use a module-global
+  store or the removed `zustand/context` API, and keep React Hook Form's
+  resolver `context` option separate from these properties.
 
 ## Companion skill routing
 
-Inspect the installed skill catalog before implementation when the request
-crosses the form boundary.
+When the request crosses the form boundary, check the installed catalog:
 
-- For library selection and verified defaults, use `$use-preferred-react-stack`
-  when available; preserve the consuming project's coherent incumbent stack.
-- For helper extraction and signatures, use `$extract-named-helpers`; this
-  skill continues to own form bindings and shared field infrastructure.
+- `$use-preferred-react-stack`: library selection and verified defaults;
+  preserve the consuming project's coherent incumbent stack.
+- `$extract-named-helpers`: helper extraction and signatures. Form bindings
+  and shared field infrastructure stay here.
+- `$build-composable-components`: general compound-family or
+  primitive-extension architecture, including a primitive's typed `size` or
+  `variant`.
+- `$manage-server-state`: API contracts, TanStack Query, submit mutations,
+  cache synchronization, optimistic updates, and authenticated requests.
 
-- For general compound-family or primitive-extension architecture, use
-  `$build-composable-components` when available.
-- For API contracts, TanStack Query, submit mutations, cache synchronization,
-  optimistic updates, or authenticated requests, use `$manage-server-state`
-  when available.
-- If a useful companion is not installed, explain its concrete benefit once
-  and ask whether the user wants it installed. Example: “This form submits to
-  an API and updates cached records. `$manage-server-state` handles the API
-  contract, mutation, cache synchronization, and rollback. Do you want me to
-  install it?”
-- Install only after approval and only through the environment's supported
-  skill installer. If no installer is available, offer the direct command:
-  `npx --yes github:barehera/react-skills manage-server-state`, which installs
-  it for the project's saved agents.
-- Continue with this skill if the user declines. Do not make a companion skill
-  a hidden prerequisite or repeatedly recommend it.
+If a useful companion is missing, explain its concrete benefit once and ask
+whether to install it. Install only after approval and only through the
+environment's supported skill installer; otherwise offer
+`npx --yes github:barehera/react-skills <skill>`, which installs it for the
+project's saved agents. If the user declines, continue with this skill and do
+not recommend it again; a companion is never a hidden prerequisite.
 
-## Read focused guidance
+## References
 
-- Read [architecture.md](references/architecture.md) before defining the field
-  foundation, public slots, file boundaries, or placement.
-- Read [field-contracts.md](references/field-contracts.md) when implementing or
-  reviewing input, textarea, select, radio, checkbox, or date families.
-- Read [browser-and-ux.md](references/browser-and-ux.md) when choosing reusable
-  browser bindings, autofill/mobile hints, error feedback, or submit behavior.
-- Read [workflows-and-submission.md](references/workflows-and-submission.md) for
-  multi-step forms, field arrays, conditional fields, submission, and companion
-  skill routing.
-- Read [review-and-testing.md](references/review-and-testing.md) for audits,
-  refactors, accessibility review, extension tests, and final verification.
-- Read [examples.md](references/examples.md) before creating a new form
-  foundation or typed feature form, and adapt the bundled implementation rather
-  than copying its domain model or paths blindly.
+- [architecture.md](references/architecture.md): field foundation, slot-owned
+  props, accessibility relationships, typed feature form, form-wide
+  properties, placement.
+- [field-contracts.md](references/field-contracts.md): shared control rules,
+  browser hints and behavior, and the input, select, radio, and checkbox
+  families.
+- [workflows-and-submission.md](references/workflows-and-submission.md):
+  multi-step forms, field arrays, conditional fields, errors, submission.
+- [review-and-testing.md](references/review-and-testing.md): audits,
+  extension tests, verification depth.
+- [examples/typed-feature-form](examples/typed-feature-form): read before
+  creating a form foundation or typed feature form. A type-checked shared
+  `components/ui` (generic Form and `createForm`, compound-field foundation,
+  Input and Select families, `composeRefs`) and a `proposal` feature (one
+  `proposal-form.ts`, sections that call `useProposalForm()`, scoped
+  properties, a `server-state` mutation connected at the screen). It expects
+  the app's existing shadcn Field, Input, Select, and Button primitives; do not
+  reinstall or rewrite them. Adapt its paths and domain model; copy the
+  layering.
 
 ## Decision defaults
 
 Use these only when the repository has no established convention:
 
-- Shared field families under `features/form/components`, with the generic Form
-  and shared compound-field foundation together in `components/form.tsx` when
-  they form one reusable boundary. They remain separate components even when
-  co-located. Keep small cross-family helpers such as ref composition directly
-  in `features/form/utils/index.ts`.
-- A cohesive `<feature>-form.ts` for the consuming feature's schema, inferred
-  values, defaults/options, and typed Form/hook, plus `components` for distinct
-  rendered sections. Do not create `schemas`, `types`, `constants`, or `logic`
-  folders merely to hold one form's small private artifacts.
-- React Hook Form as the state/controller boundary and Zod as the schema source
+- Shared field families live in `components/ui`, one
+  `<control>-field.tsx` per family exporting `<Control>FieldRoot`,
+  `<Control>FieldLabel`, `<Control>FieldControl`, and its other parts. The
+  generic Form and the shared compound-field foundation sit together in
+  `components/ui/form.tsx` when they form one reusable boundary, still exported
+  as separate components. Small cross-family helpers such as ref composition
+  live in `lib/<name>.ts` named for what they do, such as
+  `lib/compose-refs.ts`.
+- A consuming feature has one `<feature>-form.ts`, a `<feature>-screen.tsx`,
+  and `components/<feature>-<section>.tsx` for distinct rendered sections. Do
+  not create `schemas`, `types`, `constants`, or `logic` folders merely to
+  hold one form's small private artifacts.
+- React Hook Form is the state/controller boundary and Zod the schema source
   for fresh choices. Check installed dependencies first and preserve an
   established incumbent in consuming projects.
-- Scoped Zustand for justified external form-wide properties. Create one
-  vanilla store per form root and expose selector-based consumption; do not
+- Scoped Zustand only for justified external form-wide properties; do not
   install or create a store when ordinary props suffice.
 - One shared compound-field context for stable IDs and controller bindings;
   control-specific contexts only for item identity such as radio options.
-- Compound families as the primary API and compact fields as optional secondary
-  compositions.
-- Direct component imports instead of barrel exports. When the form feature has
-  a small `utils/index.ts`, define its shared helpers in that file directly;
-  do not create one-file re-export barrels.
+- Compound families are the primary API; compact fields are optional
+  secondary compositions.
+- Direct component imports; no re-export-only barrels.
 
 Do not force React Hook Form, Zod, a feature folder, multi-step navigation, or
 compound components onto a simpler coherent repository.

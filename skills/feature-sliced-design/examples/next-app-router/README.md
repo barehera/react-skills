@@ -1,8 +1,7 @@
 # Canonical Next.js App Router architecture
 
-This example shows a complete placement model for an expense-review workflow.
-It demonstrates ownership and import paths, not production backend contracts or
-UI implementation. Create only the directories required by the real project.
+Placement model for an expense-review workflow: ownership and import paths,
+not backend contracts or UI implementation.
 
 ## Project tree
 
@@ -92,47 +91,18 @@ project/
         │   └── currency/
         │       └── format-money.ts
         └── ui/
-            ├── button/
-            │   └── button.tsx
-            └── dialog/
-                └── dialog.tsx
+            ├── button.tsx
+            └── dialog.tsx
 ```
 
 ## Composition flow
 
-The framework route imports and renders the page implementation. It does not
-re-export the page and does not implement the workflow:
-
-```tsx
-import { ExpenseReviewPage } from "@/_pages/expense-review/expense-review-page";
-
-interface ExpenseRouteProps {
-  params: Promise<{ expenseId: string }>;
-}
-
-export default async function ExpenseRoute({ params }: ExpenseRouteProps) {
-  const { expenseId } = await params;
-
-  return <ExpenseReviewPage expenseId={expenseId} />;
-}
-```
-
-The page composes a widget through its real stable implementation path:
-
-```tsx
-import { ExpenseReviewPanel } from "@/widgets/expense-review-panel/expense-review-panel";
-
-export interface ExpenseReviewPageProps {
-  expenseId: string;
-}
-
-export function ExpenseReviewPage({ expenseId }: ExpenseReviewPageProps) {
-  return <ExpenseReviewPanel expenseId={expenseId} />;
-}
-```
-
-The widget may compose sibling features because it sits above the Features
-layer:
+The framework route `page.tsx` awaits `params` and renders
+`<ExpenseReviewPage expenseId={expenseId} />` from
+`@/_pages/expense-review/expense-review-page`; it neither re-exports the page
+nor implements the workflow. The page renders `ExpenseReviewPanel` the same
+way. The widget may compose sibling features because it sits above the
+Features layer:
 
 ```tsx
 import { AddExpenseNoteForm } from "@/features/add-expense-note/add-expense-note-form";
@@ -155,24 +125,20 @@ export function ExpenseReviewPanel({ expenseId }: ExpenseReviewPanelProps) {
 }
 ```
 
-The two features do not import each other. Each feature may import the Expense
-entity and Shared foundations. The Expense entity may import only Shared.
+The two features never import each other; each may import the Expense entity
+and Shared. The Expense entity imports only Shared.
 
 ## Server and remote-state decisions
 
 - `approve-expense.server.ts` owns the Server Action and validates its input.
-- `use-approve-expense-mutation.ts` owns TanStack Query mutation lifecycle and
-  targeted Expense cache effects. Read `$manage-server-state` before
-  implementing it.
+- `use-approve-expense-mutation.ts` owns the TanStack Query mutation lifecycle
+  and targeted Expense cache effects; implement it with `$manage-server-state`.
 - Entity query options own stable Expense reads shared by both features.
-- Root QueryClient composition lives in `_app/providers/query-provider.tsx`.
-- The webhook route stays at `app/api/**/route.ts`, while handler composition
-  lives in `_app/api-routes`. If webhook business logic grows into a backend
-  service, move it to a separate package.
 
 ## Public path decisions
 
-These direct paths form the deliberate external contract:
+These direct paths form the deliberate external contract; there are no
+re-export-only `index.ts` files, and supporting feature modules stay private:
 
 ```text
 @/_pages/expense-review/expense-review-page
@@ -181,26 +147,7 @@ These direct paths form the deliberate external contract:
 @/features/add-expense-note/add-expense-note-form
 @/entities/expense/expense
 @/entities/expense/expense-summary
-@/shared/ui/button/button
+@/shared/ui/button
 @/shared/integrations/firebase/client/get-remote-config
 @/shared/integrations/firebase/server/get-admin-auth
 ```
-
-There are no re-export-only `index.ts` files. Supporting feature modules remain
-private unless a real external consumer requires a stable path.
-
-## Why the original flat folders disappeared
-
-| Flat root | Result |
-| --- | --- |
-| `components` | split between owner `ui` and `shared/ui` |
-| `hooks` | remote hooks moved to owner `server-state`; other hooks follow their purpose |
-| `schemas`, `types`, `constants` | moved beside the feature/entity/config contract they govern |
-| `libs` | split into focused `shared/lib` and vendor `shared/integrations` |
-| `providers` | moved to `_app/providers` |
-| `server-state` | resource state moved to feature/entity owners; QueryClient stays in App |
-| `store` | app composition stays in App; slice stores stay in owner `model` |
-| `utils` | replaced by named libraries such as `shared/lib/currency` |
-
-This tree remains a target model, not a command to move a coherent existing
-repository in one pass.

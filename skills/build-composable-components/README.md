@@ -86,12 +86,9 @@ keyboard behavior, and maintainability.
 ## Guidance
 
 - [Canonical skill instructions](SKILL.md)
-- [Architecture and public API](references/architecture-and-api.md)
-- [Variants and styling](references/variants-and-styling.md)
-- [State and lifecycles](references/state-and-lifecycles.md)
-- [Async boundaries and adapters](references/async-and-adapters.md)
+- [Composition and public API](references/composition.md)
+- [State, styling, and effects](references/state-styling-and-effects.md)
 - [Review and testing](references/review-and-testing.md)
-- [Worked advanced examples](references/examples.md)
 - [Complete layered example](examples/layered-family): a generic `Roster`
   family, a `ShiftCrewRoster` feature adapter with one documented product rule,
   and the optimistic TanStack Query mutation it calls

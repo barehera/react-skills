@@ -19,9 +19,8 @@ stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.
 
 This skill owns library selection across all three layers and verifies the
-installed APIs. It chooses one owner per concern and then routes the code to
-the skill that owns the layer: families to `$build-composable-components`,
-field families and typed forms to `$build-forms`, and remote state to
+installed APIs. It routes families to `$build-composable-components`, field
+families and typed forms to `$build-forms`, and remote state to
 `$manage-server-state`.
 
 ## Required workflow
@@ -29,19 +28,18 @@ field families and typed forms to `$build-forms`, and remote state to
 1. Read repository instructions, `package.json`, the lockfile, framework/build
    configuration, and representative imports. Record installed versions and
    providers; a listed dependency alone does not prove it is configured.
-2. Identify the concern and its state owner using the table. Preserve an
-   explicitly chosen incumbent in an existing project; mention the catalog
-   default once without migrating unrelated code. For fresh choices use these
-   defaults, installing only dependencies needed for the authorized work.
+2. Pick the concern's owner from the table. In an existing project, keep an
+   explicitly chosen incumbent and mention the catalog default once without
+   migrating unrelated code. For fresh choices use the defaults, installing
+   only dependencies the authorized work needs.
 3. Verify imports and signatures from the installed package's `exports` and
-   declarations, or version-matched official documentation. Do not guess
-   subpaths. Pacer imports come from the verified reference, rechecked when the
-   installed version differs.
+   declarations, or version-matched official documentation; do not guess
+   subpaths. Take Pacer imports from the verified reference.
 4. Read only the relevant reference and route deeper work to its companion.
-   Installing this skill installs guidance, not the whole runtime stack.
-5. Validate actual imports and types, then exercise relevant lifecycle behavior:
-   cancellation, URL navigation, persistence hydration, isolated instances,
-   and error notification. Report selected libraries and verification limits.
+5. Validate actual imports and types, then exercise relevant lifecycle
+   behavior: cancellation, URL navigation, persistence hydration, isolated
+   instances, error notification. Report selected libraries and verification
+   limits.
 
 ## Default decisions
 
@@ -62,20 +60,18 @@ established library or native behavior during an unrelated task.
 | HTTP transport | Existing Axios wrapper | another client per feature | Preserve coherent incumbent/generated transport |
 | UI primitives | shadcn/Radix | independently restyled controls | Keep semantic HTML and existing primitive contracts |
 
-Read [decision-table.md](references/decision-table.md) for rationale and setup
-boundaries. This extends the catalog's opinionated stack; companion skills
-remain opinionated too.
+These are defaults for the listed concerns, not a reason to add Next.js,
+providers, persistence, or a compiler to every task.
 
 ## React Compiler and legacy code
 
-Check enabled build configuration, including Next's compiler option or Babel
-plugin configuration, rather than package presence alone. With compilation
-enabled, write direct functions and values; do not add routine memoization.
-Do not mass-remove existing calls. Consider removal only in code already being
-changed, after checking behavioral/identity dependencies and applicable tests.
-Leave unrelated, generated, and third-party code alone. Without compilation,
-still start with plain code; use profiling or an actual identity contract to
-justify optimization. Module-level helpers do not automatically cache results.
+Check the enabled build configuration (Next's compiler option or the Babel
+plugin), not package presence. With compilation enabled, write direct functions
+and values without routine memoization. Do not mass-remove existing calls:
+consider removal only in code already being changed, after checking identity
+dependencies and tests; leave unrelated, generated, and third-party code alone.
+Without compilation, still start with plain code; justify optimization with
+profiling or an actual identity contract.
 
 ## Companion skill routing
 
@@ -85,18 +81,17 @@ justify optimization. Module-level helpers do not automatically cache results.
 - `$feature-sliced-design`: file placement and runtime/layer boundaries.
 - `$extract-named-helpers`: helper extraction, signatures, and hook boundaries.
 
-Use installed companions; recommend a missing companion once with its concrete
-benefit and obtain approval before installing it. Continue without it if
-declined. Do not duplicate its structural guidance in this skill.
+Use installed companions; recommend a missing one once with its concrete
+benefit and install it only after approval. Continue without it if declined.
 
 ## Read focused guidance
 
-- [Decision rationale and integration](references/decision-table.md).
-- [Pacer import map and lifetimes](references/tanstack-pacer.md).
+- [Setup boundaries per library](references/decision-table.md).
+- [Pacer import map and lifetimes](references/tanstack-pacer.md), rechecked by
+  [verify-pacer.mjs](scripts/verify-pacer.mjs).
 - [Zustand scope and persistence](references/zustand.md).
-- [Search composition walkthrough](examples/search-composition.md).
-- [Scoped preference store](examples/preferences-store.ts).
-- [Preference provider](examples/preferences-provider.tsx).
-- [Browser-only singleton](examples/banner-store.ts).
-- [Search hook](examples/use-library-search.ts).
-- [Pacer verification script](scripts/verify-pacer.mjs).
+- [Search composition](examples/search-composition.md) with its
+  [hook](examples/use-library-search.ts),
+  [scoped store](examples/preferences-store.ts), and
+  [provider](examples/preferences-provider.tsx);
+  [browser-only singleton](examples/banner-store.ts).

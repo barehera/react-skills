@@ -1,30 +1,21 @@
 # Naming
 
-## Consistency rule
+Use one vocabulary inside a project. Inspect existing names before adding an
+alias; a consistent established term beats these defaults, and a requested
+naming migration updates definitions and consumers together. Keep one source
+per vocabulary: the project's existing names mechanism, a small shared names
+file extended per feature in a new multi-feature architecture, or local
+constants in a compact project.
 
-Use one vocabulary inside a project. Inspect existing names before adding another alias. A consistent established project term beats the defaults below; a requested naming migration must update definitions and consumers together.
+## Operation vocabulary
 
-## Default operation vocabulary
+For a new convention, reads are `list`, `infiniteList`, and `detail`; writes
+are `create`, `update`, and `delete` (`src/server-state/names.ts` in the
+example). Extend only for real capabilities such as `related`, `comments`,
+`preferences`, or `search`. Do not use `detail`, `byId`, `single`, and `item`
+for the same operation in one project.
 
-Use this when starting a new convention:
-
-```ts
-export const resourceQueryNames = {
-  list: "list",
-  infiniteList: "infiniteList",
-  detail: "detail",
-} as const;
-
-export const resourceMutationNames = {
-  create: "create",
-  update: "update",
-  delete: "delete",
-} as const;
-```
-
-Extend only for real capabilities such as `related`, `comments`, `preferences`, or `search`. Do not use `detail`, `byId`, `single`, and `item` for the same operation in one project. For a new vocabulary, prefer `detail`.
-
-## Default namespace rules
+## Namespaces
 
 For a `Post` entity in a `posts` domain:
 
@@ -43,9 +34,10 @@ For a `Post` entity in a `posts` domain:
 | Mutation hook | `useCreatePostMutation` |
 | Input | `PostDetailInput` or `PostDetailQueryInput` |
 
-Use plural resource names for collection namespaces and hooks; use the singular entity for one-resource data and mutations.
+Collection namespaces and hooks use the plural resource; one-resource data and
+mutations use the singular entity.
 
-At call sites, derive the result name from the hook by removing `use` and lowercasing the first letter:
+At call sites, name the result after the hook without `use`:
 
 ```ts
 const postsListQuery = usePostsListQuery({ filters });
@@ -54,15 +46,10 @@ const postsCache = usePostsCache();
 const createPostMutation = useCreatePostMutation();
 ```
 
-## Inputs and cache verbs
+## Inputs
 
-- Prefer one object input for new public operations, even with one field.
+- New public operations take one object input, even with one field.
 - Use `Input`, not `Props`, outside React component props.
-- Include the operation when ambiguity exists: `PostRelatedQueryInput`.
-- Use `setDetail` for a complete write and `patchDetail` for a partial merge.
-- Use `invalidate*` to mark stale and `remove*` to erase cache entries.
-- Reserve `delete` for a backend operation.
+- Include the operation when names would be ambiguous: `PostRelatedQueryInput`.
 
-## Where names live
-
-Use the project's existing central vocabulary mechanism. In a new multi-feature architecture, a small shared names file may define common operation words and each feature may extend it. In a compact project, local constants can be clearer. The invariant is a single source per vocabulary, not a mandatory filename.
+Cache action verbs are defined in [mutations-cache.md](mutations-cache.md#cache-semantics).

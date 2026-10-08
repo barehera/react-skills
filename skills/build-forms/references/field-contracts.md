@@ -3,49 +3,77 @@
 ## Contents
 
 - [Shared control rules](#shared-control-rules)
+- [Browser hints](#browser-hints)
+- [Browser behavior](#browser-behavior)
 - [Input, textarea, and date](#input-textarea-and-date)
 - [Select](#select)
 - [Radio group](#radio-group)
 - [Checkbox](#checkbox)
-- [Convenience compositions](#convenience-compositions)
+- [Compact fields](#compact-fields)
 
 ## Shared control rules
 
 Preserve the wrapped primitive's compatible props, className, ref target,
-events, disabled behavior, keyboard behavior, focus, and defaults.
+events, disabled behavior, keyboard behavior, focus, and defaults. Call the
+consumer's observational handler first, respect `event.defaultPrevented` when
+the event supports it, then apply the form update. Apply internal `id`,
+`name`, `value`, `checked`, `disabled`, and accessibility bindings after
+consumer props. A composed React 19 ref runs callback cleanups and resets every
+ref without its own cleanup to `null` on unmount; `composeRefs` lives in
+`lib/compose-refs.ts`.
 
-Compose the consumer ref with the form-library ref. Compose observational
-handlers first, respect `event.defaultPrevented` when the event supports it,
-then apply the authoritative form update. Apply internal `id`, `name`, `value`,
-`checked`, `disabled`, and accessibility bindings after consumer props.
-Ensure a composed React 19 ref runs callback cleanups and resets every ref that
-does not provide its own cleanup to `null` on unmount.
-Keep cross-family mechanics such as `composeRefs` directly in the shared form
-feature's `utils/index.ts`, not embedded in one control-family module or a
-re-export-only barrel.
+Restrict field paths by value type: string controls accept string-valued
+paths, checkbox controls accept boolean-valued paths, and numeric or
+structured values use focused semantic adapters rather than unsafe casts in a
+generic string field.
 
-Restrict field paths by value type when the form library supports it:
+## Browser hints
 
-- string controls accept string-valued paths;
-- checkbox controls accept boolean-valued paths;
-- numeric or structured values use focused semantic adapters rather than
-  unsafe casts in a generic string field.
+A generic field family never guesses field meaning. The feature sets these as
+Control props where the meaning is known; the family adds no root-level prop
+bags or universal defaults:
+
+- the most accurate `type` (`email`, `tel`, `url`, `search`, `date`,
+  `number`), preferred over using `inputMode` as validation;
+- valid `autocomplete` tokens for user information, with stable `name` and
+  `id`, a real owning form, and a submit button so browsers autofill reliably;
+  never disable autocomplete or correction globally or invent tokens;
+- `inputMode` only when the type cannot express the expected characters;
+- `enterKeyHint` only when its label matches what Enter actually does;
+- `autoCapitalize`, `spellCheck`, and autocorrection from the content: names
+  and prose differ from usernames, codes, URLs, and identifiers;
+- native `required`, `minLength`, `maxLength`, `min`, `max`, `step`, and
+  `pattern` mirroring schema constraints only when their semantics truly
+  match; the server still validates.
+
+Prefer a native input or select when its picker, autofill, or mobile behavior
+is central to the task. For a custom Select or combobox, verify that the
+primitive's hidden form control supports the required `name`, required state,
+and autofill instead of assuming native parity.
+
+## Browser behavior
+
+- Render a real `<form>` and a real submit button so Enter submission,
+  autofill, password managers, and form ownership work; use the Button
+  primitive when it keeps native `<button>` semantics.
+- Give every non-submit button inside a form `type="button"`.
+- Keep labels visible; placeholders are examples, not labels. Do not block
+  paste or password managers.
+- Use `readOnly` when a value must stay focusable and submitted; a disabled
+  native control is neither focusable nor submitted.
+- Avoid automatic focus unless the task clearly benefits; keep visible
+  `:focus-visible` styling and practical touch targets.
+- Set `aria-busy` only on a region actively being updated whose announcements
+  should wait, not merely because a request is pending.
 
 ## Input, textarea, and date
 
-Expose `Root`, `Label`, `Control`, `Description`, and `Error`. The Control owns
-native Input or Textarea props directly. Preserve autocomplete, input mode,
-enter-key hint, capitalization, spellcheck, placeholder, type, constraints,
-required state, and consumer events. When `required` is passed, keep the native
-attribute and derive `aria-required` rather than asking the consumer for both.
-
-Choose semantic values at the feature: use accurate input types and valid
-autocomplete tokens, prefer semantic type over `inputMode`, and ensure an
-`enterKeyHint` matches the actual Enter-key behavior. Never disable autocomplete
-or correction globally from a generic field family.
+Expose `Root`, `Label`, `Control`, `Description`, and `Error`. The Control
+takes native Input or Textarea props directly; when `required` is passed it
+keeps the native attribute and derives `aria-required`.
 
 Implement Date as a semantic composition of the Input family when the native
-date input is the repository convention. Normalize its value at the control
+date input is the repository convention. Normalize its value at the Control
 boundary and verify the form library receives browser date changes.
 
 ## Select
@@ -54,45 +82,40 @@ Expose `Root`, `Label`, `Control`, `Trigger`, `Value`, `Content`, `Item`,
 `Description`, and `Error`.
 
 - Root binds the field and outer Field layout.
-- Control owns the Select primitive root, value, disabled state, name, and
-  value-change composition. It also owns the primitive's native `required`
-  contract.
-- Trigger owns trigger props and the field control ID/ARIA.
-- Trigger reflects the Control's required state with `aria-required` without a
-  repeated consumer prop.
-- Trigger composes the form-library ref and blur binding so error focus,
+- Control owns the Select primitive root, value, disabled state, name,
+  value-change composition, and native `required`.
+- Trigger owns trigger props and the field control ID and ARIA, reflects the
+  Control's required state with `aria-required` without a repeated consumer
+  prop, and composes the form-library ref and blur binding so error focus,
   touched state, and on-blur validation reach the interactive element.
 - Content owns portal, positioning, collision, and content props.
 - Item owns item value, disabled state, text, and item props.
-
-Do not wrap Label, Description, or Error in the Select primitive provider.
-Verify mouse and keyboard opening, item selection, portal rendering, focus
-return, and invalid styling.
 
 ## Radio group
 
 Expose `Root`, `Legend`, `Description`, `Control`, `Option`, `Item`, option
 content/title/description slots, and `Error`.
 
-The Option boundary owns one stable item value and generated ID. Nested Item
-and option presentation read that identity; consumers do not repeat IDs.
-Control owns RadioGroup props and form value binding. Use consumer `.map()` for
-options when the root does not receive an options collection. If the root owns
-the collection, add a render-callback collection boundary instead.
+The Option boundary owns one stable item value and generated ID; nested Item
+and option presentation read that identity, so consumers do not repeat IDs.
+Control owns RadioGroup props and the form value binding. Consumers `.map()`
+options when the root receives no options collection; if the root owns the
+collection, add a render-callback collection boundary instead.
 
 ## Checkbox
 
-Expose `Root`, `Label`, `Layout`, `Control`, `Content`, `Title`, `Description`,
-and `Error`. Keep Layout explicit so it receives Field props naturally; do not
-hide it inside Label or add `layoutProps` to the root.
+Expose `Root`, `Label`, `Layout`, `Control`, `Content`, `Title`,
+`Description`, and `Error`. Keep Layout explicit so it receives Field props
+naturally; do not hide it inside Label or add `layoutProps` to the root.
 
 Translate the primitive's checked state to the form's boolean contract at the
-Control boundary. Preserve indeterminate presentation only when the schema and
-product model support it deliberately.
+Control boundary. Support indeterminate presentation only when the schema and
+product model deliberately do.
 
-## Convenience compositions
+## Compact fields
 
-Convenience fields are appropriate for repeated default anatomy. Keep their API
-small and predictable. When customization requires `triggerProps`,
-`contentProps`, `fieldProps`, `labelProps`, or similar bags, direct the consumer
-to the compound slots instead of growing the convenience component.
+A compact field such as `<InputField label="..." />` suits repeated default
+anatomy and composes the same Root, Label, Control, Description, and Error
+slots. Keep its API small. When customization would need `triggerProps`,
+`contentProps`, `fieldProps`, `labelProps`, or similar bags, point the
+consumer to the compound slots instead of growing the compact component.

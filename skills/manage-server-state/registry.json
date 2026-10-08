@@ -31,11 +31,6 @@
           "target": "~/.agents/skills/manage-server-state/references/backend-contracts.md"
         },
         {
-          "path": "references/examples.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/references/examples.md"
-        },
-        {
           "path": "references/mutations-cache.md",
           "type": "registry:file",
           "target": "~/.agents/skills/manage-server-state/references/mutations-cache.md"
@@ -44,11 +39,6 @@
           "path": "references/naming.md",
           "type": "registry:file",
           "target": "~/.agents/skills/manage-server-state/references/naming.md"
-        },
-        {
-          "path": "references/placements.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/manage-server-state/references/placements.md"
         },
         {
           "path": "references/queries.md",

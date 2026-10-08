@@ -23,40 +23,35 @@ This skill owns tests for the feature adapter: pure product decisions, Zod
 transforms, and store transitions whose branches fit `input -> result`, plus
 the contract between config schemas and their baked defaults. A test imports
 the feature module it locks; the shared case runner imports only Vitest and
-never a feature. Primitive and family behavior tests belong to
-`$build-composable-components` and `$build-forms`. That routes interaction
-tests; it does not forbid tables elsewhere. A pure `input -> result` transform
-in a business-agnostic library may use the same runner and layout.
+never a feature. Primitive and family interaction tests belong to
+`$build-composable-components` and `$build-forms`, but a pure
+`input -> result` transform in a business-agnostic library may use the same
+runner and layout.
 
 ## Required workflow
 
-1. Inspect repository instructions, the test runner, its configuration, the
-   existing test layout, and any shared case runner. Use the repository's
-   runner; in a repository without one, the canonical default is Vitest in a
-   Node environment. Do not add a second runner.
-2. Find the decision under test. When a product rule is inline inside a
-   component, hook, or callback, route extraction of a named pure function to
-   `$extract-named-helpers` first, then test that function.
-3. Express each pure decision as one case table passed to the single shared
-   runner, `testRule(decide, cases)`. Each row is one branch: `case`, `input`,
-   and `expected`. Adding a branch adds a row, not an `expect` block.
-4. Give each decision its own test file named for the decision, beside the
-   owning feature. Route folder placement to `$feature-sliced-design`.
-5. Build each row's `input` from only the values that select the branch. Do
-   not paste a config snapshot into a row (see "Fixtures are not config
-   defaults").
-6. Do not copy or paraphrase a `Business Logic` / `Why` / `Rule` block into a
+1. Read the repository instructions, test runner and configuration, test
+   layout, and any shared case runner. Use the repository's runner, or Vitest
+   in a Node environment when it has none. Never add a second runner; reuse an
+   existing table runner under its own name instead of adding `testRule`.
+2. When a product rule is inline in a component, hook, or callback, extract a
+   named pure function through `$extract-named-helpers` first, then test it.
+3. Lock each pure decision with one case table passed to the shared runner,
+   `testRule(decide, cases)`.
+4. Give each decision its own test file, named for the decision, beside the
+   owning feature; do not merge decision files to reduce file count. Route
+   folder placement to `$feature-sliced-design`.
+5. Do not copy or paraphrase a `Business Logic` / `Why` / `Rule` block into a
    test. The imported production function is the only owner of that block;
    route its wording to `$document-business-logic`.
-7. When the change edits a rule, follow "When a rule changes" below.
-8. When the change adds or edits a schema-backed config or its baked
-   defaults, keep or add the defaults contract test.
-9. When auditing tests for over-engineering, remove only duplicate suites,
+6. When a schema-backed config or its baked defaults change, keep or add the
+   defaults contract test.
+7. When auditing tests for over-engineering, remove only duplicate suites,
    test-only adapters, and change-detectors, covering untested behavior
    first. Keep product-decision tables, pure library tables, and one file per
    decision.
-10. Run the affected tests, typecheck, and lint. Report the tables and rows
-    added or changed, the contract result, and anything left untested.
+8. Run the affected tests, typecheck, and lint. Report the tables and rows
+   added or changed, the contract result, and anything left untested.
 
 ## Case tables
 
@@ -67,41 +62,45 @@ testRule(canSubmit, [
 ]);
 ```
 
-- One pure decision has one function and one case table.
-- The suite name is `decide.name`. Do not pass a separate string copy of that
-  name; pass a named function declaration, not an anonymous lambda.
-- The runner holds no product value, fixture, or feature import. The
-  repository has one runner; do not add a second runner per feature.
+- Each row is one branch: `case`, `input`, and `expected`. A new branch adds a
+  row, not an `expect` block.
+- The suite name is `decide.name`, so pass a named function declaration, not
+  an anonymous lambda or a separate string copy of the name.
+- The runner holds no product value, fixture, feature import, or per-feature
+  variant. A decision that does not fit `input -> result` is not a case-table
+  decision; do not bend the runner to fit it.
 - A row name states the branch in product words, not the literal values.
 - A decision with several inputs takes one object, so each row stays
-  `input -> expected`. An existing positional function, such as a generic
-  type guard, gets plain `it` cases instead of a test-only adapter that
-  reshapes its arguments.
-- Type coverage of a map's keys is not a test of its values. `satisfies
-  Record<K, V>` proves every key exists, not that each maps to the right
-  value, so a product-chosen map keeps its table.
+  `input -> expected`. An existing positional function, such as the generic
+  guard `includesOption(options, value)`, gets plain `it` cases instead of a
+  test-only adapter that reshapes its arguments.
+- A map whose values are product choices (status -> tone, plan -> limit) keeps
+  its table even when typed `satisfies Record<K, V>`: the type proves every key
+  exists, not that each maps to the right value. Pass a named lookup, declared
+  in the test, that only indexes the map. A mechanical map, such as an enum
+  mapped to its own string, restates its keys and gets no table.
 
-Case tables fit pure functions, product-chosen constant maps, Zod transforms,
-and store transitions. They
-do not fit multi-step HTTP or cache contracts, such as an MSW handler
-sequence, or browser journeys; keep those as contract or end-to-end tests
-owned by `$manage-server-state` and the repository's established test root.
+Case tables fit pure functions, product-chosen maps, Zod transforms, and
+store transitions passed as `{ state, action }`. A test that observes calls,
+timing, or rendered output does not fit: multi-step HTTP or cache contracts,
+such as an MSW handler sequence, stay with `$manage-server-state`, and browser
+journeys stay with their owning skill or the repository's end-to-end root.
 
 ## When a rule changes
 
 - Update the row whose `case` names the changed branch in the same change as
-  the rule. Leave every other row intact.
+  the rule, and leave every other row intact.
 - Never delete, skip, or loosen a failing row, or widen its matcher, to make
   the suite pass.
 - Keep the old `expected` value until the new rule is the one the author
   meant to ship. If the intent is unclear, ask instead of editing the row.
-- A new branch adds a row. A removed branch removes its row only when the
-  product rule removed that branch.
+- A new branch adds a row; a branch's row is removed only when the product
+  rule removed that branch.
 - A red test with no behavior change, such as a renamed function or a broken
-  import, is an import fix. Fix the import and leave `expected` alone.
-- A test that only restates a constant's literal is a change-detector, not a
-  rule test. Replace it with a behavior test where the behavior is untested,
-  then delete it.
+  import, is an import fix: fix the import and leave `expected` alone.
+- A test that only restates a constant's literal is a
+  [change-detector](references/case-tables.md#change-detectors), not a rule
+  test. Cover the behavior it stands for, then delete it.
 - Update the production function's Business Logic block in the same change
   when its rule text changed, through `$document-business-logic`.
 
@@ -110,15 +109,16 @@ owned by `$manage-server-state` and the repository's established test root.
 A rule test and a config-defaults contract answer different questions. Do not
 merge them.
 
-- A row passes only the inputs that select its branch. A caller-supplied value
-  such as `{ plan: 'priority' }` or a pathname stays a literal input.
+- A row's `input` holds only the values that select its branch, never a config
+  snapshot. A caller-supplied value such as `{ plan: 'priority' }` or a
+  pathname stays a literal input.
+- When a row's expected result is the current default, read it from the same
+  loader production uses, because a pasted literal keeps passing after the
+  default moves.
 - A separate contract test covers every schema-backed config that the app
   treats as a local source of truth: every schema key has a baked default,
   every default key has a schema, and the production default loader parses
-  each default.
-- When a row's expected result is the current default, read it from the same
-  loader production uses. Do not paste the previous value.
-- Adding a required config field must fail the contract test until the baked
+  each default. Adding a required config field must fail it until the baked
   default is updated, without editing unrelated rows.
 
 ## Companion skill routing
@@ -133,37 +133,24 @@ merge them.
 - `$build-composable-components`: family and primitive interaction tests.
 - `$use-preferred-react-stack`: Vitest and Zod setup and verified imports.
 
-Use available companions for their concern. Recommend an absent companion once
-with its concrete benefit; require approval to install it and continue without
-it when declined. Do not duplicate its full guidance here.
+Recommend a missing companion once with its concrete benefit, install it only
+with approval, and continue without it when declined.
 
-## Read focused guidance
+## References
 
-- [Case tables and contracts](references/case-tables.md): runner contract,
-  product-chosen maps, change-detectors, a worked rule change, the defaults
-  contract, one file per decision, and project-policy boundaries.
-- [Shared runner](examples/rule-tests/src/tests/rule-cases.ts): the only
-  `testRule` implementation.
-- [Decisions](examples/rule-tests/src/features/support-request/submission.ts)
-  with their Business Logic blocks, and their
-  [case table](examples/rule-tests/src/features/support-request/tests/unit/can-submit.test.ts)
-  and [default-dependent table](examples/rule-tests/src/features/support-request/tests/unit/get-attachment-limit-mb.test.ts).
-- [Product-chosen map](examples/rule-tests/src/features/support-request/status.ts)
-  and its
-  [lookup table](examples/rule-tests/src/features/support-request/tests/unit/support-request-status-tone.test.ts).
-- [Config schemas and loader](examples/rule-tests/src/config/app-config.ts)
-  and their
-  [defaults contract](examples/rule-tests/src/config/tests/contract/app-config-defaults.test.ts).
+- [case-tables.md](references/case-tables.md): change-detectors, a worked rule
+  change, the defaults contract, and why each decision keeps its own file.
+- [examples/rule-tests](examples/rule-tests): the type-checked shared runner
+  (the only `testRule` implementation), decisions with their tables, a
+  product-chosen map, a default-dependent table, and the defaults contract.
 
 ## Decision defaults
 
-- Runner: Vitest, Node environment, for pure decisions and contracts.
-- Shared runner location: the repository's shared test utilities, such as
-  `src/tests/rule-cases.ts`.
-- Test file: one per decision, named for the decision, beside its feature; do
-  not merge decision files to reduce file count.
 - Matcher: deep equality on the decision's return value.
-- Hosted-runner names, banned browser vendors, and the test folder name and
-  location, such as `tests/unit` or `__tests__`, are project policy; follow
-  the repository and do not promote them into this skill. One file per
-  decision is this skill's granularity, not folder policy.
+- Shared runner: the repository's shared test utilities, such as
+  `src/tests/rule-cases.ts`.
+- The test folder name and location (such as `tests/unit` or `__tests__`),
+  hosted-runner names, banned browser vendors, coverage thresholds, and
+  snapshot policy are project policy: follow the repository and do not promote
+  them into this skill. One file per decision is this skill's granularity, not
+  folder policy.

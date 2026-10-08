@@ -40,10 +40,7 @@ Use $extract-named-helpers to audit this feature. Report decisions and boundarie
 ## Guidance
 
 - [Canonical instructions](SKILL.md)
-- [extraction triggers](references/extraction-triggers.md)
-- [hooks and helpers](references/hooks-and-helpers.md)
 - [placement](references/placement.md)
-- [signatures and naming](references/signatures-and-naming.md)
 
 Complete examples live in [examples](examples). Installation adds guidance, not runtime dependencies.
 

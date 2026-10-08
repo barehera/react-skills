@@ -60,13 +60,17 @@ re-explaining the split.
 | Layer | Contains | Knows about | Default location |
 | --- | --- | --- | --- |
 | Primitive | shadcn/Radix components and the `cn` utility | Interaction, focus, ARIA, base styling | `components/ui` |
-| Composable family | Compound roots, structural slots, item boundaries, focused actions, scoped stores | Its own controlled values, generated IDs, family-wide `size` and `variant` | `components/<family>.tsx`, or a shared feature such as `features/form` |
+| Composable family | Compound roots, structural slots, item boundaries, focused actions, scoped stores | Its own controlled values, generated IDs, family-wide `size` and `variant` | `components/ui/<role>.tsx`, named for its UI role (`combobox.tsx`, `roster.tsx`) |
 | Feature adapter | Screens, domain components, schemas, typed forms, queries, mutations, cache effects, product rules | The product: which records exist, who may act, what a selection means | `features/<feature>` |
 
 Dependencies point downward only. A feature adapter composes families and
-primitives; a family composes primitives; a primitive composes nothing from
-the catalog. A family never imports a feature module, reads a query, or
-encodes a product rule, and a primitive never learns about a family.
+primitives; a family composes primitives; a primitive never imports a family.
+Primitives and generic families share `components/ui`, so the layer is decided
+by what code depends on, not by its folder. A family never imports a feature
+module, reads a query, calls a mutation, or encodes a product rule. A family is
+named for its UI role, never a record type; record-specific anatomy is composed
+once in the feature that owns the record
+(`features/<feature>/components/<record>-<role>.tsx`).
 
 Placement test: ask whether the code would change if the product changed but
 the design system stayed the same. If yes, it belongs in the feature adapter.
@@ -92,7 +96,7 @@ vocabulary without reading this document.
 
 The canonical layered example is
 [the shift-crew roster](../skills/build-composable-components/examples/layered-family):
-a generic `Roster` family under `components`, and a `ShiftCrewRoster` feature
+a generic `Roster` family under `components/ui`, and a `ShiftCrewRoster` feature
 adapter that maps crew members, applies the lead-retention rule, and calls an
 optimistic TanStack Query mutation.
 
@@ -172,6 +176,10 @@ projects or turn companion skills framework-neutral. Next.js-specific choices
 apply only to Next.js projects. Browser-only app-wide Zustand stores are an
 explicit lifetime exception; canonical SSR and repeated-instance examples
 retain scoped vanilla stores. Placement remains owned by `feature-sliced-design`.
+
+The `components/ui` placement of generic families and the benchmark-driven
+rewrite of `build-composable-components` are recorded in
+[the 2026-10-08 decision ledger](skill-feedback/2026-10-08-decisions.md).
 
 The Vitest addition for unit and contract tests is recorded in
 [the rule-tests decision ledger](skill-feedback/2026-09-24-decisions.md). It

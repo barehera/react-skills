@@ -4,7 +4,7 @@ import * as React from "react"
 import { type FieldPathByValue, type FieldValues } from "react-hook-form"
 
 import { Input } from "@/components/ui/input"
-import { composeRefs } from "../utils"
+import { composeRefs } from "@/lib/compose-refs"
 import {
   CompoundFieldDescription,
   CompoundFieldError,

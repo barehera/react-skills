@@ -1,13 +1,10 @@
 # Worked feedback loop
 
-This abbreviated example shows how a project-specific correction becomes a
-general rule without copying the entire implementation.
-
-## Project observation
+## From observation to rule
 
 An extended card footer used one long class string containing base layout plus
 `primary` and `destructive` named-group selectors. The user accepted the styles
-but found the mixed concerns difficult to review and maintain.
+but found the mixed concerns difficult to review.
 
 ```tsx
 className={cn(
@@ -18,43 +15,25 @@ className={cn(
 )}
 ```
 
-## Captured finding
+[The captured report](../examples/composable-component-feedback.md) keeps that
+pain point as a principle with a boundary: group a long list by concern in
+ordered `cn(...)` arguments, consumer override last; short lists stay intact.
 
-- Category: `missing-rule`
-- Severity: `medium`
-- Recurrence: `repeated`
-- Confidence: `high`
-- Current behavior: unrelated base and variant selectors were placed in one
-  difficult-to-scan string.
-- Preferred behavior: keep short lists intact, but group long lists by concern
-  in ordered `cn(...)` arguments and preserve consumer overrides last.
-- Generalization test: applies to Tailwind lists mixing multiple states or
-  semantic variants; does not require one string per utility.
-- Acceptance criteria: an agent can identify base, state, variant, and consumer
-  override groups without changing merge order or generated classes.
-
-## Integration decision
-
-Place the concise contract in the component skill's non-negotiable rules, put
-the detailed grouping criteria in its styling reference, update a worked
-example, and add a review-checklist item. Do not create a formatter rule that
-blindly splits every class because the decision is semantic, not line-length
-only.
-
-This is the desired conversion: preserve the user's real pain point, extract
-the ownership principle, define its boundary, and make the result testable.
+Integration: a concise core rule in the component skill, the grouping criteria
+in its styling reference, an updated worked example, and a review-checklist
+item. No formatter rule that splits every class, because the decision is
+semantic, not line-length only.
 
 ## Convert feature names before capture
 
-Do not make an ingestible example depend on the originating component. This is
-feature-bound and belongs only under `Evidence`:
+This is feature-bound and belongs only under `Evidence`:
 
 ```text
 Proposed skill change: Update InvoicePanelTitle in invoice-panel.tsx.
 Acceptance criteria: InvoicePanelTitle still sets id after the prop spread.
 ```
 
-Extract the rule and express it in vocabulary a skill could publish:
+The same finding in vocabulary a skill could publish:
 
 ```text
 Proposed skill change: Add a previous-versus-improved snippet beside the
@@ -70,7 +49,4 @@ Acceptance criteria: The skill example applies id={titleId} after {...props}.
 <Text {...props} id={titleId} />
 ```
 
-The local export and path remain useful reproduction evidence, but the
-preferred behavior, proposed destination, reusable example, acceptance test,
-and forward-test must survive deletion of that feature. If they cannot, the
-finding is a project convention rather than a source-skill improvement.
+The local export and path remain reproduction evidence under `Evidence`.

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { composeRefs } from "../utils"
+import { composeRefs } from "@/lib/compose-refs"
 import {
   CompoundFieldDescription,
   CompoundFieldError,

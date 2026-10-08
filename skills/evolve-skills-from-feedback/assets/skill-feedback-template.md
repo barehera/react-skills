@@ -11,9 +11,8 @@ status: draft
 
 ## Executive Summary
 
-{{Summarize the task, the most important mismatch, and the accepted direction.
-State that this report is for improving the named skill, not editing the
-originating product feature.}}
+{{The task, the most important mismatch, and the accepted direction. This
+report improves the named skill, not the originating product feature.}}
 
 ## Project Context
 
@@ -33,43 +32,41 @@ originating product feature.}}
 
 #### Scenario
 
-{{Describe the task and constraints that exposed the issue.}}
+{{The task and constraints that exposed the issue.}}
 
 #### Evidence
 
-{{Cite exact origin paths and narrow excerpts, test output, or direct user
-feedback. Originating feature names belong here, not in the reusable proposal.}}
+{{Exact origin paths and narrow excerpts, test output, or direct user
+feedback. Originating feature names belong here only.}}
 
 #### Current behavior
 
-{{Describe what the agent or skill caused without guessing intent.}}
+{{What the agent or skill caused, without guessing intent.}}
 
 #### Preferred behavior
 
-{{Describe the portable behavior and why it is better. Use vocabulary the skill
-could publish rather than the originating feature's names.}}
+{{The portable behavior and why it is better, in vocabulary the skill could
+publish.}}
 
 #### Proposed skill change
 
-{{Name the skill rule, reference, reusable example, or validator to change. Do
-not instruct edits to consuming-app files unless this is explicitly classified
-as project-convention.}}
+{{The skill rule, reference, reusable example, or validator to change.}}
 
 #### Generalization test
 
-{{State where this should apply, where it should not, and a counterexample.}}
+{{Where this should apply, where it should not, and a counterexample.}}
 
 #### Acceptance criteria
 
 - {{Check observable on the skill artifact or its behavior on a fresh task}}
-- {{A second skill-observable check, not a check of the originating feature}}
+- {{A second skill-observable check}}
 
 ## Cross-Cutting Decisions
 
-{{Record terminology, ownership rules, or user preferences shared by findings.}}
+{{Terminology, ownership rules, or user preferences shared by findings.}}
 
 ## Validation Requested
 
 - {{Exact skill files, validator, or repository validation to run}}
-- {{Realistic fresh-task prompt or portable fixture that does not name the
-  originating feature}}
+- {{Fresh-task prompt or portable fixture that does not name the originating
+  feature}}

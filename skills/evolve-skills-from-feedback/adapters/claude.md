@@ -1,6 +1,6 @@
 ---
 name: evolve-skills-from-feedback
-description: Capture concrete lessons from AI-assisted development and turn them into durable, evidence-backed skill improvements. Use when an agent must produce a skill feedback guide at the end of work in a consuming project, record user corrections or failed skill behavior, normalize a supplied Markdown, JSON, or plain-text feedback artifact, review proposed rule changes, plan updates to a source skill, or implement and validate approved skill improvements from real-world examples.
+description: Capture concrete lessons from AI-assisted development and turn them into durable, evidence-backed skill improvements. Use when an agent must produce a skill feedback guide at the end of work in a consuming project, record user corrections or failed skill behavior, normalize a supplied Markdown, JSON, or plain-text feedback artifact, or review, plan, or apply source-skill improvements from real-world examples.
 ---
 
 Read and follow `.agents/skills/evolve-skills-from-feedback/SKILL.md`, and the references,

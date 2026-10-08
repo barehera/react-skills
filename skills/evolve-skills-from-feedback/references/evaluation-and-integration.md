@@ -1,21 +1,11 @@
 # Evaluate and integrate feedback
 
-Use this reference in ingest mode before planning or editing a source skill.
-
 ## Evaluate each finding
 
-Score the finding qualitatively across five dimensions:
-
-| Dimension | Strong evidence | Weak evidence |
-| --- | --- | --- |
-| Reproduction | exact prompt, code, or test | remembered impression |
-| Generality | applies across repositories | one local convention |
-| Impact | correctness, API, accessibility, maintainability | cosmetic preference |
-| Recurrence | repeated or structurally likely | isolated accident |
-| Verifiability | observable acceptance test | subjective outcome only |
-
-A weak dimension does not automatically reject a finding. It changes placement:
-a conditional reference or example may be safer than a non-negotiable rule.
+Judge reproduction, generality across repositories, impact, recurrence, and
+verifiability. A weak dimension does not automatically reject a finding. It
+changes placement: a conditional reference or example may be safer than a
+non-negotiable rule.
 
 ## Choose the destination
 
@@ -26,22 +16,20 @@ a conditional reference or example may be safer than a non-negotiable rule.
 | Worked composition | example | structure is clearer in code than prose |
 | Automated guardrail | script or repository validation | invariant is deterministic |
 | Project policy | consuming repository instructions | preference is not universal |
-| No change | decision ledger only | fixed, unsupported, or contradicted |
+| No change | decision ledger only | fixed, unsupported, contradicted, or a tool failure |
 
-Avoid duplicating the same instruction in several files. Keep the brief
-contract in `SKILL.md` only when it must always be loaded, and route detailed
-guidance directly to one reference.
+Avoid duplicating the same instruction in several files. Keep a brief contract in `SKILL.md` only
+when it must always be loaded, and route detailed guidance directly to one
+reference.
 
 ## Integrate safely
 
-1. Rebase the report against the current skill version.
-2. Write the smallest rule that explains the accepted behavior and its scope.
-3. Update or add one realistic example that would have prevented the failure.
-4. Add deterministic validation only when it can detect the defect without
+1. Write the smallest rule that explains the accepted behavior and its scope.
+2. Update or add one realistic example that would have prevented the failure.
+3. Add deterministic validation only when it can detect the defect without
    encoding one repository's formatting.
-5. Review adjacent rules for contradiction, duplication, or inflated context.
-6. Validate the skill folder and the repository catalog.
-7. Forward-test with a fresh task when the change is subtle or high-impact.
+4. Review adjacent rules for contradiction, duplication, or inflated context.
+5. Forward-test with a fresh task when the change is subtle or high-impact.
 
 ## Decision ledger
 

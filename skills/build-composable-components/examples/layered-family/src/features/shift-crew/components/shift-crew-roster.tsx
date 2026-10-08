@@ -4,14 +4,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
 
 import {
+  Roster,
   RosterItem,
   RosterLabel,
   RosterList,
   RosterMeta,
-  RosterRoot,
   RosterToggle,
   type RosterSize,
-} from "../../../components/roster"
+} from "../../../components/ui/roster"
 import { useAssignShiftCrewMutation } from "../server-state/mutations/use-assign-shift-crew-mutation"
 import { useShiftCrewQuery } from "../server-state/queries/use-shift-crew-query"
 import type { CrewMember } from "../server-state/types"
@@ -58,7 +58,7 @@ export function ShiftCrewRoster({ shiftId, size }: ShiftCrewRosterProps) {
   const lockedLeadId = getLockedLeadId(members, assignedMemberIds)
 
   return (
-    <RosterRoot
+    <Roster
       size={size}
       value={assignedMemberIds}
       onValueChange={(memberIds) => assignCrew.mutate({ memberIds })}
@@ -80,7 +80,7 @@ export function ShiftCrewRoster({ shiftId, size }: ShiftCrewRosterProps) {
           <AlertDescription>{assignCrew.error.message}</AlertDescription>
         </Alert>
       )}
-    </RosterRoot>
+    </Roster>
   )
 }
 

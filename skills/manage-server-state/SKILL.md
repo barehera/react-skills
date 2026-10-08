@@ -5,14 +5,12 @@ description: Create, extend, refactor, or audit type-safe React server-state cod
 
 # Manage Server State
 
-Build reliable backend integration that feels native to the project. Treat the bundled implementation as a reference, never as a directory template to copy blindly.
+Build reliable backend integration that feels native to the project. The
+bundled implementation is a reference for reasoning, not a directory template.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff so
-the user can identify stale guidance. This shared file is the repository release
-version for every installed React Skills workflow; this skill has no independent
-version.
+Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 
 ## Layer placement
 
@@ -26,88 +24,119 @@ contracts, query keys, hooks, mutations, and cache effects. Visual families and
 primitives never import this layer; a feature component or screen calls the
 hooks and passes results into families as ordinary props.
 
-## Companion skill routing
+## Required workflow
 
-Inspect the installed skill catalog before implementation when the request
-crosses the server-state boundary.
+1. Collect the endpoint evidence the user provides: documentation, raw
+   request/response JSON, cURL, or sanitized HAR.
+2. Read repository instructions and record the
+   [project profile](references/architecture.md#project-profile): placement,
+   file granularity, naming, transport, contract source, runtime validation,
+   auth, error handling, pagination, cache conventions, and validation
+   commands. Classify the task as `create from scratch`, `create feature`,
+   `add endpoint`, `refactor`, or `audit`;
+   [workflows.md](references/workflows.md) has the steps for each.
+3. Resolve each endpoint contract in the
+   [evidence order](references/backend-contracts.md#evidence-order): user
+   evidence and repository facts, then a request for missing documentation or
+   representative payloads, then observation of existing local application
+   traffic, and a direct discovery request only as the final safe fallback.
+   Never invent routes, fields, envelopes, page parameters, or auth
+   requirements.
+4. Ask only questions whose answers cannot be established and would materially
+   change the result, and combine related questions. If the user delegates a
+   choice, use the project convention or the defaults below and state it.
+5. Implement the smallest coherent change. Do not migrate unrelated code during
+   an endpoint task.
+6. Run the repository's existing formatting, lint, typecheck, test, and build
+   commands in proportion to risk. Do not introduce a test framework unless
+   requested.
+7. Report files changed, layout and defaults chosen, contract evidence and its
+   quality, dependencies added, cache policy, commands run, any runtime
+   inspection, backend assumptions, and unresolved gaps.
 
-- For the component family that renders the data, its slots, root-owned
-  visuals, and where an optimistic boundary sits, use
-  `$build-composable-components` when available.
-- For the form that submits to a mutation, its schema, and field families, use
-  `$build-forms` when available.
-- For deciding whether a product rule around a request deserves a comment, use
-  `$document-business-logic` when available.
-- If a useful companion is not installed, explain its concrete benefit once
-  and ask whether the user wants it installed. Install only after approval and
-  only through the environment's supported skill installer; otherwise offer
-  `npx --yes github:barehera/react-skills <skill>`, which installs it for the
-  project's saved agents. Continue with this skill if the user declines and do
-  not repeat the recommendation.
-
-## Operating rule
+## Core contracts
 
 Separate decisions into three groups:
 
-1. Preserve project facts: repository instructions, existing layout, public imports, transport, generated types, auth, error handling, and backend contracts.
-2. Enforce correctness: stable cache identity, complete query keys, cancellation, safe auth gating, accurate pagination, deliberate cache effects, and one consistent vocabulary.
-3. Apply defaults only when the project has no convention. State important defaults before creating a new architecture.
+1. Preserve project facts: repository instructions, existing layout, public
+   imports, transport, generated types, auth, error handling, and backend
+   contracts.
+2. Enforce correctness: stable cache identity, complete query keys,
+   cancellation, safe auth gating, accurate pagination, deliberate cache
+   effects, and one consistent vocabulary.
+3. Apply defaults only when the project has no convention. State important
+   defaults before creating a new architecture.
 
 Use response schemas to validate and infer the expected shape without making
 schema drift take down the query. When parsing fails, report the mismatch and
 return the raw payload as the expected output so the application can degrade
 gracefully. Do not throw solely because a server response failed schema parsing.
 
-## Required workflow
+## Companion skill routing
 
-1. Collect the endpoint information, documentation, raw request/response JSON, cURL, or sanitized HAR evidence the user provides.
-2. Read repository instructions and inspect manifests, aliases, neighboring features, API clients, QueryClient setup, auth integration, backend types/schemas, API specifications, collections, and validation commands.
-3. Classify the request as `create from scratch`, `create feature`, `add endpoint`, `refactor`, or `audit`.
-4. Build a short project profile: placement, file granularity, naming, transport, contract source, runtime validation, auth, error handling, pagination, and cache conventions.
-5. Resolve the endpoint contract from user-provided evidence and repository facts. Ask for missing documentation or representative payloads before runtime inspection. Observe existing local application traffic only when those sources are insufficient; send a direct discovery request only as the final safe fallback. Never invent routes, fields, envelopes, page parameters, or auth requirements.
-6. Ask only questions whose answers cannot be established and would materially change the result. Combine related questions. If the user delegates the choice, use the project convention or the defaults in the references and state the choice.
-7. Read only the references needed for the task:
-   - [architecture.md](references/architecture.md) for placement, dependency direction, and adapting file structure.
-   - [placements.md](references/placements.md) when choosing between feature-colocated, server-state-rooted, compact, or layer-oriented placement.
-   - [naming.md](references/naming.md) for the project vocabulary and migration rules.
-   - [backend-contracts.md](references/backend-contracts.md) for contract intake, validation, errors, or pagination.
-   - [queries.md](references/queries.md) for keys, factories, hooks, overrides, and authentication.
-   - [mutations-cache.md](references/mutations-cache.md) for mutations, optimistic updates, and cache effects.
-   - [workflows.md](references/workflows.md) for questions and task-specific procedures.
-   - [examples.md](references/examples.md) before creating a new architecture or when a concrete pattern would help.
-8. Implement the smallest coherent change. Do not migrate unrelated code during an endpoint task.
-9. Run the repository's existing formatting, lint, typecheck, test, and build commands in proportion to risk. Do not introduce a test framework unless requested.
-10. Report files changed, commands run, decisions made, contract evidence used, backend assumptions, and unresolved gaps.
+When the request crosses the server-state boundary, check the installed catalog:
 
-## Defaults, not mandates
+- `$build-composable-components`: the component family that renders the data,
+  its slots, root-owned visuals, and where an optimistic boundary sits.
+- `$build-forms`: the form that submits to a mutation, its schema, and field
+  families.
+- `$document-business-logic`: whether a product rule around a request deserves
+  a comment.
+- `$use-preferred-react-stack`: library defaults and verified imports.
+- `$extract-named-helpers`: pure helper extraction and hook boundaries. Public
+  operation inputs and cache action vocabulary stay owned here; helper defaults
+  do not override them.
 
-Use `$use-preferred-react-stack` when available for library defaults and
-verified imports, and `$extract-named-helpers` for pure helper extraction and
-hook boundaries. Public operation inputs and cache action vocabulary remain
-owned here; helper defaults do not override them. Recommend an absent companion
-once with its concrete benefit and require approval before installing it.
-Continue without it if declined.
+If a useful companion is missing, explain its concrete benefit once and ask
+whether to install it. Install only after approval and only through the
+environment's supported installer, otherwise offer
+`npx --yes github:barehera/react-skills <skill>`, which installs it for the
+project's saved agents. If the user declines, continue and do not ask again.
 
-When no project convention exists, prefer:
+## References
+
+- [architecture.md](references/architecture.md): project profile, placement,
+  shared code, dependency direction.
+- [naming.md](references/naming.md): operation and namespace names.
+- [backend-contracts.md](references/backend-contracts.md): evidence, JSON
+  inference, runtime fallback safety, validation, transport, pagination.
+- [queries.md](references/queries.md): keys, option factories, hooks,
+  authentication.
+- [mutations-cache.md](references/mutations-cache.md): mutation effects, cache
+  factory, optimistic updates.
+- [workflows.md](references/workflows.md): questions, per-mode steps, audit
+  checklist.
+- [examples/feature-colocated](examples/feature-colocated): read before
+  creating a new architecture. A type-checked composition: shared primitives in
+  `src/server-state` and a Posts resource with finite and infinite lists,
+  detail and related context queries, an authenticated-query factory,
+  mutations, and hook-bound cache actions. Copy its reasoning, not its backend
+  contract or paths: replace every route, schema, type, auth policy, pagination
+  field, default, and cache rule with verified project facts.
+
+## Decision defaults
+
+Use these only when the project has no convention:
 
 - Feature-colocated remote state with direct imports and one hook per operation.
-- `detail` as the single-resource read name; `list`, `infiniteList`, `create`, `update`, and `delete` for common operations.
+- `detail` as the single-resource read name; `list`, `infiniteList`, `create`,
+  `update`, and `delete` for common operations.
 - Object inputs for public operations so parameters can grow safely.
-- Query option factories as the source of `queryKey` and `queryFn`, with thin hooks as the component API.
-- Named cache operations returned by a pure feature factory that binds QueryClient once, plus a thin feature hook for React callers. Do not memoize the returned cache API without a measured need.
-- Runtime validation for untrusted serialized data, unless generated backend types are the established source of truth.
-- The project's existing Axios, fetch, or generated-client transport instead of adding another client.
-- Axios through a project wrapper and TanStack Query when establishing a fresh
-  transport/remote-state stack; do not add a second client to an existing one.
-- `set`, `patch`, `invalidate`, and `remove` for cache actions; reserve `delete` for the backend mutation.
-- No barrel exports in a new structure. Preserve existing public entry points during a scoped refactor unless removal is requested.
+- Query option factories own `queryKey` and `queryFn`; thin hooks are the
+  component API.
+- Named cache operations returned by a pure feature factory that binds
+  QueryClient once, plus a thin feature hook for React callers. Do not memoize
+  the returned cache API without a measured need.
+- `set`, `patch`, `invalidate`, and `remove` for cache actions; reserve
+  `delete` for the backend mutation.
+- Runtime validation for untrusted serialized data, unless generated backend
+  types are the established source of truth.
+- The project's existing Axios, fetch, or generated-client transport; for a
+  fresh stack, Axios through a project wrapper and TanStack Query. Never add a
+  second client.
+- No barrel exports in a new structure. Preserve existing public entry points
+  during a scoped refactor unless removal is requested.
 
-Do not force `src/features`, Zod, Axios, Query Key Factory, shared response envelopes, a global `server-state` folder, or the reference example's file boundaries onto a project that uses a different coherent approach.
-
-## Reference implementation
-
-The complete implementation is under [examples/feature-colocated](examples/feature-colocated). It demonstrates shared primitives, a Posts resource, finite and infinite queries, context keys, an authenticated-query factory, mutations, and hook-bound cache actions.
-
-Use [placements.md](references/placements.md) to map that implementation into a server-state-rooted, compact, or established layer-oriented project. Do not duplicate the implementation only to change directories.
-
-Copy its reasoning, not its backend contract or paths. Replace every route, schema, type, authenticated-query policy, pagination field, default, and cache rule with verified project facts.
+Do not force `src/features`, Zod, Axios, Query Key Factory, shared response
+envelopes, a global `server-state` folder, or the reference example's file
+boundaries onto a project that uses a different coherent approach.

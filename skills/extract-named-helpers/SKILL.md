@@ -28,7 +28,7 @@ the primitive. Extraction must never create an import that points upward.
 1. Inspect repository instructions, callers, neighboring domain utilities,
    types, compiler configuration, and checks; when auditing, also read the
    planning artifacts the repository supplies (roadmap, backlog, plan).
-   Preserve the existing React and TypeScript stack and business ownership.
+   Preserve the existing stack and business ownership.
 2. Identify the decision or transform hidden in the implementation. Compare
    extraction against a named local value and simpler control flow first.
 3. Choose the narrowest signature and placement using the contracts below.
@@ -48,54 +48,86 @@ Extract when a useful domain name makes one of these easier to understand:
 
 Operation counts and roughly three lines are review signals, not automatic
 thresholds. A one-use effect handler can retain several statements when their
-ordering is clearest at the decision point. Delete narration the helper name
-replaces; route surviving product rules to `$document-business-logic` at the
-owning declaration. Preserve required technical comments and supported rationale.
+ordering is clearest at the decision point.
+
+`every` alone returns true for an empty array, so do not replace a nonempty
+completion rule with a vacuously true result. Extract a
+branching state updater as `update(previous => toRestartedDraft(previous))`,
+keeping the callback that receives the current value instead of precomputing
+from a stale render snapshot.
+
+Delete narration the helper name replaces; route surviving product rules to
+`$document-business-logic` at the owning declaration. Preserve required
+technical comments and supported rationale.
 
 ## Do not extract
 
 Keep a flat composition of named flags, one-line fallback, or simple single
 map/filter inline when it has one caller and no hidden derivation or meaningful
 branch. Prefer `const canSubmit = isValid && !isSaving && hasChanges` to a
-wrapper that only repeats that name. Keep a single-use side-effect branch
-inline unless extraction creates a useful responsibility boundary.
+wrapper that only repeats that name. Keep a single-use side-effect branch, or a
+callback whose short ternary already communicates its purpose, inline unless
+extraction creates a useful responsibility boundary.
 
 Before wrapping duplicated side effects, consider one call at their common
 decision point. Hoist only if order, conditions, exceptions, and call count stay
-equivalent. Similar-looking code with different business policies is not
-necessarily duplication.
+equivalent; do not hoist across `await`, cancellation checks, or early returns
+without proving the same paths execute the side effect once. Similar-looking
+code with different business policies is not necessarily duplication.
 
-These rules decide whether to create a helper. When auditing an existing
-helper, keep it when its name carries a product rule, an external contract, or
-a transform a recorded upcoming feature needs; inline only a restatement or a
-plain alias. See
-[Auditing existing helpers](references/extraction-triggers.md#auditing-existing-helpers).
+## Auditing existing helpers
+
+The rules above decide whether to create a helper. An audit of an existing
+helper asks whether its name carries meaning the call site would lose:
+
+- keep a helper whose name carries a product rule, an external contract such
+  as a wire format or boundary value, or a transform that a recorded upcoming
+  feature needs;
+- inline a helper only when it restates its body or is a plain alias of another
+  function;
+- narrow a helper with no meaning outside its module: drop `export` and keep
+  it module-private;
+- report anything else as `revisit`: name the helper and the missing evidence,
+  and leave the code unchanged. Do not inline it on caller count alone.
+
+Keep `toDayEndDateTime(day)`, whose name carries the API's inclusive day bound
+that two scheduled features need. Inline `isReadyToSave(isValid, isSaving)`,
+which only restates `isValid && !isSaving`, and a one-caller
+`getItemCount(items)` that returns `items.length`. A one-line fallback such as
+`parse(day) ?? undefined` stays when a recorded feature reuses it; without that
+record it is `revisit`, not automatically inlined. These criteria decide
+whether a helper stays named; whether it stays exported, and where it lives,
+follows Placement.
 
 ## Placement
 
 | Consumers | Default |
 | --- | --- |
-| One module, including several callers inside it | Module-private helper beside or above its consumers |
-| Multiple modules with one domain owner | Export from the existing cohesive domain utility module |
-| Never by default | Exports with no current or recorded consumer outside the module (speculative exports), a miscellaneous `helpers.ts`, or one file per tiny helper of the same concern |
+| One module, including several callers inside it | Module-private helper beside or above its consumers; two exports may share one private predicate |
+| Multiple modules with one domain owner | Export from the existing cohesive domain utility module and import it directly |
+| Never by default | Exports with no current or recorded consumer outside the module (speculative exports), a miscellaneous `helpers.ts`, a re-export barrel, or one file per tiny helper of the same concern |
 
-A recorded upcoming consumer (roadmap, backlog, plan, design, or sibling
-screen) counts as a consumer for placement; speculation has no record. A small
+A recorded consumer is one named in a roadmap, backlog, plan, or design, or an
+existing sibling screen with the same shape; speculation has no record. A small
 module for a separate purpose, such as locale resolution beside formatting, is
 a legitimate boundary even with one function; route purpose placement to
 `$feature-sliced-design`.
 
-A second call inside the same file does not earn an export. A legitimate
-independent boundary or existing public API may justify a dedicated module.
-Cross-feature reuse follows business ownership and dependency direction, not
-caller count alone; do not move business rules into generic Shared utilities.
+An independently testable policy, a server-only dependency, or an existing
+public API may justify a dedicated module even with one caller. Cross-feature
+reuse follows business ownership and dependency direction, not caller count
+alone; do not move business rules into generic Shared utilities. Preserve
+existing paths in a scoped extraction.
 
 ## Signature and naming
 
 When reading several related fields from an object callers already hold,
-accept that object using a minimal structural type or `Pick`. Avoid
-`helper(object.field, object)`. A single-value predicate usually takes that
-value. Preserve meaningful null/undefined distinctions and generic inference.
+accept that object using a minimal structural type, or `Pick` when an
+authoritative type exists. Avoid `helper(object.field, object)`. A
+single-value predicate usually takes that value; unrelated arguments, such as
+a value and a threshold, stay separate. Preserve meaningful null/undefined
+distinctions and generic inference, and do not add optionality only to avoid
+fixing a caller with invalid data.
 
 | Prefix | Expected contract |
 | --- | --- |
@@ -114,12 +146,14 @@ compatibility unless changing it is part of the task.
 Hooks own React subscriptions, effects, refs, and store/query access. Extracted
 pure decisions live at module scope with inputs passed explicitly; hooks
 compose them and return useful named values/actions. Do not turn a pure
-calculation into a hook or extract every hook-local expression. Closures that
-coordinate current hook state can remain in the hook.
+calculation into a hook, wrap a simple selector in an extra hook, or extract
+every hook-local expression. Closures that coordinate current hook state can
+remain in the hook.
 
 Module scope does not memoize results. Follow `$use-preferred-react-stack`
 for compiler detection and the legacy memoization boundary; with the compiler
-enabled, add no routine `useMemo`/`useCallback` wrappers around helpers.
+enabled, add no routine `useMemo`/`useCallback` wrappers around helpers, and
+do not remove unrelated existing memoization.
 
 ## Companion skill routing
 
@@ -130,19 +164,13 @@ enabled, add no routine `useMemo`/`useCallback` wrappers around helpers.
 - `$document-business-logic`: surviving non-obvious product rationale.
 - `$use-preferred-react-stack`: library selection and compiler policy.
 
-Use available companions for their concern. Recommend an absent companion once
-with its concrete benefit; require approval to install it and continue without
-it when declined. Do not duplicate its full guidance here.
+Recommend an absent companion once with its concrete benefit; require approval
+to install it and continue without it when declined.
 
-## Read focused guidance
+## References
 
-- [Extraction triggers](references/extraction-triggers.md): chains, callback
-  boundaries, safe hoisting, and auditing existing helpers.
-- [Placement](references/placement.md): private helpers versus domain exports,
-  recorded consumers, and purpose splits.
-- [Signatures and naming](references/signatures-and-naming.md): minimal inputs
-  and return contracts.
-- [Hooks and helpers](references/hooks-and-helpers.md): React boundaries.
-- [Complete inspection example](examples/inspection.ts): pure decisions,
-  immutable transforms, and shared private predicates.
-- [Inspection hook](examples/use-inspection-status.ts): effect composition.
+- [Placement examples](references/placement.md): recorded consumers, existing
+  lower-layer exports, and purpose splits.
+- [examples/inspection.ts](examples/inspection.ts) and
+  [examples/use-inspection-status.ts](examples/use-inspection-status.ts):
+  type-checked helpers and the hook that composes them.
