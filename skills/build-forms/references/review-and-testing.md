@@ -2,9 +2,27 @@
 
 ## Contents
 
+- [Bypass checks](#bypass-checks)
 - [Audit](#audit)
 - [Extension tests](#extension-tests)
 - [Verification depth](#verification-depth)
+- [Handoff](#handoff)
+
+## Bypass checks
+
+Run these first on every feature form with more than one section or a
+separate footer, including forms written by a delegate. Each hit is a
+finding unless the form is a single-field inline form such as a search box:
+
+| Violation | Search hint |
+| --- | --- |
+| `useForm` called outside the typed root | `useForm(` |
+| a form instance spread into a provider | `{...form}` |
+| `UseFormReturn`, submit-pending state, or read-only options passed through section props that the typed hook, root properties, or a query hook could supply | `form=`, `pending=`, `isPending=`, `options=` on section components |
+| an inline render block for a control that already has an adapter | `render={({ field })` |
+
+Then confirm the form uses the incumbent factory and adapters named in the
+form model, and that the submit footer reads pending state from the root.
 
 ## Audit
 
@@ -18,7 +36,12 @@ that covers the touched area. These checks are easy to miss:
 - Field paths match their value types.
 - Select provider boundaries contain only Select-dependent slots; radio
   option identity is supplied once; checkbox layout is explicit.
-- Compact components compose the open slots rather than duplicating behavior.
+- Compact adapters compose the open slots rather than duplicating behavior.
+- Every `slotProps` type omits the bindings its adapter owns (IDs, `name`,
+  `value`, `onValueChange`, refs, `aria-*` relationships, `children`), and
+  the adapter applies those bindings after the spread. A
+  `slotProps={{ selectTrigger: { id: "x" } }}` call must fail to compile.
+- `options` values are typed from the field value, not plain `string`.
 - The shared Form/provider and compound-field foundation stay together when
   they are one context/controller boundary; shared mechanics such as ref
   composition live in `lib/`, not in one field module.
@@ -63,3 +86,15 @@ Run typecheck and lint for public API safety. Use existing interaction tests or
 a browser pass for focus, keyboard, portals, ARIA, dynamic fields, and workflow
 transitions. Run the production build for framework and client/server
 boundaries. Do not introduce a new test framework only for one form change.
+
+## Handoff
+
+List, as separate items:
+
+- preserved contracts;
+- unresolved assumptions;
+- pre-existing contract violations: an inherited primitive the task does not
+  own that breaks a contract, named with the contract and the primitive, such
+  as "shadcn `FormControl` always lists the description ID in
+  `aria-describedby`, even without a description". When the task owns the
+  primitive, fix it instead.

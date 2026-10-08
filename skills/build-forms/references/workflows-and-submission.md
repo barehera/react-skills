@@ -6,6 +6,7 @@
 - [Step-scoped validation](#step-scoped-validation)
 - [Dynamic and conditional fields](#dynamic-and-conditional-fields)
 - [Recoverable errors](#recoverable-errors)
+- [Field-shaped values](#field-shaped-values)
 - [Submission and server state](#submission-and-server-state)
 
 ## Form and Stepper
@@ -58,6 +59,43 @@ assertive announcements disrupt users.
 Retain entered values after validation or remote failure unless reset is an
 explicit success behavior. In a multi-step process, reuse previously entered
 information rather than asking for it again.
+
+## Field-shaped values
+
+Check the root's schema typing before writing a `transform` or `z.coerce`.
+The example's `Form` accepts distinct input and output types
+(`TTransformedValues`), so a transform is fine there. A root typed
+`ZodType<T, T>` requires input to equal output: keep the value in the shape
+the control produces, such as a string for a number typed into a text input
+so tiny decimals are not rounded, and convert in the submit payload mapper in
+the feature's form module.
+
+```ts
+const priceFormSchema = z.object({
+  amount: z.string().trim().regex(/^\d+(\.\d+)?$/, "Enter a number such as 0.25"),
+})
+
+type PriceFormValues = z.infer<typeof priceFormSchema>
+
+export function createPricePayload(values: PriceFormValues) {
+  return { amount: Number(values.amount) }
+}
+```
+
+Lock the mapper with a case table in the repository's test runner
+(`$write-feature-tests` owns the table style):
+
+```ts
+it.each([
+  { amount: "0.000001", expected: 0.000001 },
+  { amount: "12", expected: 12 },
+])("maps $amount to a numeric amount", ({ amount, expected }) => {
+  expect(createPricePayload({ amount })).toEqual({ amount: expected })
+})
+```
+
+Dates that several descendant sections need as `Date` objects may justify
+extending the root's generics instead of keeping strings.
 
 ## Submission and server state
 

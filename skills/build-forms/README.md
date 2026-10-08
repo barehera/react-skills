@@ -3,15 +3,23 @@
 [← React Skills catalog](../../README.md)
 
 Design, implement, refactor, or audit accessible React form systems with
-shadcn-style compound fields, repository-native form and validation libraries,
-browser autofill/mobile input behavior, dynamic collections, and independent
-workflow orchestration.
+compact field adapters over shadcn-style compound slots, repository-native
+form and validation libraries, browser autofill/mobile input behavior, dynamic
+collections, and independent workflow orchestration.
 
-Every visible part owns its natural primitive props. Consumers configure
-`SelectFieldTrigger`, `SelectFieldContent`, `CheckboxFieldLayout`, and other
-slots directly instead of passing `triggerProps`, `contentProps`, or similar
-bags through a field root. Shared roots still own registration, IDs, invalid
-state, refs, and ARIA relationships once.
+The skill first looks for the repository's incumbent form layer, a typed form
+factory and its field adapters, and builds new forms on it in its own
+vocabulary. Only a repository without one gets the skill's fresh foundation.
+Audits flag feature forms that bypass the typed root: raw `useForm` calls,
+`<Form {...form}>` spreads, prop-drilled pending state, and inline
+`FormField` render blocks.
+
+Feature code renders one compact adapter per field, such as
+`<SelectField control name label options slotProps />`. A typed `slotProps`
+object, keyed by primitive part (`selectTrigger`, `selectContent`, ...),
+configures secondary parts and cannot override the IDs, values, refs, or ARIA
+the adapter owns. Custom anatomy composes the open `Root`, `Label`, `Control`,
+`Description`, and `Error` slots the adapter is built from.
 
 The skill keeps Form, Stepper, and surrounding Card, Dialog, or Sheet primitives
 separate. A feature adapter may validate the active step and advance navigation,
@@ -61,8 +69,9 @@ alone, add `barehera/react-skills/build-forms`. See the
 ## Use
 
 ```text
-Use $build-forms to refactor this React Hook Form screen into composable shadcn
-field families. Keep each slot's primitive props direct and remove prop bags.
+Use $build-forms to refactor these create and edit forms onto our shared form
+factory and field adapters. Add a SelectField adapter in the same style if one
+is missing, and read pending state from the form root.
 ```
 
 ```text

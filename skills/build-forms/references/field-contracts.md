@@ -9,7 +9,7 @@
 - [Select](#select)
 - [Radio group](#radio-group)
 - [Checkbox](#checkbox)
-- [Compact fields](#compact-fields)
+- [Compact adapters](#compact-adapters)
 
 ## Shared control rules
 
@@ -44,7 +44,12 @@ bags or universal defaults:
   and prose differ from usernames, codes, URLs, and identifiers;
 - native `required`, `minLength`, `maxLength`, `min`, `max`, `step`, and
   `pattern` mirroring schema constraints only when their semantics truly
-  match; the server still validates.
+  match; the server still validates. Native constraints that block submission
+  (`required`, `pattern`, `min`, `max`, `step`, `minLength`) need a root with
+  `noValidate`, or browser bubbles replace the schema's messages. Without it,
+  use `aria-required` for required state, keep the schema as the only
+  validator, and report "add `noValidate` to the shared root". `maxLength`
+  only limits typing and is safe either way.
 
 Prefer a native input or select when its picker, autofill, or mobile behavior
 is central to the task. For a custom Select or combobox, verify that the
@@ -70,7 +75,8 @@ and autofill instead of assuming native parity.
 
 Expose `Root`, `Label`, `Control`, `Description`, and `Error`. The Control
 takes native Input or Textarea props directly; when `required` is passed it
-keeps the native attribute and derives `aria-required`.
+keeps the native attribute and derives `aria-required`, which assumes the
+root sets `noValidate` (see [Browser hints](#browser-hints)).
 
 Implement Date as a semantic composition of the Input family when the native
 date input is the repository convention. Normalize its value at the Control
@@ -112,10 +118,21 @@ Translate the primitive's checked state to the form's boolean contract at the
 Control boundary. Support indeterminate presentation only when the schema and
 product model deliberately do.
 
-## Compact fields
+## Compact adapters
 
-A compact field such as `<InputField label="..." />` suits repeated default
-anatomy and composes the same Root, Label, Control, Description, and Error
-slots. Keep its API small. When customization would need `triggerProps`,
-`contentProps`, `fieldProps`, `labelProps`, or similar bags, point the
-consumer to the compound slots instead of growing the compact component.
+Every family exports one compact adapter, the default for feature code. All
+take `control`, `name`, `label`, optional `description`, the controller's
+`disabled` and `shouldUnregister`, and `slotProps` with `field`,
+`fieldLabel`, `fieldDescription`, and `fieldError`:
+
+| Adapter | Main control props | Data props | Extra `slotProps` keys |
+| --- | --- | --- | --- |
+| `InputField`, `TextareaField` | Input or Textarea props, spread | none | none |
+| `SelectField` | none; `required` is top-level | `options`, `placeholder` | `select`, `selectTrigger`, `selectValue`, `selectContent`, `selectItem` |
+| `RadioGroupField` | none; `required` is top-level | `options` | `radioGroup`, `radioGroupItem` |
+| `CheckboxField`, `SwitchField` | Checkbox or Switch props, spread | none | none |
+
+Type `options` from the field value so each option's `value` matches the
+schema. An option needing its own description or layout is custom anatomy:
+compose the family's slots. The adapter renders the same slots, so IDs, ARIA,
+and bindings behave identically in both forms.

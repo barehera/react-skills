@@ -33,7 +33,7 @@ the layer model, and responsibility boundaries.
 
 | Skill | Purpose |
 | --- | --- |
-| [Build Forms](skills/build-forms/README.md) | Build composable, accessible React forms with slot-owned props, typed feature hooks, and independent workflow orchestration. |
+| [Build Forms](skills/build-forms/README.md) | Build accessible React forms on the incumbent typed form factory, with compact field adapters, typed slot props, and independent workflow orchestration. |
 | [Manage Server State](skills/manage-server-state/README.md) | Build, extend, refactor, and audit type-safe React server state around real backend contracts. |
 | [Build Composable Components](skills/build-composable-components/README.md) | Design and refactor component families with preserved base contracts, slot-owned props, scoped state, and correct async boundaries. |
 | [Document Business Logic](skills/document-business-logic/README.md) | Preserve non-obvious product rules without inline implementation narration. |
