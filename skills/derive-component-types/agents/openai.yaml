@@ -1,0 +1,4 @@
+interface:
+  display_name: "Derive Component Types"
+  short_description: "Derive component types from one owner without casts"
+  default_prompt: "Use $derive-component-types to type these components from the types that own their data, keep reusable components in their own UI vocabulary, and remove redeclared props and casts."
