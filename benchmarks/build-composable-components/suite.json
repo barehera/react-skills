@@ -1,0 +1,9 @@
+{
+  "skill": "build-composable-components",
+  "title": "Build Composable Components",
+  "fixture": "fixture",
+  "transferTasks": [
+    "t5-bulk-selection"
+  ],
+  "promoted": "lean-v6"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "lean-v1",
+  "source": "author:skill-bench-author from skills/evolve-skills-from-feedback + LESSONS.md",
+  "note": "First lean candidate written blind to the suite tasks; see evolve-skills-from-feedback/PREP-author.md",
+  "createdAt": "2026-10-07T23:49:16.853Z",
+  "words": {
+    "core": 1020,
+    "total": 2305
+  }
+}

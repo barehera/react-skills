@@ -21,19 +21,9 @@
           "target": "~/.agents/skills/build-composable-components/agents/openai.yaml"
         },
         {
-          "path": "references/architecture-and-api.md",
+          "path": "references/composition.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/architecture-and-api.md"
-        },
-        {
-          "path": "references/async-and-adapters.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/async-and-adapters.md"
-        },
-        {
-          "path": "references/examples.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/examples.md"
+          "target": "~/.agents/skills/build-composable-components/references/composition.md"
         },
         {
           "path": "references/review-and-testing.md",
@@ -41,19 +31,14 @@
           "target": "~/.agents/skills/build-composable-components/references/review-and-testing.md"
         },
         {
-          "path": "references/state-and-lifecycles.md",
+          "path": "references/state-styling-and-effects.md",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/state-and-lifecycles.md"
+          "target": "~/.agents/skills/build-composable-components/references/state-styling-and-effects.md"
         },
         {
-          "path": "references/variants-and-styling.md",
+          "path": "examples/layered-family/src/components/ui/roster.tsx",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/references/variants-and-styling.md"
-        },
-        {
-          "path": "examples/layered-family/src/components/roster.tsx",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/components/roster.tsx"
+          "target": "~/.agents/skills/build-composable-components/examples/layered-family/src/components/ui/roster.tsx"
         },
         {
           "path": "examples/layered-family/src/features/shift-crew/components/shift-crew-roster.tsx",

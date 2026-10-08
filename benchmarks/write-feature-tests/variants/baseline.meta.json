@@ -1,0 +1,10 @@
+{
+  "id": "baseline",
+  "source": "git:main",
+  "note": "Original skill at main (v2.0.1)",
+  "createdAt": "2026-10-07T23:36:01.682Z",
+  "words": {
+    "core": 1338,
+    "total": 2838
+  }
+}

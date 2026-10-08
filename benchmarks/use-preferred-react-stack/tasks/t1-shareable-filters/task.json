@@ -1,0 +1,59 @@
+{
+  "id": "t1-shareable-filters",
+  "title": "Shareable task search and status filter",
+  "mode": "create",
+  "prompt": "Support keeps telling customers over the phone to \"search for X and filter to In progress\". Add a search box and a status filter (All, To do, In progress, Done) above the list on `TasksPage`, so the list only shows matching tasks. Support wants to paste a link that opens the list with the same search and filter already applied, and the browser Back button should undo filter changes without stepping back through every typed character. The tasks API already supports `search` and `status` (see `useTasksQuery`). Don't fire a request on every keystroke; wait until typing pauses.",
+  "criteria": [
+    {
+      "id": "url-single-owner",
+      "weight": 3,
+      "text": "Search text and status live in the URL through nuqs (`useQueryState`/`useQueryStates`) and the URL is the only writable owner: the input is bound directly to the URL value (no local useState copy of the search that is synced into the URL by an effect or debounced callback), and there is no Zustand store, context, or second useState mirroring the URL. Manual `window.history`/`URLSearchParams` synchronization is a fail."
+    },
+    {
+      "id": "nuqs-adapter",
+      "weight": 2,
+      "text": "The nuqs adapter matching this Vite SPA (`NuqsAdapter` from `nuqs/adapters/react`, not `nuqs/adapters/next/app` or another framework adapter) is mounted once at the app `Providers` boundary, not inside a feature component, and the existing QueryClientProvider and Toaster are kept (no duplicate providers)."
+    },
+    {
+      "id": "typed-parsers",
+      "weight": 2,
+      "text": "Values are parsed with nuqs typed parsers and explicit defaults: e.g. `parseAsString.withDefault(\"\")` for search and `parseAsStringLiteral([\"todo\",\"in_progress\",\"done\"] as const)` (or an equivalent typed literal parser) for status, so an invalid `?status=` falls back to All. No hand-written casting of raw query strings to TaskStatus."
+    },
+    {
+      "id": "history-mode",
+      "weight": 2,
+      "text": "History behavior is chosen deliberately per value: status changes create history entries (`history: \"push\"`), while search typing uses replace (the nuqs default) so Back does not step through keystrokes. Choosing All/clearing search removes the parameter (default value) rather than writing `?status=all` or an empty param. Full credit needs both the push/replace split and clean defaults."
+    },
+    {
+      "id": "pacer-debounce",
+      "weight": 3,
+      "text": "The request input is debounced with TanStack Pacer from the verified subpath (`useDebouncedValue`/`useDebouncer`/`useDebouncedCallback` from `@tanstack/react-pacer/debouncer`), deriving a settled search from the URL value so Back/Forward and pasted links also settle. No lodash debounce, no hand-rolled `setTimeout`/`clearTimeout` effect or custom `useDebounce` hook, and no debounce inside the queryFn. Status changes are not debounced."
+    },
+    {
+      "id": "query-boundary",
+      "weight": 2,
+      "text": "Filtering goes through the existing `useTasksQuery(projectId, { search, status })` with the settled search and the status; results are not copied into useState/Zustand, there is no effect-driven fetch, no query keys are hand-built in components, and no extra retry layer is added. Previous results stay visible while the new search loads (the provided keepPreviousData is kept)."
+    },
+    {
+      "id": "proportional-state",
+      "weight": 1,
+      "text": "No React Hook Form/Zod form model, Zustand store, or new context for the filter controls; no routine new `useMemo`/`useCallback`/`React.memo` (React Compiler is enabled in vite.config.ts)."
+    },
+    {
+      "id": "layering",
+      "weight": 2,
+      "text": "Controls are built from the existing `components/ui` primitives (Input, and Tabs/DropdownMenu/Button or another shadcn primitive for the status). Any new generic control lives in `components/ui`, is named by role, and knows nothing about tasks; the task-specific URL parsers and settled-filter hook live in `src/features/tasks` (e.g. a `useTaskListFilters` hook) and are not duplicated across components."
+    },
+    {
+      "id": "handoff",
+      "weight": 1,
+      "text": "The final message names the libraries chosen for URL state and debounce with the installed versions it checked (from package.json/lockfile or node_modules) and states which behaviors were not exercised in a browser (pasted link, Back/Forward, debounce timing)."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "TasksPage renders the search box and status filter above the list, the list shows filtered results from the API, the existing loading/error states still work, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

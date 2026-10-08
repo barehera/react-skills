@@ -1,0 +1,51 @@
+{
+  "from": "North team (billing app)",
+  "skill": "build-composable-components",
+  "skillVersion": "1.9.0",
+  "date": "2026-09-18",
+  "summary": "We built row action menus for invoices with the component skill over two sprints. Things we had to fix by hand or would like the skill to do differently.",
+  "items": [
+    {
+      "id": "N1",
+      "title": "Delete confirmation disappears when the menu closes",
+      "what_happened": "The agent rendered the confirmation AlertDialog inside the DropdownMenuItem. Selecting the item closes the menu, which unmounts the dialog in the same tick, so the confirmation flashes and is gone.",
+      "evidence": "invoice-row-menu.tsx (first version):\n<DropdownMenuItem onSelect={(e) => e.preventDefault()}>\n  <AlertDialog>\n    <AlertDialogTrigger>Delete</AlertDialogTrigger>\n    ...\n  </AlertDialog>\n</DropdownMenuItem>\n\nAccepted version: the AlertDialog is a sibling of the DropdownMenu, its open state lives in the adapter, and the Delete item only calls setConfirmOpen(true). Reproduced on three menus.",
+      "what_we_want": "Add a rule: never render any dialog in a component."
+    },
+    {
+      "id": "N2",
+      "title": "Size classes repeated on every item",
+      "what_happened": "For the large menu on the invoice detail page the agent put `h-10 text-base` on each DropdownMenuItem.",
+      "evidence": "invoice-detail-menu.tsx had className=\"h-10 text-base\" on 4 items.",
+      "what_we_want": "Add a `size` prop on the menu root that reaches the items, so pages stop patching items."
+    },
+    {
+      "id": "N3",
+      "title": "Menus should enforce permissions themselves",
+      "what_happened": "Two screens forgot to hide Delete for viewers because each screen has to call our canDeleteInvoice policy before rendering the Delete item.",
+      "evidence": "invoice-list.tsx rendered <ActionMenuDeleteItem /> without checking canDeleteInvoice; fixed in review.",
+      "what_we_want": "Make the ActionMenu family call the permission check (useViewer + canDelete) itself so no screen can forget it."
+    },
+    {
+      "id": "N4",
+      "title": "Agent does not write tests for menus",
+      "what_happened": "It feels like the agent never adds tests when it builds a menu.",
+      "evidence": "",
+      "what_we_want": "Require a test file for every component family."
+    },
+    {
+      "id": "N5",
+      "title": "Menu file location and label style",
+      "what_happened": "The agent put menus in src/components/ui. In our app, menus live in src/features/<feature>/menus/ and destructive labels end with an ellipsis (\"Delete…\").",
+      "evidence": "Team style guide, section 4.2.",
+      "what_we_want": "Change the skill to put menus in features/<feature>/menus and add ellipses to destructive labels."
+    },
+    {
+      "id": "N6",
+      "title": "Unneeded memoization",
+      "what_happened": "The agent wrapped menu handlers in useCallback and the item list in useMemo. Our app runs React Compiler, so these were noise and reviewers removed them.",
+      "evidence": "vite.config.ts enables babel-plugin-react-compiler; PR #88 review removed 9 useCallback/useMemo calls from menu code.",
+      "what_we_want": "Add a rule: never use useMemo or useCallback in components."
+    }
+  ]
+}

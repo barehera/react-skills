@@ -21,24 +21,9 @@
           "target": "~/.agents/skills/extract-named-helpers/agents/openai.yaml"
         },
         {
-          "path": "references/extraction-triggers.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/extract-named-helpers/references/extraction-triggers.md"
-        },
-        {
-          "path": "references/hooks-and-helpers.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/extract-named-helpers/references/hooks-and-helpers.md"
-        },
-        {
           "path": "references/placement.md",
           "type": "registry:file",
           "target": "~/.agents/skills/extract-named-helpers/references/placement.md"
-        },
-        {
-          "path": "references/signatures-and-naming.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/extract-named-helpers/references/signatures-and-naming.md"
         },
         {
           "path": "examples/inspection.ts",

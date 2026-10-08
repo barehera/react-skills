@@ -21,11 +21,6 @@
           "target": "~/.agents/skills/document-business-logic/agents/openai.yaml"
         },
         {
-          "path": "references/comment-contract.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/document-business-logic/references/comment-contract.md"
-        },
-        {
           "path": "examples/wait-lock.tsx",
           "type": "registry:file",
           "target": "~/.agents/skills/document-business-logic/examples/wait-lock.tsx"

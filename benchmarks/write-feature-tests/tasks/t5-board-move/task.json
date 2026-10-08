@@ -1,0 +1,59 @@
+{
+  "id": "t5-board-move",
+  "title": "Board card move rules (store transition)",
+  "mode": "create",
+  "prompt": "Drag-and-drop on the task board broke twice this month: cards landed in columns that were already at their WIP limit, and a finished card stayed flagged as blocked. The move logic is in `src/features/board/store/board-store.ts`. Add tests that lock how moving a card behaves so this stops regressing. Don't change what the board does.",
+  "criteria": [
+    {
+      "id": "extract-transition",
+      "weight": 3,
+      "text": "The move logic is extracted from the inline `set` callback into a named, exported pure function in the board feature (e.g. `moveCard({ board, move })` or `({ state, action })` returning the next `BoardState`), and the store's `moveCard` action calls it. Behavior is unchanged: rejected moves return the same state, the WIP check skips same-column reorders, the index is clamped, and Done unblocks."
+    },
+    {
+      "id": "transition-table",
+      "weight": 3,
+      "text": "The extracted transition is locked by one case table whose rows take one input object holding the state and the move, and whose `expected` is the next state compared by deep equality. Tests do not call `useBoardStore.getState()`/`setState`, render hooks, spy on `set`, or assert through a component."
+    },
+    {
+      "id": "branch-rows",
+      "weight": 2,
+      "text": "Rows cover the product branches: a move into a full column is rejected (state unchanged), a column without a WIP limit always accepts, reordering inside a full column is allowed, a card that reaches Done stops being blocked (and a blocked card moved elsewhere stays blocked), and an out-of-range drop index is clamped. A card missing from its source column is optional."
+    },
+    {
+      "id": "row-shape",
+      "weight": 2,
+      "text": "Each row has `case`/`input`/`expected`, with `case` naming the branch in product words (e.g. 'a full review column turns the card away'). Row states contain only the columns and cards the branch needs; a small local builder for a column or board is fine, but rows do not share one large board fixture full of irrelevant cards, and no row pastes the store's initial state."
+    },
+    {
+      "id": "shared-runner",
+      "weight": 2,
+      "text": "The table runs through a single generic case runner added to shared test utilities (e.g. `src/tests/rule-cases.ts`) that imports only Vitest, names the suite from the function's name, and has no board types or values; the decision is passed as a named function, not an anonymous lambda with a separate name string."
+    },
+    {
+      "id": "file-per-decision",
+      "weight": 1,
+      "text": "The test file is named for the transition (e.g. `move-card.test.ts`) and lives beside the board feature, not in a catch-all `board.test.ts` mixed with other concerns."
+    },
+    {
+      "id": "business-logic-owner",
+      "weight": 1,
+      "text": "The existing `Business Logic` / `Why` / `Rule` block moves with the rule onto the extracted production function (it does not stay orphaned on the store action or get duplicated), and no test file copies or paraphrases it."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "Only the transition is extracted: the store's public API (`useBoardStore`, `moveCard(move)`, `setBoard`), the types, and the initial columns stay the same; no new packages and no React or DOM test setup."
+    },
+    {
+      "id": "typed",
+      "weight": 2,
+      "text": "`npm run typecheck` passes including test files, with row inputs and expected states typed through the runner's inference (no `as any` casts)."
+    },
+    {
+      "id": "report",
+      "weight": 1,
+      "text": "The final message says the transition was extracted and the store delegates to it with unchanged behavior, lists the rows added, and says how tests were (or could not be) run."
+    }
+  ],
+  "rubricVersion": 1
+}

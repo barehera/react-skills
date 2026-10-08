@@ -1,62 +1,23 @@
 # Form architecture
 
+How to implement the field-family and feature-form contracts in `SKILL.md`.
+
 ## Contents
 
-- [Responsibility map](#responsibility-map)
 - [Shared field foundation](#shared-field-foundation)
 - [Slot-owned props](#slot-owned-props)
 - [Accessibility relationships](#accessibility-relationships)
-- [Create a typed feature form scope](#create-a-typed-feature-form-scope)
-- [Keep the feature form contract cohesive](#keep-the-feature-form-contract-cohesive)
-- [Placement and file boundaries](#placement-and-file-boundaries)
-
-## Responsibility map
-
-Use this dependency direction:
-
-```text
-feature form adapter
-  -> form and field families
-    -> repository form controller and design-system primitives
-
-feature submit action
-  -> feature server-state hook
-    -> transport and backend contract
-
-feature workflow adapter
-  -> independent Form API + independent Stepper API
-
-feature screen composition
-  -> independent Card/Dialog/Sheet API + independent Form API
-```
-
-The form root provides form context and submission. A field root binds one
-field and provides IDs, invalid state, disabled state, ref, value, and events.
-Leaf slots render repository primitives. Schema and product policy stay in the
-feature. Surrounding layout and navigation components keep their own public
-contracts; nesting components does not justify merging their responsibilities.
+- [Typed feature form](#typed-feature-form)
+- [Form-wide properties](#form-wide-properties)
+- [Placement](#placement)
 
 ## Shared field foundation
 
-Create shared infrastructure when several controls repeat the same controller
-and accessibility logic:
-
-```tsx
-<InputFieldRoot control={form.control} name="title">
-  <InputFieldLabel>Title</InputFieldLabel>
-  <InputFieldControl placeholder="Quarterly plan" />
-  <InputFieldDescription>Use a recognizable name.</InputFieldDescription>
-  <InputFieldError />
-</InputFieldRoot>
-```
-
-The foundation should provide stable non-visual bindings through context. Keep
+The form root provides form context and submission. A field root binds one
+field and provides IDs, invalid state, disabled state, ref, value, and events
+through one shared context; leaf slots render repository primitives. Keep
 control-specific value conversion and primitive providers inside the control
 family rather than expanding the shared root into a switchboard.
-
-A compact `<InputField label="..." />` may exist as a secondary API. Implement
-it by composing `InputFieldRoot`, `InputFieldLabel`, `InputFieldControl`,
-`InputFieldDescription`, and `InputFieldError`.
 
 ## Slot-owned props
 
@@ -65,9 +26,9 @@ Each part owns the props of what it renders:
 - Root: controller props and outer Field or FieldSet props.
 - Label: Label or Legend props.
 - Control: Input, Textarea, Checkbox, RadioGroup, or primitive-root props.
-- Trigger, value, content, item: corresponding Select primitive props.
+- Trigger, value, content, item: the corresponding Select primitive props.
 - Description: FieldDescription props.
-- Error: FieldError presentation props while internal errors remain authoritative.
+- Error: FieldError presentation props; internal errors remain authoritative.
 - Layout/content: Field and FieldContent props.
 
 Avoid:
@@ -96,87 +57,59 @@ Prefer:
 </SelectFieldRoot>
 ```
 
-The explicit `SelectFieldControl` keeps the Radix provider around only the
-trigger/value/content/item subtree. Field-level slots remain outside it.
+`SelectFieldControl` keeps the Radix provider around only the
+trigger/value/content/item subtree; field-level slots remain outside it.
 
 ## Accessibility relationships
 
-Generate one control ID per field root. Derive description and error IDs from
-it. The root supplies required bindings; consumers do not repeat them.
+Generate one control ID per field root and derive description and error IDs
+from it. The root supplies these bindings; consumers do not repeat them.
+Besides the `aria-describedby`, `aria-errormessage`, and `required` rules in
+`SKILL.md`:
 
 - Label `htmlFor` targets the control ID.
-- Control receives `aria-invalid` only while invalid.
-- `aria-describedby` includes a description ID only when that slot exists.
-- It includes an error ID only while invalid and when an error slot exists.
-- `aria-errormessage` references that visible error slot only while invalid.
-- Native required controls keep `required` and reflect `aria-required`; custom
-  controls propagate the same required state to their interactive element.
+- The form-library `name`, value, disabled state, ref, change, and blur
+  bindings reach the actual interactive element.
+- The control receives `aria-invalid` only while invalid.
 - Radio groups use a semantic FieldSet/Legend or an explicit labelled-by link.
 - Checkbox labels encompass or target the interactive control without hiding
   layout inside the label slot.
 
-Reserve internally authoritative IDs and ARIA props from leaf prop types. Allow
+Omit internally authoritative IDs and ARIA props from leaf prop types; allow
 compatible consumer ARIA such as `aria-label` when it does not break the field
-relationship.
+relationship. Native semantics come first: ARIA augments a custom control and
+never replaces a real label, input, select, button, fieldset, or form.
 
-## Create a typed feature form scope
+## Typed feature form
 
-When several descendants need form methods, bind the feature's value type once:
+`createForm<Values, Properties>()` binds the feature's value type, and an
+optional properties type, to a Form root, a typed `useForm` hook, and a
+`useProperties` selector hook
+([proposal-form.ts](../examples/typed-feature-form/src/features/proposal/proposal-form.ts)).
+It never receives a schema, defaults, or mode, because a factory that captures
+them hides product choices permanently. The root accepts the same resolver,
+defaults, mode, values, reset, focus, validation, and resolver-context options
+as `useForm`, and the screen chooses them
+([proposal-screen.tsx](../examples/typed-feature-form/src/features/proposal/proposal-screen.tsx)).
 
-```tsx
-export type ProposalForm = z.infer<typeof proposalSchema>
+Descendants call `useProposalForm()` and pass `form.control` to each field
+root, which keeps typed field-path inference without receiving the whole form
+as a prop. A descendant that needs reset, step validation, server errors, or
+submission state calls the typed hook inside the root instead of a second
+`useForm` at the screen.
 
-export type ProposalFormProperties = {
-  reviewGroupName: string
-  submissionDisabled: boolean
-}
+The screen hands submission to the feature's mutation hook, not a placeholder
+function. The mutation, its Axios call, and its response schema live in the
+feature's `server-state` folder and follow `$manage-server-state`; the typed
+form never imports TanStack Query, and the screen connects the two owners.
 
-export const {
-  Form: ProposalFormRoot,
-  useForm: useProposalForm,
-  useProperties: useProposalFormProperties,
-} = createForm<ProposalForm, ProposalFormProperties>()
-```
+## Form-wide properties
 
-Pass form configuration directly to the typed root, and hand submission to
-the feature's mutation hook rather than a placeholder function:
-
-```tsx
-const createProposal = useCreateProposalMutation()
-
-return (
-  <ProposalFormRoot
-    properties={{
-      reviewGroupName: "Launch council",
-      submissionDisabled: createProposal.isSuccess,
-    }}
-    resolver={zodResolver(proposalSchema)}
-    defaultValues={PROPOSAL_DEFAULT_VALUES}
-    mode="onBlur"
-    onSubmit={async (values) => {
-      await createProposal.mutateAsync(values)
-    }}
-  >
-    <ProposalDetails />
-  </ProposalFormRoot>
-)
-```
-
-The mutation hook, its Axios call, and the response schema live under the
-feature's `server-state` folder and follow `$manage-server-state`. The typed
-form never imports TanStack Query itself; the screen connects the two owners.
-
-Descendants call `useProposalForm()` and pass `form.control` to individual field
-roots, preserving typed field-path inference without receiving the entire form
-as a prop. The generic `createForm` factory binds the value type to a Form root
-and hook. The root accepts React Hook Form's configuration props directly and
-instantiates `useForm` once. The consuming feature still chooses the resolver,
-defaults, mode, and other options; the factory must not hard-code product
-configuration or absorb unrelated product context.
-
-When multiple descendants also need external non-field properties, bind a
-second type and pass one `properties` object to the root. The factory creates
-one vanilla Zustand store per mounted form and returns a typed selector hook:
+Use `properties` for external dependencies or UI policy that several
+descendants need but that are not submitted values, such as a review group
+name or a submission lock. The root creates one vanilla Zustand store per
+mount; React context transports only the stable `StoreApi`, and descendants
+select narrow slices:
 
 ```tsx
 const reviewGroupName = useProposalFormProperties(
@@ -184,59 +117,33 @@ const reviewGroupName = useProposalFormProperties(
 )
 ```
 
-The current scoped Zustand pattern uses React context only to transport the
-stable `StoreApi`; values and subscriptions belong to Zustand. Do not use the
-removed `zustand/context` API or a module-global store. Keep this channel for
-dependencies and UI policy that meaningfully apply across the form, not remote
-records or arbitrary screen state. The `properties` name deliberately avoids a
-collision with React Hook Form's resolver `context` option.
+Submitted values, Stepper state, cached server records, and unrelated screen
+state never go in this store; React Hook Form, the Stepper, and the
+server-state layer own them. The name `properties` avoids a collision with
+React Hook Form's resolver `context` option.
 
-## Keep the feature form contract cohesive
+## Placement
 
-Keep the shared form feature limited to reusable bindings and field families.
-Keep one feature's closely related form contract together by default:
+Follow the repository first. From scratch:
 
 ```text
+components/ui/
+  form.tsx             generic Form, createForm, compound-field foundation
+  input-field.tsx
+  select-field.tsx
+lib/
+  compose-refs.ts      composeRefs and other cross-family helpers
 features/proposal/
   components/
     proposal-details.tsx
     proposal-preview.tsx
     proposal-submit.tsx
-  proposal-form.ts
-  proposal-screen.tsx
+  server-state/        API call, response schema, mutation hook
+  proposal-form.ts     schema, values, defaults, options, properties type, typed Form/hooks
+  proposal-screen.tsx  resolver and options, properties, composition
 ```
 
-`proposal-form.ts` may own the schema, inferred values, defaults, option
-metadata, optional form-wide properties type, typed Form/hooks, and a small
-local submit example. Focused components own rendering and call the typed hooks.
-The screen chooses the resolver/options, supplies external properties, and owns
-composition; the typed root owns the single `useForm` call and isolated Zustand
-store.
-
-Split schema, types, constants, or submission into dedicated modules only when
-they become independently reusable, acquire substantial logic, or follow a
-strong repository convention. Do not create folders whose only purpose is to
-hold one tiny private file.
-
-## Placement and file boundaries
-
-Follow the repository first. When creating a feature-scoped foundation from
-scratch, a useful boundary is:
-
-```text
-features/form/
-  components/
-    form.tsx
-    input-field.tsx
-    select-field.tsx
-  utils/
-    index.ts
-```
-
-Keep each cohesive public family in one file. `components/form.tsx` may own the
-generic Form/provider factory and compound-field context/controller foundation
-when they are one reusable boundary, while still exporting them as separate
-components. Put small non-visual helpers shared across families directly in
-`utils/index.ts`. Import component modules directly; do not add barrels whose
-only job is to re-export neighboring files. Keep product form contracts and
-feature copy in the consuming feature.
+Keep each cohesive public family in one file. Import component modules
+directly; a barrel whose only job is re-exporting neighbors obscures
+dependencies. Product form contracts and feature copy stay in the consuming
+feature.

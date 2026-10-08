@@ -1,0 +1,9 @@
+{
+  "skill": "use-preferred-react-stack",
+  "title": "Use Preferred React Stack",
+  "fixture": "fixture-use-preferred-react-stack",
+  "transferTasks": [
+    "t3-nudge-rate-limit"
+  ],
+  "promoted": "lean-v1"
+}

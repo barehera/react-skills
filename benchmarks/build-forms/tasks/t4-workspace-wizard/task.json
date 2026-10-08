@@ -1,0 +1,49 @@
+{
+  "id": "t4-workspace-wizard",
+  "title": "Create workspace wizard in a dialog",
+  "mode": "create",
+  "prompt": "Turn `CreateWorkspaceDialog` into a three-step \"Create workspace\" wizard that opens in a dialog from its button. Step 1, About you: full name, work email, phone (optional). Step 2, Workspace: workspace name, URL (3 to 30 lowercase letters, numbers or dashes, shown as acme.app/<url>), team size (1-10, 11-50, 51+). Step 3, Review: a read-only summary and the Create button. Continue only moves on when the current step is valid, and Back never loses what was typed. Save with `useCreateWorkspaceMutation`; if it answers 409 the URL is taken, so take the user back to the Workspace step with the error on the URL field. Close the dialog and call `onCreated` after it saves. Use the existing Stepper (`src/components/ui/stepper.tsx`). Most people fill this in on their phones, so make typing easy.",
+  "criteria": [
+    {
+      "id": "independent-owners",
+      "weight": 3,
+      "text": "Dialog, Stepper, and Form stay separate components composed in a workspaces feature adapter (e.g. `<Dialog>` > `<DialogContent>` > `<Stepper>` + the typed Form root, in either nesting order). No fused `WizardForm`, `StepperForm`, `FormStepper`, `DialogForm`, or `FormDialog` component and no generic wrapper merging their props. The Stepper primitive and `src/features/form` are not modified to know about each other or about workspace fields; step state stays in the Stepper (not in form values or a form-wide store)."
+    },
+    {
+      "id": "step-validation",
+      "weight": 3,
+      "text": "The step-to-field mapping lives in the feature (e.g. a `WORKSPACE_STEP_FIELDS` constant in `workspace-form.ts`). Continue validates only the active step's fields through the form library (e.g. `form.trigger(fields, { shouldFocus: true })`) and calls `stepper.next()` only when that resolves true; Continue and Back are `type=\"button\"`, and only the final Review step has the `type=\"submit\"` Create button (pressing Enter on an earlier step must not create the workspace)."
+    },
+    {
+      "id": "value-retention",
+      "weight": 2,
+      "text": "All three steps share one form instance (`useForm` called once at the feature-typed root that wraps every step); step content may unmount, but values persist because fields are not unregistered (no `shouldUnregister: true`) and no per-step forms are merged on submit. Back simply calls the stepper; it does not reset or re-default the form."
+    },
+    {
+      "id": "error-routing",
+      "weight": 2,
+      "text": "A 409 `ApiError` sets an error on the slug/URL field (e.g. `setError(\"workspace.slug\", ...)`) and moves the Stepper to the Workspace step so the message is visible (focusing the field is a plus); an invalid final submit (`onInvalid`) routes to the first step containing an error; other failures show a form-level error and keep every value. The dialog closes and `onCreated` runs only after a successful save."
+    },
+    {
+      "id": "semantic-hints",
+      "weight": 2,
+      "text": "Browser hints are chosen per field at the feature on the Control parts, not as defaults inside the shared Input family: full name `autoComplete=\"name\"` (capitalized words); work email `type=\"email\"` + `autoComplete=\"email\"`; phone `type=\"tel\"` + `autoComplete=\"tel\"`; URL slug `autoCapitalize=\"none\"`/`\"off\"`, `spellCheck={false}`, autocorrect off, no misleading autocomplete token; workspace name uses an organization-appropriate token (e.g. `autoComplete=\"organization\"`) or none. Any `enterKeyHint` matches what Enter does (e.g. not \"go\"/\"send\" on a non-final step). Native constraints such as `maxLength={30}` / `pattern` may mirror the schema. Full credit needs at least email, tel, and slug handled correctly."
+    },
+    {
+      "id": "typed-feature-form",
+      "weight": 2,
+      "text": "A cohesive `src/features/workspaces/workspace-form.ts` (or similarly named single module) holds the Zod schema (slug regex 3-30 lowercase/digits/dashes with a readable message, optional phone), inferred type, defaults, team-size options, step field mapping, and the typed Form root/hook from the existing `createForm`. Step components call the typed hook instead of receiving `form`/`control` props; the root receives resolver/defaultValues/mode; the submit maps form values to `CreateWorkspaceInput` in the adapter (phone omitted when empty is a plus)."
+    },
+    {
+      "id": "reuse-foundation",
+      "weight": 2,
+      "text": "Fields use the existing `src/features/form` Input and Select families (root/label/control/description/error parts, Select trigger/value/content/item) rather than raw `<input>`/`<label>` markup or `register` spreads; the `acme.app/` prefix is rendered by consumer-composed markup or a Description part, not by adding prefix props to the shared Input family. The Review step reads values through the typed hook (`useWatch`/`getValues`) and renders them read-only, not as disabled inputs."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "`CreateWorkspaceDialog` keeps its `{ onCreated }` props, its button opens the dialog with all three steps, Back/Continue/Create work as described, the request goes through `useCreateWorkspaceMutation`, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

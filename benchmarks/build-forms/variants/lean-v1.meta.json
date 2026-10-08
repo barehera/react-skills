@@ -1,0 +1,10 @@
+{
+  "id": "lean-v1",
+  "source": "author:skill-bench-author from skills/build-forms + LESSONS.md",
+  "note": "First lean candidate written blind to the suite tasks; see build-forms/PREP-author.md",
+  "createdAt": "2026-10-07T23:49:16.848Z",
+  "words": {
+    "core": 1403,
+    "total": 3773
+  }
+}

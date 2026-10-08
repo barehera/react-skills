@@ -1,0 +1,9 @@
+{
+  "skill": "extract-named-helpers",
+  "title": "Extract Named Helpers",
+  "fixture": "fixture",
+  "transferTasks": [
+    "t4-progress-steps"
+  ],
+  "promoted": "lean-v1"
+}

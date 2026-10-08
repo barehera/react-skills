@@ -1,0 +1,84 @@
+{
+  "id": "t3-invite-audit",
+  "title": "Invite members form audit (seeded)",
+  "mode": "audit",
+  "prompt": "Review the invite members dialog (`src/features/members/components/invite-members-dialog.tsx` and what it uses, including `src/components/form-field.tsx` and `src/components/dialog-form.tsx`). Several bugs are reported in `docs/backlog.md`, and other forms will reuse `FormField` soon. Don't edit any files. Give me a prioritized list of what to fix, what to keep, and how.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "form-instance",
+      "weight": 3,
+      "text": "Explains MEM-5: `InviteSummary` calls `useForm()` again, creating a second, empty form instance, so it never sees the dialog's invitees. Also flags that sections receive `form: UseFormReturn<InviteValues>` props. Recommends one form instance with a feature-typed Form/hook (e.g. a `createForm<InviteValues>()` root + `useInviteForm()`, or FormProvider + a typed `useFormContext`/`useWatch` wrapper) consumed by the sections. Full credit needs both the root cause and the typed-context fix."
+    },
+    {
+      "id": "index-keys",
+      "weight": 2,
+      "text": "Explains MEM-2: invitee rows use `key={index}` with a field array, so React reuses the wrong row's DOM after a middle row is removed; recommends `key={field.id}` from `useFieldArray` (index stays only in the field path)."
+    },
+    {
+      "id": "button-type",
+      "weight": 2,
+      "text": "Explains MEM-3: the \"Add another\" Button has no `type`, so it defaults to `submit` inside the form; recommends `type=\"button\"` for every non-submit button in the form."
+    },
+    {
+      "id": "handler-override",
+      "weight": 2,
+      "text": "Explains MEM-6: `FormField` spreads `inputProps` after `form.register(name)`, so the invitee row's `onBlur` analytics handler replaces React Hook Form's `onBlur` and `mode: \"onBlur\"` validation never runs (consumer `onChange`/`ref` would be clobbered the same way). Recommends composing consumer handlers/refs with the form binding and applying authoritative bindings deliberately."
+    },
+    {
+      "id": "policy-in-shared-field",
+      "weight": 3,
+      "text": "Flags that the shared `src/components/form-field.tsx` imports `isPersonalEmail` from the members feature and branches on `name.endsWith(\"email\")`, so a product rule lives in a generic field that SET-6 will reuse; recommends moving the work-address rule into the invite schema (e.g. `refine`/`superRefine` on the email with a message) so it actually blocks submission, and keeping the shared field product-free."
+    },
+    {
+      "id": "slots-not-bags",
+      "weight": 2,
+      "text": "Flags `labelProps`/`inputProps` (and the closed `label`/`description` string props) on `FormField` and recommends a compound field family (root that binds the field + label/control/description/error parts that each take their own primitive props), optionally keeping a compact field built from those parts."
+    },
+    {
+      "id": "aria-and-ids",
+      "weight": 2,
+      "text": "Flags that `aria-describedby` always references `-description` and `-error` ids even when those elements are not rendered, that no `aria-invalid` (or `aria-errormessage`) is set while invalid, and that ids derived from `name` collide when two forms with the same field names are mounted (MEM-9: quick invite + dialog). Recommends a generated id (`useId`) per field root and describedby/errormessage ids only for rendered, visible parts. Full credit needs the dangling-idref issue and the duplicate-id issue."
+    },
+    {
+      "id": "semantic-hints",
+      "weight": 1,
+      "text": "Flags that the shared field hard-codes `autoComplete=\"off\"` (which would break SET-6 profile autofill) and that invitee emails render as plain text inputs; recommends leaving `type`/`autoComplete`/`inputMode` to the consumer per field (e.g. `type=\"email\"` for invitee emails; `autoComplete=\"name\"`/`\"email\"` only on the user's own profile fields). Recommending `autoComplete=\"email\"` for other people's addresses caps this at 0.5."
+    },
+    {
+      "id": "fused-dialog-form",
+      "weight": 2,
+      "text": "Flags `DialogForm` as a fused component that merges Dialog and form contracts (title, description, submit label, pending, onSubmit as one prop surface) and recommends composing the repository Dialog parts and the form separately in the members feature (the form inside `DialogContent`, its own submit button)."
+    },
+    {
+      "id": "schema-owned-rules",
+      "weight": 1,
+      "text": "Flags the duplicate-email check done in the submit handler with `window.alert` and recommends a schema rule (e.g. `superRefine` on `invitees` adding an error at the duplicate row's email path) so it shows inline like other errors."
+    },
+    {
+      "id": "cohesive-form-module",
+      "weight": 1,
+      "text": "Notes that `schemas/invite-schema.ts` and `types/invite.ts` are one-file folders for one form and recommends a cohesive `invite-form.ts` (schema, inferred type, defaults, role options, typed Form/hook)."
+    },
+    {
+      "id": "keep-unregister-note",
+      "weight": 3,
+      "text": "Keeps `register(\"note\", { shouldUnregister: true })` in `PersonalNote` (it is how MEM-8 is satisfied: unticking drops the note from the request) and does NOT recommend removing `shouldUnregister` or retaining the hidden note value. Recommending removal or switching to keeping the draft in the submitted values is a fail. (Suggesting it be documented, or moved into a field slot that preserves the option, is fine.)"
+    },
+    {
+      "id": "keep-submit-alert",
+      "weight": 1,
+      "text": "Does not recommend removing `role=\"alert\"` from the dynamically inserted submission error banner in `InviteMembersDialog` (announcing a form-level submit failure is correct); advising against assertive alerts on every inline field error is fine."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings are prioritized by user impact (backlog bugs first), cite files/lines, separate confirmed bugs from maintainability issues, tie each bug to its backlog id, and give a concrete correction for each. No invented requirements and no false positives presented as bugs."
+    }
+  ],
+  "rubricVersion": 1
+}

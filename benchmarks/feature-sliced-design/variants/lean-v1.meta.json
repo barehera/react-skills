@@ -1,0 +1,10 @@
+{
+  "id": "lean-v1",
+  "source": "author:skill-bench-author from skills/feature-sliced-design + LESSONS.md",
+  "note": "First lean candidate written blind to the suite tasks; see feature-sliced-design/PREP-author.md",
+  "createdAt": "2026-10-07T23:49:16.856Z",
+  "words": {
+    "core": 968,
+    "total": 3870
+  }
+}

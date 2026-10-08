@@ -1,0 +1,59 @@
+{
+  "id": "t3-config-defaults",
+  "title": "Baked remote-config safety net",
+  "mode": "create",
+  "prompt": "Task limits and notification settings now come from remote config, with baked defaults in `src/config/remote-config.ts` for when the fetch fails. Last release a baked default was missing a field and the app crashed for offline users. Add a test safety net so a broken baked default can't ship again, and cover the subtask limit rule in `src/features/tasks/subtasks.ts`. Also add the new `reminderLeadMinutes` notification setting (whole minutes, default 30).",
+  "criteria": [
+    {
+      "id": "contract-names",
+      "weight": 2,
+      "text": "A defaults contract test asserts that the set of config names in `remoteConfigSchemas` equals the set in `bakedRemoteConfigDefaults` (a schema without a default and a default without a schema both fail)."
+    },
+    {
+      "id": "contract-keys",
+      "weight": 3,
+      "text": "For every config name, the contract asserts that the baked default's keys exactly equal the schema's keys (e.g. comparing sorted `Object.keys` with the schema `shape`), so an optional schema key with no default or an orphaned default key fails. Parsing alone, or `safeParse(...).success`, is not enough for credit."
+    },
+    {
+      "id": "contract-loader",
+      "weight": 2,
+      "text": "The contract parses every default through the production `loadBakedConfig` (e.g. `it.each(names)` + `expect(() => loadBakedConfig(name)).not.toThrow()`), not through a test-only `schema.parse` copy, and iterates the config names instead of hardcoding one assertion per config."
+    },
+    {
+      "id": "contract-separate",
+      "weight": 2,
+      "text": "The defaults contract lives in its own test file under the config module (e.g. `src/config/tests/.../remote-config-defaults.test.ts`), separate from the `getSubtaskLimit` table; no decision rows inside the contract file and no contract assertions inside the decision file."
+    },
+    {
+      "id": "default-from-loader",
+      "weight": 3,
+      "text": "The `getSubtaskLimit` case table reads the expected value for config-driven plans from the same loader production uses (`loadBakedConfig(\"taskLimits\").maxSubtasks`), not a literal `20`. The enterprise row keeps the literal `500`, and plan inputs stay literal strings (`\"enterprise\"`, `\"free\"`); no parsed config object or config snapshot is pasted into a row."
+    },
+    {
+      "id": "decision-table",
+      "weight": 2,
+      "text": "`getSubtaskLimit` is locked by one case table (`case`/`input`/`expected` rows named in product words, e.g. 'keeps the contractual enterprise ceiling') passed to a single generic runner in shared test utilities that imports only Vitest; the suite is named from the function, and the table sits in its own file named for the decision beside the tasks feature."
+    },
+    {
+      "id": "new-setting",
+      "weight": 2,
+      "text": "`reminderLeadMinutes` is added to the `notifications` schema as a whole-number setting (e.g. `z.number().int()` with a sensible lower bound) and to the baked default as `30` in the same change; no existing rows or unrelated defaults are edited to accommodate it."
+    },
+    {
+      "id": "orphan-key",
+      "weight": 2,
+      "text": "The agent notices that the baked `notifications` default carries `legacyDigest`, which no schema declares (the new key contract fails on it), and removes it or clearly flags it in the handoff instead of weakening the contract to ignore extra keys."
+    },
+    {
+      "id": "no-business-logic-copy",
+      "weight": 1,
+      "text": "No test file copies or paraphrases the `Business Logic` / `Why` / `Rule` block of `getSubtaskLimit`."
+    },
+    {
+      "id": "typed-and-reported",
+      "weight": 2,
+      "text": "`npm run typecheck` passes including test files, and the final message lists the contract checks, the decision rows, the `reminderLeadMinutes` change, and the `legacyDigest` finding, and says how tests were (or could not be) run."
+    }
+  ],
+  "rubricVersion": 1
+}

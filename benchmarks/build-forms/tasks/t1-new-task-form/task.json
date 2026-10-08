@@ -1,0 +1,59 @@
+{
+  "id": "t1-new-task-form",
+  "title": "New task form",
+  "mode": "create",
+  "prompt": "Build the New task page (`NewTaskPage` is a placeholder). It needs a Title (required, 3 to 120 characters), a Description (optional, multi-line, up to 2000 characters) and a Status (To do, In progress, Done; defaults to To do). Next to the fields, show a live preview card with the title and status as the user types, and put the Create button in a footer that shows progress while saving. Save with `useCreateTaskMutation`, then call `onCreated` with the new task. The API answers 409 when the project already has a task with that title: show that on the Title field. If saving fails for any other reason, keep what the user typed and show an error. We are about to build several more forms (project settings, invite member), so the field building blocks must be reusable.",
+  "criteria": [
+    {
+      "id": "field-foundation",
+      "weight": 3,
+      "text": "Reusable field code lives in a shared location outside the tasks feature (the skill default is `src/features/form/components/` + `src/features/form/utils/`; another single shared form module such as `src/components/form/` is acceptable) and never imports task types, schemas, mutations, or copy. One shared field root/foundation owns the controller binding (`useController`), generated id (`useId`), invalid/disabled state and ARIA wiring once, and the Input, Textarea, and Select families are built on it rather than each re-implementing controller + id + aria logic. A one-off form written directly in the tasks feature with no reusable field layer is a fail."
+    },
+    {
+      "id": "open-slots",
+      "weight": 3,
+      "text": "Each field family is a compound API with separately rendered parts (e.g. `InputFieldRoot` / `InputFieldLabel` / `InputFieldControl` / `InputFieldDescription` / `InputFieldError`; Select also exposes trigger, value, content, and item parts) that the feature composes, so Description or Error can be omitted or reordered. Labels, descriptions, placeholders, and options are passed to the part that renders them. No root-level prop bags (`labelProps`, `inputProps`, `triggerProps`, `contentProps`, `fieldProps`) and no closed `<TextField label options .../>` as the only API (a compact convenience component built from the open parts is fine)."
+    },
+    {
+      "id": "aria-wiring",
+      "weight": 2,
+      "text": "The foundation wires accessibility without consumer repetition: label `htmlFor` targets the generated control id; `aria-invalid` is set only while the field is invalid; `aria-describedby` includes the description id only when a description part is rendered and the error id only while an error part is rendered and visible; `aria-errormessage` (if used) points at the visible error only while invalid. Required controls keep native `required` (or the Select trigger gets `aria-required`). The Select trigger (not a wrapper div) receives the control id, ARIA, and the form-library ref/blur so error focus and on-blur validation reach it."
+    },
+    {
+      "id": "typed-feature-form",
+      "weight": 3,
+      "text": "The task form contract is cohesive in the tasks feature (e.g. `src/features/tasks/task-form.ts` or `new-task-form.ts`): Zod schema with the 3-120 / max 2000 rules and messages, inferred value type, defaults (status `todo`), status option metadata, and a feature-typed Form root + hook (e.g. from a generic `createForm<T>()` factory or a typed `useFormContext` wrapper). `useForm` is called exactly once for this form, resolver/defaultValues/mode are chosen by the feature at the root, and the preview and footer components read form state through the typed hook (or `useWatch` with its control) instead of receiving `form: UseFormReturn` props or creating another form instance. Fields receive `control` (or the typed context) so field names are type-checked. No `schemas/`, `types/`, or `constants/` folders created just for this one form."
+    },
+    {
+      "id": "server-errors",
+      "weight": 2,
+      "text": "Submission maps remote failures deliberately: an `ApiError` with status 409 becomes a field error on `title` (e.g. `setError(\"title\", ...)`, ideally with focus), other failures show a form-level error (e.g. `setError(\"root.server\")` rendered in an Alert, or mutation error state) while every typed value stays in place (no reset on failure). `onCreated` is called only with the task returned by a successful mutation."
+    },
+    {
+      "id": "submission-boundary",
+      "weight": 2,
+      "text": "The screen/feature adapter connects the form to `useCreateTaskMutation` (e.g. `mutateAsync` in the root's onSubmit); field families and the form foundation do not import the mutation, query keys, `api`, or `ApiError`. A real `<form>` element with a `type=\"submit\"` Button (the repository Button primitive) inside it is used; the button is disabled/shows progress only while submitting; any other button in the form has `type=\"button\"`."
+    },
+    {
+      "id": "primitive-contract",
+      "weight": 2,
+      "text": "Control parts spread the consumer's compatible primitive props onto `Input`/`Textarea`/`SelectTrigger` and keep authoritative bindings (id, name, value, aria) applied after the spread or omitted from the prop type; a consumer `ref` is composed with the form-library ref (not replaced), and consumer `onChange`/`onBlur`/`onValueChange` handlers are called in addition to the form binding rather than overwritten. A small cross-family helper such as `composeRefs` lives in a shared utils module, not duplicated inside each family."
+    },
+    {
+      "id": "select-boundary",
+      "weight": 1,
+      "text": "The Radix Select provider wraps only the select-dependent parts (trigger, value, content, items); the field label, description, and error parts are rendered outside the Select root, so the label still targets the trigger by id."
+    },
+    {
+      "id": "conventions",
+      "weight": 1,
+      "text": "Components are imported directly from their modules (no re-export-only barrel `index.ts` for the form kit); no routine `useMemo`/`useCallback`/`React.memo` (React Compiler is enabled); no module-global store; native constraints mirror the schema where meaningful (e.g. `maxLength` on description) without disabling autocomplete globally in the shared Input family."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "`NewTaskPage` renders the working form with all three fields, the live preview, and the footer button, keeps its `{ projectId, onCreated }` props, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

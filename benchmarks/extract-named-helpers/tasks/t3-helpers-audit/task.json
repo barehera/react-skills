@@ -1,0 +1,74 @@
+{
+  "id": "t3-helpers-audit",
+  "title": "Task helpers audit (seeded)",
+  "mode": "audit",
+  "prompt": "Our helper functions have piled up: `src/features/tasks/task-utils.ts`, `src/lib/helpers.ts`, and `src/features/tasks/hooks/use-is-task-stale.ts`, plus the components and queries that use them. Review them and tell me which helpers to keep, which to inline or remove, and anything that is actually broken. Don't edit any files. Give me a prioritized list with a concrete fix for each finding. The backlog is in `docs/backlog.md`.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "mutating-sort",
+      "weight": 3,
+      "text": "Finds that `getSortedTasks` calls `tasks.sort(...)` on `tasksQuery.data`, mutating the TanStack Query cached array in place even though a `get` name promises a pure read; recommends sorting a copy (e.g. `[...tasks].sort(...)`) and/or a copy-signalling name, and types the input as readonly."
+    },
+    {
+      "id": "empty-project-complete",
+      "weight": 3,
+      "text": "Ties BUG-212 to `isProjectComplete`: `tasks.every(isTaskDone)` is vacuously true for an empty list, so a new project shows \"All tasks done\". Recommends requiring at least one task inside the helper (e.g. `tasks.length > 0 && tasks.every(isTaskDone)`)."
+    },
+    {
+      "id": "stale-rule-placement",
+      "weight": 2,
+      "text": "Flags that `isTaskStale` is a tasks product rule (14-day stale policy) living in shared `src/lib/helpers.ts`, which makes `lib` import from `features/tasks` (upward dependency); recommends moving it into the tasks feature (e.g. task-utils.ts or policy.ts) and keeping `lib` business-agnostic. Mentioning that a grab-bag `helpers.ts` should not exist is a plus but not required."
+    },
+    {
+      "id": "hook-wrapper",
+      "weight": 2,
+      "text": "Flags `useIsTaskStale` as a hook that wraps a pure calculation (no subscriptions, effects, refs, or store/query access) and recommends calling the pure predicate directly with an explicit `now`/clock value passed in, deleting the hook."
+    },
+    {
+      "id": "keep-sort-param",
+      "weight": 2,
+      "text": "Keeps `toApiSortParam` named and exported from the business-agnostic lib layer: its name carries the API's `-field` wire contract and MEM-4 records a second consumer in another feature. Recommending to inline it or move it into the tasks feature is a fail."
+    },
+    {
+      "id": "keep-reopen-rule",
+      "weight": 2,
+      "text": "Keeps `canReopenTask` as a named helper with its Business Logic block even though it has one caller (it carries a product rule). Recommending to inline it is a fail; suggesting it move to `policy.ts` is fine."
+    },
+    {
+      "id": "keep-due-label",
+      "weight": 2,
+      "text": "Keeps `toDueDayLabel` named and exported because CAL-2 records a second consumer with the same wording, despite being a one-line fallback with one current caller. Recommending to inline it is a fail."
+    },
+    {
+      "id": "inline-restatements",
+      "weight": 2,
+      "text": "Recommends inlining `isEmpty` (restates `items.length === 0`, one caller) and removing the `isCompleted` alias in favor of `isTaskDone`. Both are needed for full credit; one for half."
+    },
+    {
+      "id": "narrow-export",
+      "weight": 1,
+      "text": "Recommends dropping `export` from `getStatusRank` (only used inside task-utils.ts) and keeping it module-private, rather than deleting it or inlining the lookup at every use."
+    },
+    {
+      "id": "revisit-title",
+      "weight": 1,
+      "text": "Treats `getTaskTitle` (one caller, \"Untitled task\" fallback, no backlog record) as a revisit/leave-as-is item that names the missing evidence (is the fallback a product rule? will other screens need it?), rather than confidently inlining or deleting it on caller count alone. Keeping it with a reason also earns credit; recommending deletion does not."
+    },
+    {
+      "id": "no-false-positives",
+      "weight": 1,
+      "text": "Does not invent work from the distractor TASK-40, does not recommend creating new helpers or files for their own sake, and does not flag `isTaskDone`, `statusOrder`, or the query hooks as problems without evidence."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings are prioritized (real bugs BUG-212 and the cache-mutating sort first), cite files/functions, separate confirmed bugs from maintainability items, and give a concrete keep/inline/narrow/move/revisit decision for every helper in the three files."
+    }
+  ],
+  "rubricVersion": 1
+}

@@ -21,7 +21,7 @@ APIs. Each component keeps its own props, state, and behavior.
 Each consuming feature keeps its schema, inferred values, defaults/options, and
 typed Form/hook together in a cohesive `<feature>-form.ts` module by default.
 Distinct UI sections stay in `components`, while reusable bindings and shared
-helpers remain in `features/form`. Feature components consume the typed form
+helpers remain in `components/ui` and `lib`. Feature components consume the typed form
 hook instead of threading a React Hook Form instance through every section prop.
 The typed root accepts `resolver`, `defaultValues`, `mode`, and the remaining
 React Hook Form options directly, then creates the form instance once.
@@ -76,10 +76,8 @@ active step before navigation.
 - [Canonical skill instructions](SKILL.md)
 - [Form architecture](references/architecture.md)
 - [Field contracts](references/field-contracts.md)
-- [Browser and form UX](references/browser-and-ux.md)
 - [Workflows and submission](references/workflows-and-submission.md)
 - [Review and testing](references/review-and-testing.md)
-- [Examples and adaptation](references/examples.md)
 - [Complete typed feature-form example](examples/typed-feature-form)
 
 The shared `.agents/skills/VERSION` file records the React Skills release that

@@ -1,0 +1,9 @@
+{
+  "skill": "document-business-logic",
+  "title": "Document Business Logic",
+  "fixture": "fixture",
+  "transferTasks": [
+    "t5-reassign-lock-tr"
+  ],
+  "promoted": "lean-v1"
+}

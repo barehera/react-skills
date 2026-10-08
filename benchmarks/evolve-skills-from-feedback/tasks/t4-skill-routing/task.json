@@ -1,0 +1,59 @@
+{
+  "id": "t4-skill-routing",
+  "title": "Route review lessons to two skills (transfer)",
+  "mode": "create",
+  "prompt": "PR #212 (bulk archive for tasks) was written by an agent using our component and server-state skills (both installed in `.agents/skills/`). The review threads and the agent's handoff notes are in `docs/reviews/pr-212.md`, and the merged code is in the repo. Capture what the skills should learn from this for the skill maintainers.",
+  "criteria": [
+    {
+      "id": "per-skill-reports",
+      "weight": 3,
+      "text": "Two separate reports are written, one per target skill: `.agents/feedback/manage-server-state/<YYYY-MM-DD>-<topic>.md` and `.agents/feedback/build-composable-components/<YYYY-MM-DD>-<topic>.md` (or the same layout under `docs/skill-feedback/` with a stated reason), each with frontmatter `target_skill` matching its folder and `target_skill_version: 2.0.1`. One combined report covering both skills gets at most 0.5; no report file gets 0."
+    },
+    {
+      "id": "routing",
+      "weight": 3,
+      "text": "Each lesson goes to the skill that owns the behavior: the cache-sequencing lesson (return the invalidation promise from the mutation hook so callers can sequence UI after the refetch; key factory instead of a hand-written key) is in the manage-server-state report, and the config-array lesson (toolbar/bar actions should be consumer-composed parts, not an `actions` array) is in the build-composable-components report. Neither lesson is duplicated as a finding in both reports."
+    },
+    {
+      "id": "root-cause",
+      "weight": 2,
+      "text": "The server-state finding identifies the skill-side cause given in the evidence: the skill's own example invalidates in onSuccess without returning the promise, so it is classified bad-example or missing-example (or ambiguous-rule) with a proposal to fix the example and/or state the sequencing rule; it notes that rules 1-2 (key factory, hooks own cache effects) already exist rather than proposing to add them again."
+    },
+    {
+      "id": "false-positive",
+      "weight": 2,
+      "text": "The 'archive should be optimistic' review comment is classified `false-positive` (the agent followed the skill's predictable-result condition and the reviewer agreed), or explicitly recorded as needing no skill change with that reason. Proposing that the skill require optimistic updates for bulk actions is a fail."
+    },
+    {
+      "id": "tool-limitation",
+      "weight": 2,
+      "text": "The sandbox failure to run Vitest is classified `tool-limitation` (or explicitly excluded as an environment issue), with no proposed change to either skill's code guidance; crediting the agent for reporting it honestly is fine."
+    },
+    {
+      "id": "report-format",
+      "weight": 2,
+      "text": "Both reports follow the canonical format: required frontmatter fields (feedback_version 1, target_skill, target_skill_version, source_project, captured_at YYYY-MM-DD, status), `# Skill Feedback: <skill>` heading, the five required sections, and every `### F-###:` finding has Category, Severity, Recurrence, Confidence plus the seven subsections from Scenario to Acceptance criteria; no template placeholders."
+    },
+    {
+      "id": "portable-proposals",
+      "weight": 2,
+      "text": "Preferred behavior, Proposed skill change, Acceptance criteria, and the fresh-task prompts do not name SelectionBar, TaskBulkArchiveBar, useArchiveTasksMutation, PR #212, the reviewer, or `src/features/...`/`src/components/...` paths (those appear only under Evidence or labeled 'origin (do not ingest)'); proposed changes name a skill artifact; each fresh-task prompt describes a different feature (not bulk archive of tasks)."
+    },
+    {
+      "id": "evidence-and-final",
+      "weight": 1,
+      "text": "Evidence cites the review file and the merged source files with narrow excerpts, and Preferred behavior reflects the merged result (hook returns the invalidation promise and uses taskKeys.list; bar exposes count and actions parts filled by the adapter), not the first version."
+    },
+    {
+      "id": "layer",
+      "weight": 1,
+      "text": "Each reusable finding names the layer its rule governs: the server-state finding governs feature adapter code (mutation hooks), the actions finding governs the composable family."
+    },
+    {
+      "id": "capture-scope",
+      "weight": 1,
+      "text": "No edits under `.agents/skills/`, `src/`, or `docs/reviews/`; only the report files are added. The final message lists the report paths and the proposed improvements."
+    }
+  ],
+  "rubricVersion": 1
+}

@@ -1,0 +1,59 @@
+{
+  "id": "t1-lock-task-rules",
+  "title": "Lock the task rules with tests",
+  "mode": "create",
+  "prompt": "Last sprint two regressions slipped through: a viewer could reopen an archived task, and done tasks showed the red overdue badge. We have no tests yet. Add tests that lock the task rules in `src/features/tasks` (`policy.ts`, `due.ts`, and the status mappings in `status.ts`) so these can't come back. We'll keep adding rules to this feature, so set it up the way the rest of the app should do it.",
+  "criteria": [
+    {
+      "id": "shared-runner",
+      "weight": 3,
+      "text": "Exactly one generic case runner is added in shared test utilities outside the tasks feature (e.g. `src/tests/rule-cases.ts`), taking `(decide, cases)` with Input/Result generics inferred from `decide`, running one test per row (e.g. `it.each`) with deep equality (`toEqual`), and naming the suite from `decide.name`. The runner imports only Vitest: no feature import, Task type, product value, or fixture. A per-feature runner, a second runner, or a runner that takes a separate suite-name string is a fail."
+    },
+    {
+      "id": "one-table-per-decision",
+      "weight": 3,
+      "text": "Each decision (`canDeleteTask`, `canReopenTask`, `getTaskDueTone`, and the `TASK_STATUS_TONE` map) is locked by exactly one case table passed to the shared runner, and each table lives in its own test file named for the decision (e.g. `can-reopen-task.test.ts`) inside or beside the tasks feature. A merged `policy.test.ts`/`task-rules.test.ts` holding several decisions, or branches written as separate `it`/`expect` blocks instead of rows, is a fail."
+    },
+    {
+      "id": "row-shape",
+      "weight": 2,
+      "text": "Every row has `case`, `input`, and `expected`; each `case` states the branch in product words (e.g. 'an owner cannot reopen an archived task'), not the literal values ('role owner, status archived -> false'). Rows pass only the values that select the branch (the decision's own input object); no full `Task`/`Viewer` objects, shared fixture factories, or irrelevant fields."
+    },
+    {
+      "id": "regression-branches",
+      "weight": 2,
+      "text": "Rows cover the reported regressions and the boundaries of each rule: archived never reopens (including for an owner and an assignee), a viewer can neither reopen nor delete (including a viewer who created the task), an editor deletes only their own task, done and archived tasks are never overdue or due soon, the due-today / two-days-out / past-due boundaries, and a task with no due date."
+    },
+    {
+      "id": "product-map-table",
+      "weight": 2,
+      "text": "`TASK_STATUS_TONE` gets a case table even though it is typed `satisfies Record<...>`: the test declares a named lookup function that only indexes the map (no reshaping or extra logic) and passes it to the runner, with rows named by the product reason (e.g. blocked work asks for attention)."
+    },
+    {
+      "id": "no-mechanical-map-test",
+      "weight": 1,
+      "text": "`TASK_STATUS_QUERY_PARAM` (each status mapped to its own string) gets no table or literal-restating test; ideally the handoff says why it was left untested."
+    },
+    {
+      "id": "no-business-logic-copy",
+      "weight": 2,
+      "text": "No test file contains a copy or paraphrase of the production `Business Logic` / `Why` / `Rule` comments, and the production blocks are not moved or rewritten."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "Production decisions keep their current signatures and behavior (tests are added, not rules reshaped to suit the tests); no new packages, no second test runner or config, no snapshot tests, no React rendering tests for these pure rules."
+    },
+    {
+      "id": "typed",
+      "weight": 2,
+      "text": "`npm run typecheck` (which includes test files) passes, and rows are typed by the runner's inference (no `as any`/`as never` casts on inputs or expected values)."
+    },
+    {
+      "id": "report",
+      "weight": 1,
+      "text": "The final message lists the tables and rows added per decision, says how the tests were (or could not be) run, and names anything deliberately left untested."
+    }
+  ],
+  "rubricVersion": 1
+}

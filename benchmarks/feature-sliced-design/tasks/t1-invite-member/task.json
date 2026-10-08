@@ -1,0 +1,64 @@
+{
+  "id": "t1-invite-member",
+  "title": "Invite member feature placement",
+  "mode": "create",
+  "prompt": "Project owners need to invite teammates to a project by email and choose their role (editor or viewer). Put the invite form in the People card on the project settings page (`ProjectSettingsPage`) and in the Members card on the dashboard (`DashboardPage`). Send it with `POST /projects/:projectId/invitations` and the body `{ email, role }`. Reject obviously invalid emails before sending, and refresh the project's member list after a successful invite. Only owners can invite; editors and viewers should not see the form.",
+  "criteria": [
+    {
+      "id": "slice-ownership",
+      "weight": 3,
+      "text": "Every invite-specific artifact (form UI, email/role validation, invitation request, mutation with members-cache refresh, owner-only rule) lives in ONE feature slice: either `src/features/members/...` (extending the existing members slice) or a new user-interaction slice such as `src/features/invite-member/...`. Nothing invite-specific is added to `src/components/ui`, `src/hooks`, `src/lib`, `src/pages`, or a new global bucket (`src/types`, `src/utils`, `src/constants`, `src/schemas`, `src/api`, `src/server-state`). Splitting invite code across two slices is partial credit at best."
+    },
+    {
+      "id": "pages-compose",
+      "weight": 3,
+      "text": "Both pages render the same invite component imported from the owning slice; each page only composes it (passes projectId and, if the design needs it, the permission decision or viewer). The form, its validation, and its request are not implemented or duplicated inside either page file. No feature file imports from `src/pages`."
+    },
+    {
+      "id": "no-sibling-imports",
+      "weight": 2,
+      "text": "The new invite code does not import from the tasks slice (`@/features/tasks/types`, `@/features/tasks/policy`, or any tasks module), e.g. to get the `Viewer` type or reuse a tasks policy. Acceptable: reading the role through `useViewer()` without naming the tasks type, deriving the type from `useViewer`, or moving `Viewer` to a lower, non-feature owner with every consumer updated. Importing a tasks module into the members/invite slice is a fail. If a new `src/features/invite-member` slice is created, it may import `memberKeys` only through a deliberate direct path and the report must call out that cross-slice dependency (or the read contract is lowered); silent deep imports of members internals are partial credit."
+    },
+    {
+      "id": "server-state-placement",
+      "weight": 2,
+      "text": "The invite mutation lives in the owning slice's server-state segment (matching the neighbor convention, e.g. `server-state/` or `server-state/mutations/`), sends through the existing `api` client from `@/lib/api` (no new fetch/axios wrapper), and refreshes members by invalidating `memberKeys` (e.g. `memberKeys.all` or the project's search keys) inside the hook. Components never touch `QueryClient` or query keys. The raw request is not duplicated in both an `api` module and the hook."
+    },
+    {
+      "id": "policy-in-model",
+      "weight": 2,
+      "text": "The owner-only rule is a named, reusable decision in the owning slice (e.g. `canInviteMembers(viewer)` in a policy/model module, mirroring `features/tasks/policy.ts`), applied by the component or pages, rather than an inline `viewer.role === \"owner\"` copied into both pages. Email/role validation lives with the invite feature (model or the form module), not in a global utils/schemas module."
+    },
+    {
+      "id": "segments-and-anatomy",
+      "weight": 2,
+      "text": "Files are named by purpose and placed in segments that have real content, following the neighbor slice's anatomy consistently within the slice (e.g. `components/` or `ui/`, `server-state/`, a policy/model module). No empty or single-purpose catch-all folders inside the slice (`utils/`, `helpers/`, `types/`, `constants/` holding one item), no prebuilt unused segments."
+    },
+    {
+      "id": "direct-paths",
+      "weight": 2,
+      "text": "Pages import the invite component through a direct implementation path with the `@/` alias (e.g. `@/features/members/components/invite-member-form`). No new `index.ts` re-export barrels and no `export *`. Imports inside the owning slice are relative."
+    },
+    {
+      "id": "generic-ui-boundary",
+      "weight": 1,
+      "text": "Generic controls use or extend `src/components/ui` primitives (Input, Label, Button, and a role select built from a generic primitive or a native select); any NEW file in `src/components/ui` is business-agnostic, named by role, and knows nothing about invitations, members, or roles."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 1,
+      "text": "No unrelated files are moved or renamed (tasks feature, `src/hooks`, `src/lib`, existing members query) and no packages are added; changes outside the owning slice are limited to composing the form in the two pages and optional new generic primitives."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "Both pages show the form only to owners; the request is `POST /projects/:projectId/invitations` with `{ email, role }` where role is `\"editor\" | \"viewer\"`; an invalid email is rejected client-side without a request; the members list is refreshed after success; pending state prevents double submit; the project typechecks."
+    },
+    {
+      "id": "placement-report",
+      "weight": 1,
+      "text": "The final message states where each piece went and why (owner first, then segment), the public path the pages use, and any pre-existing structural debt it noticed but did not fix (e.g. `src/hooks/use-viewer.ts` depending on `@/features/tasks/types`)."
+    }
+  ],
+  "rubricVersion": 1
+}

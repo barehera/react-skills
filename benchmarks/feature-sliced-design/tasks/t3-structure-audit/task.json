@@ -1,0 +1,69 @@
+{
+  "id": "t3-structure-audit",
+  "title": "Source structure audit (seeded)",
+  "mode": "audit",
+  "prompt": "We're about to double the team working on this app. Review how `src/` is organized and how its modules depend on each other. I want to know what will hurt us, in priority order, and a safe order to fix it in. Don't edit any files.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "secret-leak",
+      "weight": 3,
+      "text": "Flags that `VITE_STRIPE_SECRET_KEY` (src/config/env.ts, src/env.d.ts) is a server secret exposed to the browser because Vite inlines `VITE_*` variables into the client bundle, and that src/lib/billing.ts calls Stripe with it from client code (via features/billing/components/upgrade-button.tsx). Recommends moving checkout-session creation behind a server endpoint and separating client-safe from server-only environment access. Ranked at or near the top."
+    },
+    {
+      "id": "sibling-slice-imports",
+      "weight": 3,
+      "text": "Flags the same-layer cross-feature imports in both directions: features/tasks/components/task-assignee-field.tsx imports `useMembersQuery` from features/members, and features/members/components/member-workload.tsx imports `useTasksQuery` from features/tasks (tasks <-> members coupling/cycle). Recommends lowering the shared read contracts (e.g. member/task entities owning the query and type) and/or composing from a higher owner (page/widget passing data or slots), not simply 'importing through a barrel'. Full credit needs both directions."
+    },
+    {
+      "id": "foundation-imports-feature",
+      "weight": 3,
+      "text": "Flags business knowledge inside shared foundations that import a feature (upward dependency): src/components/ui/status-badge.tsx imports `TaskStatus` and hardcodes task status labels (duplicating features/tasks/status-label.ts), src/hooks/use-viewer.ts and src/lib/analytics.ts import `Viewer`/`Task` from features/tasks/types. Recommends moving StatusBadge into the tasks slice (or making it a generic badge fed labels by tasks) and moving `Viewer`/`ViewerRole` to a lower owner (session/viewer entity or app/shared). At least two of the three files for full credit."
+    },
+    {
+      "id": "barrel-self-import",
+      "weight": 2,
+      "text": "Flags features/tasks/index.ts as an `export *` re-export barrel and task-detail-header.tsx importing `canDeleteTask`/`statusLabel` from `@/features/tasks` inside the tasks slice (self-import through its own public entry, circular). Recommends relative imports inside the slice and direct public module paths instead of a wildcard barrel."
+    },
+    {
+      "id": "global-server-state",
+      "weight": 2,
+      "text": "Flags src/server-state/project-queries.ts as a global resource dump that mixes project reads/mutations with task comments (one shared `queryKeys` object), and recommends moving `useTaskCommentsQuery`/`TaskComment` to the tasks owner's server-state and the project query/mutation to a project owner (entity or feature), each with its own keys."
+    },
+    {
+      "id": "zustand-mirror",
+      "weight": 2,
+      "text": "Flags src/store/task-store.ts + the effect in task-list.tsx that copies `useTasksQuery` data into a global Zustand store (duplicated server state, stale/flash risk) and recommends rendering from the query, keeping only client state such as `selectedTaskId` in a store owned by the tasks slice's model."
+    },
+    {
+      "id": "integration-business-logic",
+      "weight": 2,
+      "text": "Flags src/lib/analytics.ts: vendor client initialized at module import time and a business rule (`trackTaskCompleted` deciding which completions count) living in a shared library that imports feature types. Recommends a thin vendor integration (e.g. shared/integrations/<vendor> or a focused lib module) started by the app layer, with task event semantics owned by the tasks slice."
+    },
+    {
+      "id": "keep-shared-date",
+      "weight": 2,
+      "text": "Does NOT recommend moving src/lib/date/format-relative-date.ts into a feature: it is a business-agnostic, purpose-named library used by both tasks and members. Recommending it move into tasks or members is a fail; noting it as a good example is fine."
+    },
+    {
+      "id": "keep-separate-labels",
+      "weight": 2,
+      "text": "Does NOT recommend merging features/tasks/status-label.ts and features/members/role-label.ts into one shared labels/constants module just because they look alike; they encode different business vocabularies. Recommending a shared `labels`/`constants` module for both is a fail. (Deduplicating StatusBadge's copy of the TASK labels into the tasks slice is correct and is not this trap.)"
+    },
+    {
+      "id": "incremental-plan",
+      "weight": 2,
+      "text": "Gives a fix order driven by impact (security leak and dependency cycles before cosmetics) and an incremental migration (one slice/owner at a time, app runnable after each step). Does not present a big-bang move of the whole tree (e.g. renaming components/ui to shared/ui or creating every FSD layer) as a required or top-priority fix."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings cite exact files (and lines where useful), separate confirmed problems from preferences, and give one concrete correction each. No invented violations (e.g. it does not call features/tasks/server-state colocation, `@/lib/api`, or `cn` in `@/lib/utils` a problem)."
+    }
+  ],
+  "rubricVersion": 1
+}

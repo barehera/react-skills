@@ -1,0 +1,39 @@
+{
+  "id": "t5-reassign-lock-tr",
+  "title": "Reassignment lock (Turkish request)",
+  "mode": "create",
+  "prompt": "Atama için yeni bir kural ekleyelim: teslim tarihine (`dueAt`) 48 saatten az kalmış bir görevin atanan kişisini sadece proje sahibi (owner) değiştirebilsin. Editörler için `TaskAssigneeField` salt okunur olsun ve neden değiştiremediklerini görsünler; owner'lar eskisi gibi değiştirebilsin. Sebep: teslimden 48 saat önce atanan kişiye SMS ile hatırlatma gidiyor ve son dakika değişiklikleri müşterilere çelişkili mesajlar gitmesine yol açıyordu. Kuralı kodda belgele ki ileride kimse kaldırmasın.",
+  "criteria": [
+    {
+      "id": "english-block",
+      "weight": 3,
+      "text": "The rule is documented by exactly one `Business Logic:` / `Why:` / `Rule:` block written in English (no Turkish in the comment) even though the request was in Turkish, with each labelled line a single sentence and no extra prose."
+    },
+    {
+      "id": "owner-placement",
+      "weight": 3,
+      "text": "The block sits immediately above the feature-level declaration that owns the lock (e.g. `canReassignTask` in features/tasks/policy.ts, or an equivalent named function/hook/const under src/features/tasks), not inline inside a function body or JSX, and not in src/components/ui or a generic component."
+    },
+    {
+      "id": "supplied-rationale",
+      "weight": 2,
+      "text": "`Why` states the supplied reason (assignees get an SMS reminder 48 hours before the due date, and last-minute changes sent customers conflicting messages); `Rule` states that within 48 hours of dueAt only owners may change the assignee. No invented reason (e.g. accountability, workload balancing, audit)."
+    },
+    {
+      "id": "obvious-uncommented",
+      "weight": 2,
+      "text": "Derived pieces carry no comments of their own: the 48-hour constant, the date arithmetic, `isLocked`/`canReassign` booleans, the null-dueAt case, and the read-only branch in TaskAssigneeField have no inline narration and no second business block. The existing `// TODO: replace with the assignee picker` placeholder may stay or go, but no new narration is added."
+    },
+    {
+      "id": "single-source",
+      "weight": 1,
+      "text": "The 48-hour window is a named constant defined once in the tasks feature and reused; the rule check is one function/const used by the field, not duplicated logic or a repeated magic number."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "TaskAssigneeField uses the rule with the viewer (useViewer): editors inside the 48-hour window cannot change or clear the assignee and see an explanation; owners still can; tasks with null dueAt are not locked; the existing props contract is unchanged; the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

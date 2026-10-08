@@ -26,16 +26,6 @@
           "target": "~/.agents/skills/build-forms/references/architecture.md"
         },
         {
-          "path": "references/browser-and-ux.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/references/browser-and-ux.md"
-        },
-        {
-          "path": "references/examples.md",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/references/examples.md"
-        },
-        {
           "path": "references/field-contracts.md",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/references/field-contracts.md"
@@ -51,24 +41,19 @@
           "target": "~/.agents/skills/build-forms/references/workflows-and-submission.md"
         },
         {
-          "path": "examples/typed-feature-form/src/features/form/components/form.tsx",
+          "path": "examples/typed-feature-form/src/components/ui/form.tsx",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/form.tsx"
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/components/ui/form.tsx"
         },
         {
-          "path": "examples/typed-feature-form/src/features/form/components/input-field.tsx",
+          "path": "examples/typed-feature-form/src/components/ui/input-field.tsx",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/input-field.tsx"
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/components/ui/input-field.tsx"
         },
         {
-          "path": "examples/typed-feature-form/src/features/form/components/select-field.tsx",
+          "path": "examples/typed-feature-form/src/components/ui/select-field.tsx",
           "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/components/select-field.tsx"
-        },
-        {
-          "path": "examples/typed-feature-form/src/features/form/utils/index.ts",
-          "type": "registry:file",
-          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/form/utils/index.ts"
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/components/ui/select-field.tsx"
         },
         {
           "path": "examples/typed-feature-form/src/features/proposal/components/proposal-details.tsx",
@@ -104,6 +89,11 @@
           "path": "examples/typed-feature-form/src/features/proposal/server-state/mutations/use-create-proposal-mutation.ts",
           "type": "registry:file",
           "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/features/proposal/server-state/mutations/use-create-proposal-mutation.ts"
+        },
+        {
+          "path": "examples/typed-feature-form/src/lib/compose-refs.ts",
+          "type": "registry:file",
+          "target": "~/.agents/skills/build-forms/examples/typed-feature-form/src/lib/compose-refs.ts"
         },
         {
           "path": "examples/typed-feature-form/src/server-state/api.ts",

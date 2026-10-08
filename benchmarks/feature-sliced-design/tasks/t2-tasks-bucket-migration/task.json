@@ -1,0 +1,49 @@
+{
+  "id": "t2-tasks-bucket-migration",
+  "title": "Move tasks code out of global buckets",
+  "mode": "extend",
+  "prompt": "`src/hooks`, `src/utils`, `src/constants`, and `src/types` have turned into dumping grounds, and nobody knows what is safe to change in them. Let's start with tasks: anything that only the tasks feature uses should live with the tasks feature. Behavior must stay exactly the same. Members is next sprint, so leave the members code alone for now.",
+  "criteria": [
+    {
+      "id": "tasks-code-colocated",
+      "weight": 3,
+      "text": "All tasks-only code now lives under `src/features/tasks/` in purpose-named places: the `useTaskFilters` store and the `TaskStatusFilter`/`TaskFilterState` types (together, e.g. `model/`), `filterTasks`/`sortTasksByStatus` and `formatTaskTitle` (e.g. `model/` or `lib/`), and `TASK_TITLE_MAX_LENGTH`, `TASK_STATUS_ORDER`, `TASK_SEARCH_DEBOUNCE_MS` (e.g. `config/` or beside the rule they configure). None of these remain in `src/hooks`, `src/utils`, `src/constants`, or `src/types`; `src/types/task-filter.ts` and `src/hooks/use-task-filters.ts` are deleted."
+    },
+    {
+      "id": "split-mixed-modules",
+      "weight": 3,
+      "text": "Mixed modules are split by owner, not moved whole: `formatTaskTitle` leaves `src/utils/format.ts` while the generic `formatCount` (also used by members) does NOT move into the tasks slice; `MEMBER_SEARCH_DEBOUNCE_MS` does NOT move into tasks; the generic `useDebouncedValue` (used by members too) does NOT move into tasks. Keeping these generic items where they are, or moving them to a focused purpose-named shared module (e.g. `src/lib/format/...`, `src/lib/debounce/...`) with consumers updated, both pass. Moving any of them into `src/features/tasks` is a fail."
+    },
+    {
+      "id": "no-compat-barrels",
+      "weight": 2,
+      "text": "No compatibility re-exports are left for moved code: `src/utils/index.ts` no longer re-exports task helpers (it may remain for the generic helpers members still uses, or be removed with members' import updated to a direct path), there are no forwarding stubs re-exporting moved symbols from old paths, and no new `index.ts` or `export *` barrel is created inside the tasks slice. Tasks consumers import the moved modules directly."
+    },
+    {
+      "id": "import-direction",
+      "weight": 2,
+      "text": "Inside the tasks slice, moved modules are imported with relative paths (e.g. `../model/task-filters-store`), not via `@/features/tasks/...` self-imports or old global paths. The global buckets no longer import `@/features/tasks/...` because of moved code (e.g. `src/constants/index.ts` no longer imports `TaskStatus` once `TASK_STATUS_ORDER` moved)."
+    },
+    {
+      "id": "scope-discipline",
+      "weight": 2,
+      "text": "Members files are untouched, except for an import-path change that is strictly required by a moved or removed generic module. `src/hooks/use-viewer.ts`, `src/app`, `src/components/ui`, and `src/lib` are untouched. The rest of the tasks slice is not restructured beyond the migration (e.g. existing `components/` is not renamed to `ui/`, `types.ts`/`policy.ts`/`server-state` are not moved)."
+    },
+    {
+      "id": "behavior-preserved",
+      "weight": 2,
+      "text": "Moved code keeps identical logic and values (filter/sort semantics, store shape and actions, title truncation, constant values, debounce delays); components render the same output; no new dependencies; the project typechecks."
+    },
+    {
+      "id": "segment-naming",
+      "weight": 1,
+      "text": "New tasks segments are named by purpose (`model`, `lib`, `config`, or a clearly named module) and contain real content; the migration does not recreate global buckets inside the slice (`features/tasks/hooks/`, `features/tasks/utils/`, `features/tasks/constants/`, `features/tasks/types/` folders holding the moved items are partial credit)."
+    },
+    {
+      "id": "migration-report",
+      "weight": 2,
+      "text": "The final message lists each moved symbol/file with its new owner, the intentionally unmoved items and why (`formatCount`, `useDebouncedValue`, `MEMBER_SEARCH_DEBOUNCE_MS`, `use-viewer`), remaining debt (e.g. `src/utils` barrel still used by members, `use-viewer` depending on tasks types), the validation run, and the next safe slice to migrate."
+    }
+  ],
+  "rubricVersion": 1
+}

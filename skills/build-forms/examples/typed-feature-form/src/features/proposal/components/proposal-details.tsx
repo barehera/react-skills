@@ -6,7 +6,7 @@ import {
   InputFieldError,
   InputFieldLabel,
   InputFieldRoot,
-} from "../../form/components/input-field"
+} from "@/components/ui/input-field"
 import {
   SelectFieldContent,
   SelectFieldControl,
@@ -17,7 +17,7 @@ import {
   SelectFieldRoot,
   SelectFieldTrigger,
   SelectFieldValue,
-} from "../../form/components/select-field"
+} from "@/components/ui/select-field"
 import {
   PROPOSAL_SURFACES,
   useProposalForm,

@@ -1,0 +1,79 @@
+{
+  "id": "t4-tests-audit",
+  "title": "Feature tests audit (seeded)",
+  "mode": "audit",
+  "prompt": "People keep saying our test suite is over-engineered and slow to change. Review the tests under `src/` (and the helpers they use) and tell me what to delete, what to keep, and what to fix, in priority order. Don't edit any files. Also, Sam wants to merge all the task test files into one `task-rules.test.ts` to cut the file count. Is that worth doing?",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "second-runner",
+      "weight": 3,
+      "text": "Flags `features/tasks/tests/helpers/task-table.ts` (`runTaskTable`) as a second, feature-specific case runner that duplicates `src/tests/rule-cases.ts`: it takes a separate suite-name string, imports feature types, and carries `makeTask`/`makeViewer` fixtures. Recommends deleting it and moving `can-reopen-task.test.ts` onto the shared `testRule`."
+    },
+    {
+      "id": "reshaping-adapter",
+      "weight": 2,
+      "text": "Flags `reopenWith` in `can-reopen-task.test.ts` as a test-only adapter that reshapes `canReopenTask`'s arguments, and the full `makeTask`/`makeViewer` objects as inputs carrying irrelevant fields; recommends passing `canReopenTask` directly with rows of only `{ status, role, isAssignee }`."
+    },
+    {
+      "id": "positional-guard-adapter",
+      "weight": 2,
+      "text": "Flags `includesOptionCase` in `lib/tests/includes-option.test.ts` as a test-only wrapper that reshapes the positional `includesOption(options, value)` into one object only to fit `testRule`; recommends plain `it` cases against `includesOption` instead (not changing the production signature)."
+    },
+    {
+      "id": "duplicate-suite",
+      "weight": 2,
+      "text": "Flags `task-policy.test.ts` as a duplicate of the `canDeleteTask` table in `can-delete-task.test.ts` (same four branches as separate `expect` blocks) and recommends deleting it, noting that the table already covers every branch."
+    },
+    {
+      "id": "change-detector-order",
+      "weight": 3,
+      "text": "Identifies `default-task-filters.test.ts` as a change-detector (its expected value is the constant's own literal) and recommends adding a behavior test for `resetTaskFilters` first (e.g. a case table: reset clears every filter, returns to page 1, and keeps the sort), because that behavior is currently untested, then deleting the change-detector. Deleting it without covering `resetTaskFilters`, or keeping it as is, is partial credit at best."
+    },
+    {
+      "id": "mechanical-map",
+      "weight": 2,
+      "text": "Recommends deleting `task-status-query-param.test.ts`: `TASK_STATUS_QUERY_PARAM` maps each status to its own string, so the table only restates the keys (and its row names are the literal values)."
+    },
+    {
+      "id": "copied-business-logic",
+      "weight": 2,
+      "text": "Flags the `Business Logic` / `Why` / `Rule` block copied into the top of `can-delete-task.test.ts` and recommends removing it, because the production `canDeleteTask` owns that block and the copy will drift."
+    },
+    {
+      "id": "literal-default",
+      "weight": 2,
+      "text": "Flags the `team` and `free` rows in `get-subtask-limit.test.ts` for pasting the current baked default (`expected: 20`) and recommends reading it from `loadBakedConfig(\"taskLimits\").maxSubtasks`, while keeping the enterprise row's literal `500` and the literal plan inputs."
+    },
+    {
+      "id": "keep-product-map",
+      "weight": 3,
+      "text": "Keeps `task-status-tone.test.ts`: `TASK_STATUS_TONE` values are product choices, and `satisfies Record<TaskStatus, StatusTone>` proves keys exist, not that each status maps to the right tone. Recommending its deletion (e.g. as a change-detector or as covered by types) is a fail."
+    },
+    {
+      "id": "keep-defaults-contract",
+      "weight": 3,
+      "text": "Keeps `config/tests/contract/remote-config-defaults.test.ts` as the safety net between schemas and baked defaults; does NOT call it a change-detector or recommend deleting or merging it into the rule tables."
+    },
+    {
+      "id": "keep-library-table",
+      "weight": 1,
+      "text": "Keeps `lib/tests/clamp-page.test.ts` (a pure business-agnostic `input -> result` table on the shared runner) and the shared `src/tests/rule-cases.ts` runner."
+    },
+    {
+      "id": "reject-merge",
+      "weight": 3,
+      "text": "Advises against merging the task test files into one `task-rules.test.ts`: one file per decision keeps a red file name pointing at the broken rule, keeps review diffs and history per decision, and keeps a collection failure (e.g. a broken baked default read by one table) local. Agreeing to the merge is a fail."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings are prioritized, cite files (and lines or symbols), separate delete / fix / keep, and give a concrete correction for each. No invented problems: the healthy tables (`get-task-due-tone`, `task-status-tone`, `clamp-page`, the contract) are not reported as defects; optional notes on missing rows are fine."
+    }
+  ],
+  "rubricVersion": 1
+}

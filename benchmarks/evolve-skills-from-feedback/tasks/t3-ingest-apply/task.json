@@ -1,0 +1,49 @@
+{
+  "id": "t3-ingest-apply",
+  "title": "Apply a feedback report to the source skill",
+  "mode": "extend",
+  "prompt": "Harbor's feedback on our component skill came in: `tooling/react-skills/feedback/build-composable-components/2026-10-02-action-pending-state.md`. Our editable skill source is in `tooling/react-skills/`. Apply what's worth applying and tell me what you did with each point.",
+  "criteria": [
+    {
+      "id": "example-fixed",
+      "weight": 3,
+      "text": "`tooling/react-skills/skills/build-composable-components/examples/action-menu.tsx` no longer has a root-level `loading` (or renamed equivalent such as `pending`/`busy`) that is ORed into every item's disabled state; the family has no family-wide loading context, and the feature adapter passes each item its own mutation's pending state (e.g. `disabled={duplicate.isPending}`). The rest of the example (trigger, content size/group selectors, className merge order, composition) is preserved, and the project typechecks."
+    },
+    {
+      "id": "rule-once",
+      "weight": 2,
+      "text": "The new guidance (pending/disabled state belongs to the action that runs it, not to the family) is stated once, in one destination (a numbered rule in SKILL.md or a focused reference linked from it), labeled with its layer, and is not repeated in SKILL.md rules plus checklist plus reference plus README. A rule that keeps the report's boundary (a consumer-set root `disabled` for a read-only record is still allowed) gets full credit; one that bans every root-level disabled or loading prop gets 0.5."
+    },
+    {
+      "id": "already-covered",
+      "weight": 2,
+      "text": "F-002 (className merged last) is recognized as already covered by existing SKILL.md rule 2: no second className rule or duplicate checklist line is added, and the handoff records it as already-covered, citing the existing rule."
+    },
+    {
+      "id": "validator-judgment",
+      "weight": 2,
+      "text": "F-003 is not implemented as a name-based check that fails on any prop called `loading` (the report itself says a single-action `loading` is legitimate); the handoff marks it rejected or adapted with that reason (the defect is semantic, a name match would encode formatting and produce false positives). Adding such a script is a fail."
+    },
+    {
+      "id": "contract-kept",
+      "weight": 2,
+      "text": "SKILL.md still has `## Version`, `## Layer placement`, and `## Companion skill routing`, stays under 220 lines, and its frontmatter is intact. If any file was added, renamed, or removed in the skill folder, `registry.json` `files` matches the folder; README.md is updated only if the description of what the skill teaches changed. No adapters or unrelated files were hand-created."
+    },
+    {
+      "id": "decision-ledger",
+      "weight": 2,
+      "text": "The final message (REPORT.md) gives one decision per finding (F-001 accepted, F-002 already-covered, F-003 rejected/adapted, or equivalent wording) with destination, short reason, and the validation run (typecheck result). Unsupported claims are not presented as verified."
+    },
+    {
+      "id": "evidence-preserved",
+      "weight": 1,
+      "text": "The feedback report file still exists with its findings and evidence intact (updating `status` to `applied` or adding a short decision note is fine; deleting or rewriting findings is a fail)."
+    },
+    {
+      "id": "scope",
+      "weight": 1,
+      "text": "No edits under `src/`, no new dependencies, no changes to `tsconfig.json`, and no unrelated rewrites of other rules, the styling reference, or CHANGELOG entries for past versions. A new CHANGELOG entry for the change is fine but not required."
+    }
+  ],
+  "rubricVersion": 1
+}

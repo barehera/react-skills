@@ -1,0 +1,44 @@
+{
+  "id": "t4-card-duplicate",
+  "title": "Duplicate action in a commented card",
+  "mode": "extend",
+  "prompt": "Add a Duplicate button to `TaskCard` (`src/features/tasks/components/task-card.tsx`) that copies the task with `useDuplicateTaskMutation`. Only people who can edit (`canEditTask`) should see it, and it should show that it's working while the copy is being created.",
+  "criteria": [
+    {
+      "id": "essay-replaced",
+      "weight": 3,
+      "text": "The 'IMPORTANT (read this before touching!!)' essay is replaced by exactly one `Business Logic` / `Why` / `Rule` block (the essay is not kept beside it, and not simply deleted without a block): Business Logic = unassigned tasks show a 'Needs owner' badge, Why = triage can find work nobody owns (PRD-31), Rule = unassigned tasks must keep showing the badge. The '??' / gray-circle / v1.3 / dark-mode / 'ask Priya' history is gone."
+    },
+    {
+      "id": "block-placement",
+      "weight": 2,
+      "text": "The block sits immediately above the owning declaration (the TaskCard component, or an extracted named function/const such as `taskNeedsOwner`), not inline in JSX or between statements of the function body; each labelled line is one English sentence."
+    },
+    {
+      "id": "narration-removed",
+      "weight": 2,
+      "text": "Narration in the edited component is removed: `// get the current user from context`, `// check if the user can edit`, `{/* title */}`, `{/* flex row with a gap ... */}`, and the `{/* TODO actions ... */}` placeholder (replaced by the feature)."
+    },
+    {
+      "id": "keep-a11y-note",
+      "weight": 1,
+      "text": "The accessibility note on the badge ('The badge text is its accessible name; do not swap it for an icon-only badge.') is kept unchanged or kept in substance."
+    },
+    {
+      "id": "no-new-comments",
+      "weight": 2,
+      "text": "The new Duplicate button, its pending state, and the canEdit gate add no comments (no `// duplicate the task`, no business block for canEdit or isPending)."
+    },
+    {
+      "id": "scoped-cleanup",
+      "weight": 2,
+      "text": "Comment cleanup stays in the file being edited: `task-board-column.tsx` (with its own narration comments) and other files are not touched, and the final message does not claim a repository-wide cleanup."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "TaskCard renders a Duplicate Button only when canEditTask(viewer) is true, calls useDuplicateTaskMutation with the task, disables it and/or shows a pending label while isPending, the 'Needs owner' behavior is unchanged, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

@@ -1,0 +1,84 @@
+{
+  "id": "t3-timeline-audit",
+  "title": "Activity timeline audit (seeded)",
+  "mode": "audit",
+  "prompt": "Review `src/components/activity-timeline.tsx` and the screens that use it. It has grown messy, and I want to know what to fix and what to remove. Don't edit any files. Give me a prioritized list of findings. Our backlog is in `docs/backlog.md`.",
+  "criteria": [
+    {
+      "id": "no-edits",
+      "weight": 2,
+      "text": "No files were edited (CHANGES.patch is empty or only trivial non-source noise)."
+    },
+    {
+      "id": "global-store",
+      "weight": 3,
+      "text": "Finds that `useTimelineStore` is a module-global zustand store shared by every timeline instance, so expanding an entry in one timeline collapses/affects the other on the task activity page (backlog ACT-11), and recommends per-instance state (local state or a scoped store per root)."
+    },
+    {
+      "id": "prop-bags",
+      "weight": 2,
+      "text": "Flags `headerProps`/`itemProps` root prop bags and recommends exposing header/item as composable slots that take their own props."
+    },
+    {
+      "id": "closed-anatomy",
+      "weight": 2,
+      "text": "Flags that the root owns `entries` and hardcodes each item's anatomy (actor/message/details), blocking consumer customization such as reactions under the message (backlog ACT-9); recommends consumer-mapped item parts or a render callback."
+    },
+    {
+      "id": "title-in-context",
+      "weight": 2,
+      "text": "Flags the root `title` prop carried through context and rendered by ActivityTimelineTitle; recommends passing the title as children of the title part, with context carrying only the generated id."
+    },
+    {
+      "id": "id-spread-order",
+      "weight": 2,
+      "text": "Flags that ActivityTimelineTitle applies `id={titleId}` and className before `{...props}`, so a consumer id breaks aria-labelledby and a consumer className replaces the base styles; recommends merging className with cn and applying the required id after the spread."
+    },
+    {
+      "id": "index-prop",
+      "weight": 1,
+      "text": "Flags the positional `index` prop on items/ActivityTimelinePosition (and `entries.indexOf` in grouped mode) and recommends deriving position from the item identity at the item boundary."
+    },
+    {
+      "id": "leaf-size-patches",
+      "weight": 2,
+      "text": "Flags the repeated `min-h-10 px-4 text-base` item className patches in both consumers and recommends a root-level size (or variant) propagated to items."
+    },
+    {
+      "id": "remove-layout-switch",
+      "weight": 2,
+      "text": "Recommends removing the unused `layout` prop and `GroupedEntries` (no consumer sets it, nothing in the backlog asks for grouping; it only switches children)."
+    },
+    {
+      "id": "keep-compact-variant",
+      "weight": 3,
+      "text": "Keeps the currently unused `compact` variant because backlog DASH-14 is a recorded consumer; does NOT recommend deleting it. Recommending removal is a fail."
+    },
+    {
+      "id": "keep-extension-hook",
+      "weight": 2,
+      "text": "Keeps the exported `useActivityTimeline` hook as a consumer extension point (consumers can build custom parts), even though nothing outside the module calls it today; does NOT recommend deleting or un-exporting it. (Suggesting it stop exposing `title` is fine.)"
+    },
+    {
+      "id": "remove-test-only-export",
+      "weight": 2,
+      "text": "Recommends removing `__timelineItemsForTest` (exported only so a test can reach it) and testing behavior through the component instead."
+    },
+    {
+      "id": "narrow-dom-id-helper",
+      "weight": 1,
+      "text": "Recommends dropping `export` from `getTimelineEntryDomId` (only read inside its module) rather than deleting the function."
+    },
+    {
+      "id": "ternary-null",
+      "weight": 1,
+      "text": "Flags `cond ? <X/> : null` ternaries and recommends `&&` for boolean-only branches (or otherwise notes the convention)."
+    },
+    {
+      "id": "report-quality",
+      "weight": 2,
+      "text": "Findings are prioritized by user impact, cite files/lines, distinguish confirmed bugs from maintainability issues, and give a concrete correction for each. No invented requirements; no false positives presented as bugs."
+    }
+  ],
+  "rubricVersion": 2
+}

@@ -1,0 +1,54 @@
+{
+  "id": "t1-project-summary",
+  "title": "Project summary cleanup with a shared overdue rule",
+  "mode": "extend",
+  "prompt": "`ProjectSummaryCard` has turned into a wall of filters and comments, and the overdue check is copy-pasted between it and `TaskList`. Product is changing the overdue rule next sprint, so it has to live in exactly one place. Clean both components up so they read clearly. What users see must not change.",
+  "criteria": [
+    {
+      "id": "single-overdue-rule",
+      "weight": 3,
+      "text": "The overdue condition (not done, has a due date, due date before today) exists exactly once as a named boolean predicate (e.g. `isTaskOverdue`), and both TaskList and ProjectSummaryCard call it. No copy of `dueDate < today` remains in either component. The predicate reuses `isTaskDone` (or equivalent single done check) rather than restating `status !== \"done\"`."
+    },
+    {
+      "id": "domain-placement",
+      "weight": 3,
+      "text": "The shared overdue predicate is exported from the existing tasks domain module `src/features/tasks/task-status.ts` (or another cohesive module inside `src/features/tasks` named for task status/schedule). It is NOT placed in `src/lib`, `src/components`, `src/hooks`, a generic `helpers.ts`/`utils.ts`, a barrel, or one-file-per-helper; no new file contains a single tiny helper of the same concern as `task-status.ts`."
+    },
+    {
+      "id": "private-single-use",
+      "weight": 2,
+      "text": "Derivations used only by ProjectSummaryCard (next due day, percent complete, archive eligibility, if extracted) are module-private functions at module scope in `project-summary-card.tsx` without `export`, not exported from the domain module or a new file. Nothing new is exported that has no consumer outside its module."
+    },
+    {
+      "id": "hidden-derivation-named",
+      "weight": 2,
+      "text": "The filter/map/sort/find chain that computes the next due day is replaced by a named helper or clearly named value with explicit absence (`string | undefined` or null), keeping `>= today` for next-due vs `< today` for overdue; the `as string` cast is removed or replaced with a type-safe narrowing. Sorting never mutates `tasksQuery.data`."
+    },
+    {
+      "id": "nonempty-archive",
+      "weight": 3,
+      "text": "Archive eligibility still requires at least one task: an empty project never shows Archive. If the all-done check is extracted (e.g. `hasCompletedAllTasks`/`isProjectComplete`), the helper itself keeps the nonempty condition or the caller keeps `tasks.length > 0`; a helper built on bare `every` that drops the nonempty check is a fail. The SUP-88 rationale survives as a comment at the declaration that owns the rule (helper or canArchive), not deleted."
+    },
+    {
+      "id": "keep-flat-inline",
+      "weight": 2,
+      "text": "Flat compositions stay as named local values: `isOwner`, `showEmpty`, and the `canArchive` composition with `isOwner` are not wrapped in helpers that just repeat their name (no `getIsOwner`, `shouldShowEmpty(tasks, isPending)` wrapper for a one-line expression). No new hook is created for these pure calculations, and no useMemo/useCallback is added."
+    },
+    {
+      "id": "signatures",
+      "weight": 2,
+      "text": "The overdue predicate accepts the task (or `Pick<Task, \"status\" | \"dueDate\">`) plus an explicit `today` day string, not decomposed fields like `(status, dueDate, today)` and not reading the clock internally in a way that changes when `today` is computed. Predicates are named is/has/can and return boolean; any getter is named get and makes absence explicit."
+    },
+    {
+      "id": "narration-removed",
+      "weight": 1,
+      "text": "Comments that merely narrate code (\"count the done tasks\", \"get today's date\", \"check if the viewer is the owner\") are deleted because names now carry them; no new narration comments added."
+    },
+    {
+      "id": "behavior-and-typecheck",
+      "weight": 2,
+      "text": "Rendered output is unchanged: same counts, percent rounding and 0% for empty, same Overdue badge condition, same next-due text, Archive conditions unchanged; `today` is still YYYY-MM-DD from `new Date().toISOString().slice(0, 10)` (computed once per render is fine). The project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

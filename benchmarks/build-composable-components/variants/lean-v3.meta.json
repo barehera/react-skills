@@ -1,0 +1,10 @@
+{
+  "id": "lean-v3",
+  "source": "editor:lean-v2+it1 decisions",
+  "note": "it1 decisions: confirm-dialog failure reported from a surviving parent (no hoisted shared dialog); styling context only for JS behavior, attribute copying is styling; nested-root clause removed",
+  "createdAt": "2026-10-07T16:23:09.235Z",
+  "words": {
+    "core": 1299,
+    "total": 6872
+  }
+}

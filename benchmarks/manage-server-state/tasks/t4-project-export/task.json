@@ -1,0 +1,54 @@
+{
+  "id": "t4-project-export",
+  "title": "Background project export with progress",
+  "mode": "create",
+  "prompt": "People want to export a project's tasks as CSV or JSON from `ProjectHeader`. Exports run in the background on the server (contract in `docs/api/exports.md`): starting one returns right away, and finishing can take up to a minute. While it runs, show its progress; when it is done, show a download link; if it fails, show the reason and let them try again. Below the header, list the project's 5 most recent exports so people can download them again, and keep that list up to date when an export finishes.",
+  "criteria": [
+    {
+      "id": "polling-policy",
+      "weight": 3,
+      "text": "Progress comes from a query on `GET /exports/{exportId}` whose `refetchInterval` is a function of the query's data that returns an interval (about 1-3 s) while status is queued/running and `false` once it is succeeded/failed, defined in the query options/hook rather than in the component. No setInterval/setTimeout/useEffect polling loops, and nothing polls when there is no active export. Polling that never stops on terminal status is a fail."
+    },
+    {
+      "id": "seed-detail",
+      "weight": 2,
+      "text": "The start-export mutation uses the complete Export returned by the 202 response: it writes it into that export's detail cache with setQueryData via the same key function the detail query uses (so progress renders immediately without waiting for a refetch), and invalidates or prepends to only that project's recent-exports list. Not `invalidateQueries()` without a filter."
+    },
+    {
+      "id": "list-sync",
+      "weight": 2,
+      "text": "When an export reaches a final status, the project's recent-exports list reflects it without a manual reload, through a targeted mechanism in the server-state layer or a hook it exports: patching the matching list item from the detail result, invalidating that project's list key once the detail becomes final, or a list `refetchInterval` that runs only while some listed export is queued/running. Component code calling `queryClient` directly is at most half credit; a global invalidation is a fail."
+    },
+    {
+      "id": "key-design",
+      "weight": 2,
+      "text": "An exports key factory follows the existing `taskKeys` pattern (root prefix plus functions): the detail key includes exportId, the recent list key includes projectId and limit, detail and list keys are distinct, and every read and cache write (set/patch/invalidate) builds keys from that factory. No literal key arrays elsewhere, no new key library."
+    },
+    {
+      "id": "contract-fidelity",
+      "weight": 2,
+      "text": "The Export type matches the doc: `format` `\"csv\" | \"json\"`, `status` as the four documented values, `progress` number, `downloadUrl: string | null`, `error: { message: string } | null`, `createdAt` string (documented enums are fine here). Requests go through the existing `api` wrapper with encoded path segments: POST `/projects/{projectId}/exports` with `{ format }`, GET `/exports/{exportId}`, GET `/projects/{projectId}/exports?limit=5`. Pages/envelopes are not invented (list reads `{ exports }`)."
+    },
+    {
+      "id": "server-vs-local-state",
+      "weight": 2,
+      "text": "UI-local state holds at most the active export id (and the chosen format); export status, progress, URLs, and errors are read from the queries, never copied into useState/Zustand or mirrored between the list and a local variable. The 409 \"already running\" case and a page reload during a running export are handled from server data (e.g. the newest queued/running export from the list becomes the active one) or at least reported as a known gap."
+    },
+    {
+      "id": "layering",
+      "weight": 2,
+      "text": "Server-state code lives in a feature folder (`src/features/exports/server-state/` or `src/features/projects/server-state/`) mirroring the tasks layout (keys module, `queries/`, `mutations/`, one hook per operation, object inputs for new operations). Components only call hooks; they never import QueryClient, query keys, or the transport. UI pieces reuse the existing `components/ui` primitives (Button, DropdownMenu, Badge, Alert); a new primitive (e.g. a shadcn-style `components/ui/progress.tsx`) is fine only if it is generic, named by role, and has no export/feature knowledge; no barrel files."
+    },
+    {
+      "id": "ux-states",
+      "weight": 1,
+      "text": "The start control is disabled while the start request is pending and while an export is queued/running (avoids the 409); progress is shown as a percentage or bar; success shows a download link (`<a href={downloadUrl}>`) ; failure shows `error.message` with a way to start again; the recent list shows status per export and a download link only for succeeded ones."
+    },
+    {
+      "id": "wired-and-typed",
+      "weight": 2,
+      "text": "`ProjectHeader` renders the export control and the recent-exports list for its projectId with the existing props contract, CSV and JSON can both be chosen, and the project typechecks."
+    }
+  ],
+  "rubricVersion": 1
+}

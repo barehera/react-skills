@@ -1,0 +1,10 @@
+{
+  "id": "lean-v4",
+  "source": "editor:lean-v3+13 deletions+owner goals",
+  "note": "13 deletions (duplicates, model-knows, contradicting TaskActions examples; family never calls a mutation) + owner goals: generic families in components/ui named by role, record anatomy composed once in the owning feature, extract repeated code, className only for layout (variants/sizes on the primitive), generic Combobox example; orchestrator clean-code pass: shadcn naming (no Root suffix), one file shape, primitive variants via existing definition, ARIA for composite parts, generic item types, small public API; roster example aligned",
+  "createdAt": "2026-10-07T17:18:43.906Z",
+  "words": {
+    "core": 1628,
+    "total": 6177
+  }
+}
