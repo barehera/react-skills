@@ -24,9 +24,7 @@ needs. A family never imports a feature module, reads a query, calls a
 mutation, or encodes a product rule. Placement test: code that changes when the
 product changes belongs in the feature adapter; code that changes when the
 design system changes belongs in the family or the primitive. A generic family
-is named for its UI role, not a record type, and the feature that owns the
-record composes the record's anatomy once, so every consumer reuses the same
-pieces.
+is named for its UI role, not a record type.
 
 ## Required workflow
 
@@ -39,15 +37,35 @@ pieces.
 3. Sketch the family before JSX: its files and names, what the root shares, the
    structural slots and item boundary, which domain items the feature adapter
    composes, which content can unmount and which overlays persist, and who owns
-   state and side effects.
-4. Implement the smallest coherent family that satisfies the core contracts.
-   Export the parts consumers compose and the hooks they need to build their
-   own parts; keep internal helpers unexported.
-5. Run the [extension test](references/review-and-testing.md#extension-scenarios):
+   state and side effects, then build it by the ladder below.
+4. Run the [extension test](references/review-and-testing.md#extension-scenarios):
    add, omit, and reorder an item; insert a consumer separator; add a size; mount
    two instances; open an overlay from content that can unmount; fail a mutation.
-6. Run the repository's checks in proportion to risk. Report decisions,
-   preserved primitive contracts, and open assumptions.
+5. Run the repository's checks in proportion to risk. Report decisions,
+   preserved primitive contracts, and open assumptions. End with one `Skipped:`
+   line for what was left out on purpose and one `Not checked:` line for what
+   could not be verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. Skip parts, props, variants, and exports that neither the task nor a
+   concrete requirement (step 2) names; list them in the handoff. Existing
+   parts face only the [over-engineering decision test](references/review-and-testing.md#judge-over-engineering).
+2. What the repository already has: a family, a part, or a simpler pattern.
+3. A shadcn/Radix primitive that owns the role (`Card`, `Alert`, `Empty`,
+   `Item`) instead of a restyled `div`, or a new `size` or `variant` on it.
+4. A semantic element, data attributes, or named groups before JavaScript.
+5. Props, then context, then a scoped store, as State escalates below.
+6. The smallest coherent family that meets the core contracts. Export only the
+   parts consumers compose and the hooks they need to build their own parts.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Primitive props, refs, ARIA, focus, keyboard behavior, consumer
+  `className` overrides, and anything the user asked for are never cut.
+- Mark a deliberate limit with one comment: `// shortcut: <limit>, <when to upgrade>`.
 
 ## Core contracts
 
@@ -63,8 +81,7 @@ Root and parts:
   wording, so the family holds no product wording.
 - `disabled`, loading, and event props belong to the action that owns them, so
   one action can stay enabled while another is disabled. A root lock or handler
-  exists only for behavior every part shares, such as a fieldset lock or
-  `onOpenChange`.
+  exists only for behavior all parts share: a fieldset lock or `onOpenChange`.
 - Each public part renders one primitive or DOM role and accepts that
   primitive's props as `React.ComponentProps<typeof Primitive>`, which includes
   `ref` in React 19, so parts need no `forwardRef`. A `triggerProps`,
@@ -95,14 +112,12 @@ Collections:
   `key`. Nested leaves derive their item, selection, and position from it;
   repeated `id`, `index`, or `selected` props go stale on reorder.
 - When the call site owns a presentational array, the consumer `.map()`s it
-  inside a structural list slot. Move a collection to the root only when the
-  family owns a controlled snapshot, virtualization, sorting, or cohesive
-  loading, error, and empty gating; then enumerate through a render callback
-  that leaves item anatomy to the consumer. Never both: the consumer does not
-  map an array it also passed to the root.
-- A root that only derives an aggregate from the collection, such as an
-  all-selected state or a total, takes the item IDs, and the consumer still
-  maps the items; the root never renders from those IDs.
+  inside a structural list slot; a root that only derives an aggregate, such as
+  all-selected or a total, takes the item IDs and never renders from them. Move
+  a collection to the root only when the family owns a controlled snapshot,
+  virtualization, sorting, or cohesive loading, error, and empty gating; then
+  enumerate through a render callback that leaves item anatomy to the consumer.
+  Never both: the consumer does not map an array it also passed to the root.
 
 State:
 
@@ -113,20 +128,18 @@ State:
   indeterminate, counts, and position, during render. Do not store it or sync
   it in an effect, because the copy goes stale.
 - A parent-owned clearable value can be controlled-only (`value: T | undefined`
-  with a required `onValueChange`); if the family also supports uncontrolled
-  use, detect controlledness with `"value" in props`, because a
-  `value !== undefined` check turns a cleared value uncontrolled. Radix's
-  `useControllableState` makes that check, so a dual-mode family resolves
+  with a required `onValueChange`). A dual-mode family detects controlledness
+  with `"value" in props`, as Radix's `useControllableState` does, because a
+  `value !== undefined` check turns a cleared value uncontrolled, and resolves
   every controllable value through one helper in its own file.
 
 Styling:
 
 - Visual configuration follows the DOM first: root data attributes, named
-  Tailwind groups, and inherited CSS variables, with each slot mapping the value
-  to its own styles, so a visual-only change does not re-render every slot
-  through context. Use context only for portaled slots or when JavaScript
-  behavior, not only CSS, must read the value. Copying a root value onto a
-  slot's attributes is still styling.
+  Tailwind groups, and inherited CSS variables, each slot mapping the value to
+  its own styles, so a visual-only change does not re-render every slot through
+  context. Use context only for portaled slots or values JavaScript behavior,
+  not only CSS, must read. Copying a root value onto slot attributes is styling.
 - Call-site `className` is for one composition's layout, such as width, margin,
   alignment, or grid placement. A size, spacing, typography, or color treatment
   that belongs to the component is a typed `size` or `variant` on the family or
@@ -134,10 +147,9 @@ Styling:
   to every call site.
 - When a call site needs a primitive in another role, such as a destructive
   `AlertDialogAction` or a smaller `Avatar`, add that variant to the primitive
-  in `components/ui` through its existing variant definition. A new size or
-  variant keeps the existing base classes and default as written and applies
-  its classes only under the new value, so every call site that omits it
-  renders exactly as before.
+  in `components/ui` through its existing variant definition. The new value
+  keeps the base classes and default as written and applies its classes only
+  under itself, so every call site that omits it renders exactly as before.
 
 Overlays and side effects:
 
@@ -148,15 +160,13 @@ Overlays and side effects:
   root auto-mounts only overlays every valid instance needs.
 - A confirm dialog's action calls `event.preventDefault()`, stays disabled
   while its mutation is pending, and closes on success, even for optimistic
-  mutations. If the optimistic update unmounts the item that hosts the dialog,
-  report the failure from a parent that survives instead of hoisting one
-  shared dialog above the items, which would detach it from each item's
-  capability check.
+  mutations. If the optimistic update unmounts the item hosting the dialog,
+  report the failure from a surviving parent; do not hoist one shared dialog
+  above the items, which detaches it from each item's capability check.
 - Effects that depend on the result, such as closing, navigating, or resetting
-  state, run after confirmed success through the `mutateAsync` promise or
-  mutation-level callbacks, because callbacks passed to `mutate()` do not run
-  once the launching content has unmounted. Cache keys and cache mechanics stay
-  in the server-state layer.
+  state, run after confirmed success through `mutateAsync` or mutation-level
+  callbacks, because callbacks passed to `mutate()` do not run once the
+  launching content has unmounted. Cache keys and mechanics stay in server state.
 
 ## Companion skill routing
 
@@ -195,25 +205,15 @@ project's saved agents. If the user declines, continue and do not ask again.
 
 Use these only when the repository has no established convention:
 
-- Primitives and generic families live in `components/ui/<role>.tsx`, named
-  for their UI role. The root takes the role name with no suffix and every part
-  is `<Root><Part>`, as in shadcn (`roster.tsx` exporting `Roster`,
-  `RosterList`, `RosterItem`). A composition for one record type lives in
-  `features/<feature>/components/<record>-<role>.tsx`, named for the record it
-  renders, not the field or screen that uses it, and reuses the generic file's
-  role name verbatim (`roster.tsx` -> `shift-crew-roster.tsx`), so every run
-  names the composition the same way.
+- Primitives and generic families live in `components/ui/<role>.tsx`. The root
+  takes the role name with no suffix and every part is `<Root><Part>`, as in
+  shadcn (`roster.tsx` exporting `Roster`, `RosterList`, `RosterItem`). A
+  record composition lives in `features/<feature>/components/<record>-<role>.tsx`,
+  named for the record it renders, not the field or screen that uses it, and
+  reuses the generic role name verbatim (`roster.tsx` -> `shift-crew-roster.tsx`).
 - One cohesive family (root, context or store, parts, overlays) lives in one
   file of plain function components, with `data-slot` on each part's element,
   one context hook that throws outside the root, and one named export list at
   the end with no default export, so every family reads the same.
 - Each family-wide value has one exported type reused by the root and every
-  part; a `cva` primitive's props use `VariantProps<typeof variants>`. Reuse
-  a primitive that already owns a visual role, such as `Card`, `Alert`,
-  `Empty`, or `Item`, instead of restyling a `div`.
-
-Do not force compound components, context, Zustand, CVA, Radix, shadcn, or a
-particular folder layout onto a project with a simpler coherent solution.
-This governs introducing machinery. In an audit it does not permit removing an
-existing part: judge each abstraction with the
-[over-engineering decision test](references/review-and-testing.md#judge-over-engineering).
+  part; a `cva` primitive's props use `VariantProps<typeof variants>`.
