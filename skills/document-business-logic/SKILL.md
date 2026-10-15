@@ -37,7 +37,9 @@ it in place.
      write or keep one [business block](#business-block);
    - required technical documentation (license, generated-file banner,
      required lint suppression, public API documentation, accessibility note,
-     structural section label): keep it, because it has a different owner and
+     structural section label, or a one-line
+     `shortcut: <limit>, <when to upgrade>` marker that names a deliberate limit
+     and its upgrade trigger): keep it, because it has a different owner and
      purpose;
    - implementation narration (restating an identifier, condition, or the next
      statement; control flow, CSS classes, event-stream order, transport
@@ -49,7 +51,26 @@ it in place.
    implementation details.
 4. Clean only files and code already in scope. Replace a rambling comment with
    one supported block or remove it; do not keep both and do not launch a
-   repository-wide comment cleanup.
+   repository-wide comment cleanup. End with one `Skipped:` line for what was
+   left out on purpose and one `Not checked:` line for what could not be
+   verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. No comment. Skip a block nobody asked for and no recorded requirement
+   supports; name it in the handoff.
+2. A clearer name, type, or focused function that carries the rule in code.
+3. A behavioral test that locks the rule.
+4. One [business block](#business-block) on the owning declaration.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. A supported product rule, required technical documentation, and
+  anything the user asked for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Business block
 
@@ -65,9 +86,9 @@ Use this format when the repository has no conflicting documented standard:
 
 - Default to no comment. Add the block only when a maintainer could break a
   user-visible policy because the code looks accidental, unnecessarily
-  restrictive, or safe to delete. Prefer an expressive name, type, focused
-  function, or behavioral test when it already communicates the rule, and
-  never put the block on an obvious derived value.
+  restrictive, or safe to delete, and no earlier rung of the
+  [smallest complete change](#smallest-complete-change) already communicates
+  the rule. Never put the block on an obvious derived value.
 - Each field needs reliable evidence from the task, product documentation,
   tests, or direct user guidance. Never invent a `Why` from CSS, event-stream
   order, framework mechanics, call stacks, or implementation history; ask
@@ -76,7 +97,8 @@ Use this format when the repository has no conflicting documented standard:
   another language.
 - Place one block immediately above the function, component, hook, store
   action, or const that owns the rule, never as inline comments in its body.
-  An ordinary focused edit adds zero comments or one supported block.
+  An ordinary focused edit adds zero comments or one supported block; a
+  deliberate limit adds at most one `shortcut:` line.
 
 Wrong, because it narrates transport timing and the next condition:
 
