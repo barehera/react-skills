@@ -78,10 +78,12 @@ Keep `SKILL.md` concise and imperative. Use this order:
 4. `## Layer placement`, naming the layer the skill owns and the layers it
    routes;
 5. `## Required workflow`;
-6. core contracts;
-7. `## Companion skill routing`;
-8. direct links to focused references;
-9. decision defaults for repositories without an established convention.
+6. `## Smallest complete change`, the skill's layer-specific ladder from
+   [technology-stack.md](technology-stack.md#smallest-complete-change);
+7. core contracts;
+8. `## Companion skill routing`;
+9. direct links to focused references;
+10. decision defaults for repositories without an established convention.
 
 Put detailed conditional guidance in `references/`, realistic code in
 `examples/`, deterministic checks in `scripts/`, and reusable output material
@@ -102,6 +104,7 @@ template asks for the rest.
 | --- | --- | --- |
 | `SKILL.md` contains `## Version`, `## Layer placement`, and `## Companion skill routing` | Every installed skill reports the release, shares the layer vocabulary, and routes instead of duplicating | validator |
 | `SKILL.md` has a `## Required workflow` section, or mode sections when the skill branches on the user's situation | Agents follow numbered steps instead of improvising | review |
+| `SKILL.md` has a `## Smallest complete change` section with a layer-specific ladder, the never-cut list, the `// shortcut:` marker, and the `Skipped:` / `Not checked:` handoff lines | Agents write only what the task needs, in the owning layer, without cutting safety or leaving the change half-finished | validator (section); review (ladder content) |
 | `SKILL.md` stays under 220 lines and its description under 1024 characters | The core file is loaded on every task; detail belongs in `references/` | validator |
 | Every rule and example names its layer: primitive, composable family, or feature adapter | Agents place product policy, families, and primitives correctly without re-deriving the split | review |
 | The `description` does not claim a concern another skill owns | Overlapping triggers make agents pick the wrong skill | review |

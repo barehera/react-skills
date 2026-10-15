@@ -96,5 +96,5 @@ List, as separate items:
 - pre-existing contract violations: an inherited primitive the task does not
   own that breaks a contract, named with the contract and the primitive, such
   as "shadcn `FormControl` always lists the description ID in
-  `aria-describedby`, even without a description". When the task owns the
-  primitive, fix it instead.
+  `aria-describedby`, even without a description". Never patch it silently
+  or drop it; when the task owns the primitive, fix it instead.

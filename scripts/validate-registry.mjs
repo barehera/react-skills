@@ -19,6 +19,7 @@ const dependencyFields = ["dependencies", "devDependencies"];
 const requiredSkillSections = [
   "## Version",
   "## Layer placement",
+  "## Smallest complete change",
   "## Companion skill routing",
 ];
 const maxSkillLines = 220;

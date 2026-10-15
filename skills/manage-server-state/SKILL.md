@@ -45,14 +45,40 @@ hooks and passes results into families as ordinary props.
 4. Ask only questions whose answers cannot be established and would materially
    change the result, and combine related questions. If the user delegates a
    choice, use the project convention or the defaults below and state it.
-5. Implement the smallest coherent change. Do not migrate unrelated code during
-   an endpoint task.
+5. Implement the [smallest complete change](#smallest-complete-change). Do not
+   migrate unrelated code during an endpoint task.
 6. Run the repository's existing formatting, lint, typecheck, test, and build
    commands in proportion to risk. Do not introduce a test framework unless
    requested.
 7. Report files changed, layout and defaults chosen, contract evidence and its
    quality, dependencies added, cache policy, commands run, any runtime
-   inspection, backend assumptions, and unresolved gaps.
+   inspection, backend assumptions, and unresolved gaps. End with one
+   `Skipped:` line for what was left out on purpose and one `Not checked:` line
+   for what could not be verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. Does it need to exist at all? Skip operations, hooks, options, cache
+   actions, and exports nobody asked for and no recorded requirement (roadmap,
+   backlog, plan, design, sibling screen) names; name them in the handoff.
+2. An existing operation, hook, query option factory, key factory, or cache
+   action in this feature's remote state.
+3. The existing transport wrapper. Never add a second client.
+4. TanStack Query built-ins (`select`, `enabled`, `placeholderData`, targeted
+   invalidation) before custom effects or copied state.
+5. The minimum new code: one option factory and one thin hook per operation,
+   and named actions on the feature cache factory. Add no other wrapper; auth
+   gating reuses the [authenticated-query factory](references/queries.md#authentication).
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Response parsing at the trust boundary with its graceful drift
+  fallback, auth gating, cancellation, complete query keys, error handling
+  that prevents data loss, and anything the user asked for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Core contracts
 
@@ -132,8 +158,7 @@ Use these only when the project has no convention:
 - Runtime validation for untrusted serialized data, unless generated backend
   types are the established source of truth.
 - The project's existing Axios, fetch, or generated-client transport; for a
-  fresh stack, Axios through a project wrapper and TanStack Query. Never add a
-  second client.
+  fresh stack, Axios through a project wrapper and TanStack Query.
 - No barrel exports in a new structure. Preserve existing public entry points
   during a scoped refactor unless removal is requested.
 

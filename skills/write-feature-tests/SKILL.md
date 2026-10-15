@@ -51,7 +51,27 @@ runner and layout.
    first. Keep product-decision tables, pure library tables, and one file per
    decision.
 8. Run the affected tests, typecheck, and lint. Report the tables and rows
-   added or changed, the contract result, and anything left untested.
+   added or changed and the contract result. End with one `Skipped:` line for
+   what was left out on purpose and one `Not checked:` line for what could not
+   be verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. No new test when no branch is added or changed; a changed branch updates its
+   row (When a rule changes). New product logic (a branch, a parser, money,
+   permissions) gets one good table, not coverage.
+2. A new row in the decision's existing table.
+3. One new table file per new decision on the shared runner (steps 1, 4).
+4. The defaults contract, only when config or baked defaults change.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. A failing row, the defaults contract, and anything the user asked
+  for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Case tables
 

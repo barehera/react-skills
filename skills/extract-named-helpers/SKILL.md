@@ -29,13 +29,35 @@ the primitive. Extraction must never create an import that points upward.
    types, compiler configuration, and checks; when auditing, also read the
    planning artifacts the repository supplies (roadmap, backlog, plan).
    Preserve the existing stack and business ownership.
-2. Identify the decision or transform hidden in the implementation. Compare
-   extraction against a named local value and simpler control flow first.
+2. Identify the decision or transform hidden in the implementation and weigh
+   it against simpler control flow and the ladder in Smallest complete change.
 3. Choose the narrowest signature and placement using the contracts below.
 4. Preserve evaluation order, nullability, mutation versus copy semantics,
    exception behavior, callback cancellation, and hook dependencies.
 5. Check every changed caller and run relevant type and behavior checks. Report
-   what was extracted, deliberately left inline, and validated.
+   what was extracted and validated. End with one `Skipped:` line for what was
+   left out on purpose and one `Not checked:` line for what could not be
+   verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. Keep it inline or as a named local value when Do not extract applies; list
+   what stayed inline on the `Skipped:` line.
+2. Reuse an existing helper in the owning domain module.
+3. Use a standard-library or platform API (array methods, `Intl`,
+   `URLSearchParams`, `structuredClone`) whose empty and absent cases match.
+4. Add a module-private helper; extract a duplicated predicate once.
+5. Export it from the domain module only for a current or recorded consumer in
+   another module (Placement).
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Evaluation order, nullability, copy versus mutation semantics, and
+  anything the user asked for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Extraction triggers
 

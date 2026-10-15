@@ -51,20 +51,38 @@ those and connect them to server state through `$manage-server-state`.
    Dialog, or Sheet, and submission and remote state. When delegating, put the
    model verbatim in the brief; the delegate confirms it with a repository
    search before editing.
-4. Audit each wrapped primitive's props, ref, events, value contract, disabled
-   behavior, ARIA, focus, keyboard behavior, semantic input type,
-   autocomplete, mobile hints, constraints, defaults, and portal boundaries.
+4. Audit each wrapped primitive's props, ref, events, value, disabled state,
+   ARIA, focus, keyboard, input hints, constraints, defaults, and portals.
 5. Build on the incumbent. With none, implement the shared foundation and its
    compound slots, then one compact adapter per control, then the feature form.
 6. Run the [extension tests](references/review-and-testing.md#extension-tests)
-   the task touches: omission, reordering, custom layout, two form instances,
-   validation failure, reset, submit success and failure, dynamic
-   add/remove/reorder, and workflow transitions.
+   the task touches.
 7. Run the repository's format, lint, typecheck, interaction tests, and build
    in proportion to risk. Report preserved contracts, unresolved assumptions,
-   and pre-existing contract violations: an inherited primitive outside the
-   task's scope that breaks an accessibility contract is named with that
-   contract, not patched silently or dropped.
+   and [pre-existing violations](references/review-and-testing.md#handoff).
+   End with one `Skipped:` line for what was left out on purpose and one
+   `Not checked:` line for what could not be verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. Skip fields, options, slot props, and exports that neither the request nor
+   a recorded requirement names; list them in the handoff.
+2. The incumbent factory and adapters, used as workflow step 1 says.
+3. The shadcn primitive with native input semantics (`type`, `autocomplete`,
+   `inputMode`, `required`, constraints) before custom widgets or JavaScript.
+4. React Hook Form and Zod built-ins (`useFieldArray`, the resolver, schema
+   refinements) before custom state; keep values in the control's shape.
+5. The minimum new code, in the field family or the typed feature form.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Submit-time schema validation, label, description, and error
+  associations, error focus, submit failure handling, and anything the user
+  asked for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Core contracts
 
@@ -76,9 +94,8 @@ Ownership:
 - A Form owns values, validation, and submission; a Stepper owns step value,
   order, and navigation. A feature adapter may validate the active step and
   then call `stepper.next()`.
-- Never create fused `StepperForm`, `FormStepper`, `CardForm`, `DialogForm`,
-  or similar APIs; render the separate components in the feature composition,
-  each with its own state, props, and behavior.
+- Never create fused `StepperForm`, `FormStepper`, `CardForm`, or `DialogForm`
+  APIs; compose the separate components, each with its own state and props.
 - Schema definitions, cross-field business validation, submit mutations,
   notifications, routing, and cache synchronization stay outside field slots.
 
@@ -99,27 +116,22 @@ Field families:
   in the label row, composes those slots directly; they are the escape hatch.
 - Registration, generated IDs, invalid/disabled state, and accessibility
   relationships live once on the field root or shared field foundation.
-- Compose consumer refs with the form-library ref, and observational handlers
-  before authoritative bindings. Helpers shared by several families live
-  outside any one Input or Select module.
-- Keep control-specific primitive providers around only the slots that require
-  them: label, description, and error stay outside a Radix Select provider;
-  trigger, value, content, and items stay inside `SelectFieldControl`.
+- Compose consumer refs with the form-library ref, and run observational
+  handlers before authoritative bindings
+  ([shared control rules](references/field-contracts.md#shared-control-rules)).
+- A Radix Select provider wraps only trigger, value, content, and items inside
+  `SelectFieldControl`; label, description, and error stay outside it.
 - `aria-describedby` lists the description ID only when that slot renders and
   the error ID only while invalid with an error slot rendered;
   `aria-errormessage` points to that visible error slot only while invalid.
-- Use native `required` when the form root sets `noValidate`; otherwise
-  reflect required state with `aria-required` and report "add `noValidate` to
-  the shared root" as a follow-up. Semantic `type`, valid `autocomplete`,
-  `inputMode`, `enterKeyHint`, capitalization, spellcheck, and native
-  constraints are chosen per field; never guess one universal value.
-- Field-array React keys use the form library's stable field identity, never
-  the array index, and nested field parts do not repeat positional identity.
-- Unregister a conditional field only when product semantics say the hidden
-  value must leave the submitted model.
-- Reuse repository-native `Field`, `Label`, `Input`, `Select`, `Textarea`,
-  `RadioGroup`, `Checkbox`, `Button`, and error primitives rather than
-  restyling raw DOM controls. Keep semantic `form`, `fieldset`, `section`, and
+- Choose [browser hints](references/field-contracts.md#browser-hints) and
+  constraints per field, never one universal value. Native `required` needs a
+  `noValidate` root; otherwise use `aria-required` and report the gap.
+- Field-array React keys use the library's stable field identity, never the
+  index, and nested parts do not repeat it. Unregister a conditional field
+  only when product semantics remove its value from the submitted model.
+- Reuse repository-native field, control, `Button`, and error primitives, never
+  restyled raw DOM controls; keep semantic `form`, `fieldset`, `section`, and
   headings where no UI primitive replaces them.
 
 Feature form:
@@ -139,8 +151,7 @@ Feature form:
   inline `FormField` render block for a control that has an adapter. A
   single-field inline form such as a search box is exempt.
 - Before a schema `transform` or `z.coerce`, check that the root accepts
-  distinct input and output types. If they must match, keep the value in the
-  shape the control produces and convert it in a tested
+  distinct input and output types; if not, convert in a tested
   [payload mapper](references/workflows-and-submission.md#field-shaped-values).
 - For non-field properties several descendants need, bind an optional second
   properties type in `createForm` and pass one `properties` object to the
@@ -184,11 +195,9 @@ not recommend it again; a companion is never a hidden prerequisite.
   checks, extension tests, verification depth.
 - [examples/typed-feature-form](examples/typed-feature-form): read before
   creating a foundation when the repository has none. `components/ui` holds
-  `createForm`, the compound-field foundation, and the Input and Select slots
-  with their `InputField` and `SelectField` adapters; the `proposal` feature
-  uses those adapters, one compound layout, scoped properties, and a
-  `server-state` mutation. It expects the app's shadcn primitives; adapt paths
-  and domain, copy the layering.
+  `createForm`, the field foundation, and `InputField`/`SelectField` with their
+  slots; the `proposal` feature uses them with one compound layout, scoped
+  properties, and a mutation. Adapt paths and domain; copy the layering.
 
 ## Decision defaults
 
@@ -198,20 +207,13 @@ Use these only when the repository has no established convention:
   per family exporting the compact `<Control>Field` adapter and its
   `<Control>FieldRoot`, `<Control>FieldLabel`, `<Control>FieldControl`, and
   other slots. The generic Form and compound-field foundation sit together in
-  `components/ui/form.tsx`. Cross-family helpers live in `lib/<name>.ts`,
-  such as `lib/compose-refs.ts`.
+  `components/ui/form.tsx`; cross-family helpers live in `lib/<name>.ts`.
 - A consuming feature has one `<feature>-form.ts`, a `<feature>-screen.tsx`,
-  and `components/<feature>-<section>.tsx` for distinct rendered sections. Do
-  not create `schemas`, `types`, `constants`, or `logic` folders for one
-  form's small private artifacts.
+  and `components/<feature>-<section>.tsx` per rendered section; no `schemas`,
+  `types`, `constants`, or `logic` folders for one form's private artifacts.
 - React Hook Form is the state/controller boundary and Zod the schema source
   for fresh choices; preserve an established incumbent in consuming projects.
 - Scoped Zustand only for justified external form-wide properties.
 - One shared compound-field context for stable IDs and controller bindings;
   control-specific contexts only for item identity such as radio options.
-- Compact adapters with typed `slotProps` are the primary field API; compound
-  slots are the escape hatch for custom anatomy.
 - Direct component imports; no re-export-only barrels.
-
-Do not force React Hook Form, Zod, a feature folder, multi-step navigation, or
-compound components onto a simpler coherent repository.

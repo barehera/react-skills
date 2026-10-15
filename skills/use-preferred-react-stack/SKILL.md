@@ -30,16 +30,34 @@ families and typed forms to `$build-forms`, and remote state to
    providers; a listed dependency alone does not prove it is configured.
 2. Pick the concern's owner from the table. In an existing project, keep an
    explicitly chosen incumbent and mention the catalog default once without
-   migrating unrelated code. For fresh choices use the defaults, installing
-   only dependencies the authorized work needs.
+   migrating unrelated code. For fresh choices use the defaults.
 3. Verify imports and signatures from the installed package's `exports` and
    declarations, or version-matched official documentation; do not guess
    subpaths. Take Pacer imports from the verified reference.
 4. Read only the relevant reference and route deeper work to its companion.
 5. Validate actual imports and types, then exercise relevant lifecycle
    behavior: cancellation, URL navigation, persistence hydration, isolated
-   instances, error notification. Report selected libraries and verification
-   limits.
+   instances, error notification. Report selected libraries. End with one
+   `Skipped:` line for what was left out on purpose and one `Not checked:` line
+   for what could not be verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. React or platform built-ins the Boundary column allows: local `useState`, a
+   one-shot `setTimeout`, simple native controls, `Intl`. Skip wrappers and
+   options no request or recorded requirement names; list them in the handoff.
+2. An installed owner of the concern, including an explicitly chosen incumbent.
+3. The catalog default, installed only when the authorized work needs it.
+4. Another new dependency only when no rung above works; never for a few lines.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Verified imports and signatures, and anything the user asked for
+  are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Default decisions
 

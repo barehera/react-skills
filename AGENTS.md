@@ -28,6 +28,8 @@ Every new or changed skill must satisfy the Skill quality contract in
 and `Companion skill routing` sections in `SKILL.md`, a core file under 220
 lines, a type-checked example when it ships code, and the
 generated adapter set for Claude Code, Cursor, GitHub Copilot, and Windsurf.
+Each `SKILL.md` also carries a `Smallest complete change` section with its
+layer-specific ladder from the technology contract.
 Run `npm run skills:sync` after adding or renaming skill files; it regenerates
 adapters and registry file lists.
 
