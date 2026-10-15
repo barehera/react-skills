@@ -1,24 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { useStore, type StoreApi } from "zustand"
-import { createStore } from "zustand/vanilla"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
-type RosterSize = "sm" | "default" | "lg"
-
-type RosterHighlightState = {
-  highlightedValue: string | null
-  highlight: (value: string | null) => void
-}
-
 type RosterContextValue = {
   value: string[]
   onValueChange: (value: string[]) => void
-  highlightStore: StoreApi<RosterHighlightState>
 }
 
 const RosterContext = React.createContext<RosterContextValue | null>(null)
@@ -53,76 +44,50 @@ function useRosterItem(part: string) {
   return context
 }
 
-function createHighlightStore() {
-  return createStore<RosterHighlightState>((set) => ({
-    highlightedValue: null,
-    highlight: (value) => set({ highlightedValue: value }),
-  }))
-}
-
-type RosterProps = Omit<
-  React.ComponentProps<"div">,
-  "defaultValue" | "onChange"
-> & {
-  value: string[]
-  onValueChange: (value: string[]) => void
-  size?: RosterSize
-}
-
 function Roster({
   value,
   onValueChange,
+  children,
+}: RosterContextValue & { children?: React.ReactNode }) {
+  return <RosterContext value={{ value, onValueChange }}>{children}</RosterContext>
+}
+
+const rosterListVariants = cva("group/roster-list flex flex-col gap-1", {
+  variants: {
+    size: { sm: "gap-0.5", default: "", lg: "gap-2" },
+  },
+  defaultVariants: { size: "default" },
+})
+
+function RosterList({
   size = "default",
   className,
   ...props
-}: RosterProps) {
-  const [highlightStore] = React.useState(createHighlightStore)
-
-  return (
-    <RosterContext value={{ value, onValueChange, highlightStore }}>
-      <div
-        role="group"
-        {...props}
-        data-slot="roster"
-        data-size={size}
-        className={cn("group/roster flex flex-col gap-2", className)}
-      />
-    </RosterContext>
-  )
-}
-
-function RosterList({ className, ...props }: React.ComponentProps<"ul">) {
+}: React.ComponentProps<"ul"> & VariantProps<typeof rosterListVariants>) {
   return (
     <ul
       {...props}
       data-slot="roster-list"
-      className={cn(
-        "flex flex-col gap-1",
-        "group-data-[size=sm]/roster:gap-0.5 group-data-[size=lg]/roster:gap-2",
-        className
-      )}
+      data-size={size}
+      className={cn(rosterListVariants({ size }), className)}
     />
   )
 }
 
-type RosterItemProps = React.ComponentProps<"li"> & {
-  value: string
-}
+const rosterRowClassName = cn(
+  "flex items-center gap-3 px-3 py-2 text-sm",
+  "group-data-[size=sm]/roster-list:gap-2 group-data-[size=sm]/roster-list:px-2 group-data-[size=sm]/roster-list:py-1",
+  "group-data-[size=lg]/roster-list:gap-4 group-data-[size=lg]/roster-list:px-4 group-data-[size=lg]/roster-list:py-3"
+)
 
 function RosterItem({
   value,
   className,
-  onPointerEnter,
-  onPointerLeave,
   ...props
-}: RosterItemProps) {
+}: React.ComponentProps<"li"> & { value: string }) {
   const roster = useRoster("RosterItem")
   const toggleId = React.useId()
   const selected = roster.value.includes(value)
-  const highlighted = useStore(
-    roster.highlightStore,
-    (state) => state.highlightedValue === value
-  )
 
   return (
     <RosterItemContext value={{ value, selected, toggleId }}>
@@ -130,33 +95,23 @@ function RosterItem({
         {...props}
         data-slot="roster-item"
         data-state={selected ? "checked" : "unchecked"}
-        data-highlighted={highlighted || undefined}
         className={cn(
-          "flex items-center gap-3 rounded-md border px-3 py-2",
-          "group-data-[size=sm]/roster:gap-2 group-data-[size=sm]/roster:px-2 group-data-[size=sm]/roster:py-1",
-          "group-data-[size=lg]/roster:gap-4 group-data-[size=lg]/roster:px-4 group-data-[size=lg]/roster:py-3",
-          "data-[highlighted]:bg-accent data-[state=checked]:border-primary",
+          rosterRowClassName,
+          "rounded-md border hover:bg-accent data-[state=checked]:border-primary",
           className
         )}
-        onPointerEnter={(event) => {
-          onPointerEnter?.(event)
-          roster.highlightStore.getState().highlight(value)
-        }}
-        onPointerLeave={(event) => {
-          onPointerLeave?.(event)
-          roster.highlightStore.getState().highlight(null)
-        }}
       />
     </RosterItemContext>
   )
 }
 
-type RosterToggleProps = Omit<
+function RosterToggle({
+  onCheckedChange,
+  ...props
+}: Omit<
   React.ComponentProps<typeof Checkbox>,
   "checked" | "defaultChecked" | "id"
->
-
-function RosterToggle({ onCheckedChange, ...props }: RosterToggleProps) {
+>) {
   const roster = useRoster("RosterToggle")
   const item = useRosterItem("RosterToggle")
 
@@ -190,8 +145,7 @@ function RosterLabel({
       data-slot="roster-label"
       htmlFor={item.toggleId}
       className={cn(
-        "text-sm font-medium",
-        "group-data-[size=sm]/roster:text-xs group-data-[size=lg]/roster:text-base",
+        "font-medium group-data-[size=sm]/roster-list:text-xs group-data-[size=lg]/roster-list:text-base",
         className
       )}
     />
@@ -204,10 +158,41 @@ function RosterMeta({ className, ...props }: React.ComponentProps<"p">) {
       {...props}
       data-slot="roster-meta"
       className={cn(
-        "ml-auto text-xs text-muted-foreground",
-        "group-data-[size=lg]/roster:text-sm",
+        "ml-auto text-xs text-muted-foreground group-data-[size=lg]/roster-list:text-sm",
         className
       )}
+    />
+  )
+}
+
+function RosterLoading({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li
+      role="status"
+      {...props}
+      data-slot="roster-loading"
+      className={cn(rosterRowClassName, "text-muted-foreground", className)}
+    />
+  )
+}
+
+function RosterError({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li
+      role="alert"
+      {...props}
+      data-slot="roster-error"
+      className={cn(rosterRowClassName, "text-destructive", className)}
+    />
+  )
+}
+
+function RosterEmpty({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li
+      {...props}
+      data-slot="roster-empty"
+      className={cn(rosterRowClassName, "text-muted-foreground", className)}
     />
   )
 }
@@ -219,7 +204,7 @@ export {
   RosterToggle,
   RosterLabel,
   RosterMeta,
-  useRoster,
-  useRosterItem,
+  RosterLoading,
+  RosterError,
+  RosterEmpty,
 }
-export type { RosterProps, RosterItemProps, RosterSize }
