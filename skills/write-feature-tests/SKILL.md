@@ -60,12 +60,12 @@ runner and layout.
 Write only what the task needs, in the layer that owns it. Take the first
 option that fully works:
 
-1. No test for a change without a new branch. New product logic (a branch, a
-   parser, money, permissions) gets one good table, not coverage.
+1. No new test when no branch is added or changed; a changed branch updates its
+   row (When a rule changes). New product logic (a branch, a parser, money,
+   permissions) gets one good table, not coverage.
 2. A new row in the decision's existing table.
-3. The existing shared runner (workflow step 1).
-4. One new table file per new decision (workflow step 4).
-5. The defaults contract, only when config or baked defaults change.
+3. One new table file per new decision on the shared runner (steps 1, 4).
+4. The defaults contract, only when config or baked defaults change.
 
 - Finish every place the change reaches: callers, tests, fixtures, and
   exports. A failing row, the defaults contract, and anything the user asked
