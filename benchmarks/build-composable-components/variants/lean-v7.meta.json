@@ -1,0 +1,10 @@
+{
+  "id": "lean-v7",
+  "source": "git:5e08d05",
+  "note": "v3.3.0 = lean-v6 (v3.2.0) + Smallest complete change ladder; reworded to fit 219 lines",
+  "createdAt": "2026-10-15T09:22:12.160Z",
+  "words": {
+    "core": 1892,
+    "total": 4586
+  }
+}
