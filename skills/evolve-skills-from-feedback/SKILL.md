@@ -22,8 +22,9 @@ rules). Dependencies point downward only.
 
 This skill owns no application layer. When a finding proposes a rule, state
 which layer the rule governs and confirm the proposal keeps dependencies
-pointing downward. A finding that would make a family read a query or a
-primitive learn a product rule is a boundary violation, not a missing rule.
+pointing downward. A finding that would make a generic family read a query,
+enumerate data, hold product copy, or keep visual config in context, or make a
+primitive learn a product rule, is a boundary violation, not a missing rule.
 
 ## Required workflow
 

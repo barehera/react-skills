@@ -21,8 +21,8 @@ mutations, product rules). Dependencies point downward only.
 
 This skill owns the field-family layer under `components/ui` and the typed
 feature form in the adapter. Field families never import a feature schema,
-mutation, or product rule; the feature's `<feature>-form.ts` and screen own
-those and connect them to server state through `$manage-server-state`.
+query, mutation, or product rule; the feature's `<feature>-form.ts` and
+screen own those and wire server state through `$manage-server-state`.
 
 ## Required workflow
 

@@ -60,9 +60,9 @@ Apply the placement test to the file that holds the type:
    indexed access, string-keyed maps with `satisfies`, casts on primitive
    callbacks with type guards, and annotations with inference. Convert or format at the edge where the compiler points.
 3. Reusable code last. Remove record imports, extend
-   `ComponentProps<...>` with `Omit` for replaced keys, drop props types
-   exported just in case, and make a component generic only when values flow
-   back to the consumer.
+   `ComponentProps<...>` with `Omit` for replaced keys, and drop props types
+   exported just in case. A family typed with `items: T[]` or a render
+   callback is a composition fix: route it to `$build-composable-components`.
 
 Do not change runtime behavior while fixing types.
 

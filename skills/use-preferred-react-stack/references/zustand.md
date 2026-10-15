@@ -28,3 +28,8 @@ Placement follows the business owner via `feature-sliced-design`: app
 composition wires providers; the feature or entity `model` owns its state.
 `store/` and `features/<feature>/store/` are origin conventions, not catalog
 mandates. Compound instance state routes to `build-composable-components`.
+
+A store holds shared behaviour state (selection, open, sort, dismissed IDs).
+Visual-only values such as `size`, `variant`, or `density` never go in a store
+or context: they are a `cva` variant on the container part, mirrored as
+`data-*` attributes that descendants read with group selectors.

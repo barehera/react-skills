@@ -1,13 +1,16 @@
 # Composition
 
 API shapes behind the core contracts in `SKILL.md`. Copy the shape, not the
-domain names.
+domain names. Every family here knows only UI; data, copy, and config come
+from the consumer.
 
 ## Contents
 
 - [Open parts](#open-parts)
-- [Consumer-mapped collection](#consumer-mapped-collection)
-- [Root-owned collection](#root-owned-collection)
+- [Consumer-mapped lists](#consumer-mapped-lists)
+- [Aggregate ids on the root](#aggregate-ids-on-the-root)
+- [Derived-value parts](#derived-value-parts)
+- [Record families](#record-families)
 - [Required bindings after a spread](#required-bindings-after-a-spread)
 - [Switches and modes](#switches-and-modes)
 - [Feature adapters](#feature-adapters)
@@ -15,106 +18,146 @@ domain names.
 
 ## Open parts
 
-A closed component that owns the map and hardcodes each item's anatomy exposes
-no customization boundary:
+A closed component that owns the map, the status branches, or the copy
+exposes no customization boundary:
 
 ```tsx
-<ComboboxList>
-  <ComboboxResults />
-</ComboboxList>
+<MemberCombobox items={members} loading={isPending} placeholder="Unassigned" />
 ```
 
-Split it instead: the collection part owns enumeration and when items may
-render; the item boundary owns the base primitive, selection, disabled rules,
-and identity; the item's children own presentation. Apply the same test to
-table rows, command results, tree nodes, cards, carousel slides, and sortable
-items.
+Split it instead: the root shares state, the list part owns layout and ARIA,
+the item part owns the primitive item, selection, and identity, and the
+consumer owns presence, order, data, and copy. Apply the same test to table
+rows, command results, tree nodes, cards, carousel slides, and sortable items.
 
-Structural slots own semantic layout; focused leaves own interaction logic,
-accessibility labels, disabled rules, and state subscriptions; the consumer
-owns presence and order. A header part that always renders a title,
-description, and edit action closes the family to new capabilities. An inert
-text span that consumers never omit, move, or customize needs no public part.
+A header part that always renders a title, description, and edit action
+closes the family to new capabilities. An inert span that consumers never
+omit, move, or relabel needs no public part.
 
-## Consumer-mapped collection
+## Consumer-mapped lists
 
-The consumer maps its own array. Identity is set once on the item, the root
-takes only the IDs it needs for an aggregate (position and total here), and
-the wording around the derived value is the consumer's:
+The consumer reads the query, maps the records inside the list part, and
+renders loading, error, and empty as child parts from its own query state:
 
 ```tsx
-<Stepper
-  value={activeStepId}
-  onValueChange={setActiveStepId}
-  stepIds={steps.map((step) => step.id)}
->
-  <StepperList>
-    {steps.map((step) => (
-      <StepperItem key={step.id} value={step.id}>
-        <StepperTrigger>
-          <StepperPosition>
-            {(position, total) => `Step ${position} of ${total}`}
-          </StepperPosition>
-          <StepperTitle>{step.title}</StepperTitle>
-        </StepperTrigger>
-      </StepperItem>
-    ))}
-  </StepperList>
-  <StepperPrevious>Back</StepperPrevious>
-  <StepperNext>Continue</StepperNext>
-</Stepper>
-```
-
-`StepperItem` provides its `value` through a small item context;
-`StepperPosition` and `StepperTrigger` read it and derive position and the
-active state during render, so reordering `steps` cannot leave a stale index.
-
-## Root-owned collection
-
-When the family gates loading, error, and empty states, the root receives the
-array once and a collection part enumerates it through a render callback:
-
-```tsx
-<Combobox
-  items={results}
-  value={value}
-  onValueChange={setValue}
-  query={query}
-  onQueryChange={setQuery}
-  loading={isPending}
-  error={error}
->
-  <ComboboxTrigger>{selectedLabel}</ComboboxTrigger>
+<Combobox value={assigneeId} onValueChange={setAssigneeId}>
+  <ComboboxTrigger aria-labelledby={labelId}>
+    <ComboboxValue placeholder="Unassigned">{assignee?.name}</ComboboxValue>
+  </ComboboxTrigger>
   <ComboboxContent>
-    <ComboboxInput placeholder="Search" />
-    <ComboboxList>
-      <ComboboxLoading>Searching</ComboboxLoading>
-      <ComboboxError>Results unavailable</ComboboxError>
-      <ComboboxEmpty>No results</ComboboxEmpty>
-      <ComboboxCollection>
-        {(item) => (
-          <ComboboxItem key={item.id} value={item.id}>
-            <ComboboxItemLabel>{item.label}</ComboboxItemLabel>
-            <ComboboxItemIndicator />
-          </ComboboxItem>
-        )}
-      </ComboboxCollection>
-    </ComboboxList>
+    <CommandInput placeholder="Search members…" value={search} onValueChange={setSearch} />
+    <CommandList>
+      {membersQuery.isPending && <CommandLoading>Loading members…</CommandLoading>}
+      {membersQuery.isError && <ComboboxError>Members unavailable</ComboboxError>}
+      {membersQuery.data?.length === 0 && <ComboboxEmpty>No members found</ComboboxEmpty>}
+      {membersQuery.data?.map((member) => (
+        <MemberComboboxItem key={member.id} member={member}>
+          <ComboboxItemIndicator />
+        </MemberComboboxItem>
+      ))}
+    </CommandList>
   </ComboboxContent>
 </Combobox>
 ```
 
-`ComboboxCollection` renders nothing while loading, failed, or empty, so no
-consumer repeats `!loading && !error && items.map(...)`. It is generic over the
-item type (`ComboboxCollection<T>` with a typed render callback), and any cast
-stays inside the family, so consumers never write `as`. The loading, error,
-and empty parts stay focused and independently replaceable.
+- The root never receives `items`, `loading`, or `error`, and no part
+  enumerates through a render-function child or a `Collection` part. A
+  generic collection part forces a cast or a callback-annotated `T` that
+  accepts any type; the consumer's `.map()` keeps inference.
+- The search query is the consumer's state passed to the input it renders;
+  the family does not own it unless several parts read it.
+- A status part inside a list keeps the list's semantics: an `li` inside a
+  `ul`, `role="status"` for loading, `role="alert"` for a failure.
+- TanStack Query keeps `data` when a background refetch fails, so the error
+  part and the stale rows can render together. That is the intended reading
+  of independent parts; gate rows on `!isError` only when the product says so.
 
-A root-owned collection is an ownership boundary, not a convenience. Do not
-hoist an array to the root because a future requirement might need these
-behaviors. That rejects speculation, a need with no record. A consumer named in
-a roadmap, backlog, plan, design, or sibling screen with the same shape is a
-concrete requirement.
+## Aggregate ids on the root
+
+A root that derives an aggregate (select-all, indeterminate, a count, a
+position out of a total) takes the ids it needs and never renders from them:
+
+```tsx
+<SelectableList value={selectedIds} onValueChange={setSelectedIds} itemValues={taskIds}>
+```
+
+`taskIds` comes from the same query the consumer maps
+(`tasksQuery.data?.map((task) => task.id) ?? []`). The root prunes `value`
+against `itemValues` once, so a removed row never counts as selected. Never
+both directions at once: the root does not map the array the consumer also
+renders.
+
+Item identity is set once on the item part and doubles as the React `key`.
+Parts inside the item read it from an item scope: `RosterItem` provides
+`value`, `selected`, and a generated `toggleId`; `RosterToggle` and
+`RosterLabel` read them, so reordering the list cannot leave a stale index.
+
+## Derived-value parts
+
+A value the family derives renders as its own part. The consumer writes the
+words around it; the family holds none:
+
+```tsx
+<span><SelectableListCount /> selected</span>
+<StepperTrigger>
+  Step <StepperPosition /> of <StepperTotal />
+  <StepperTitle>{step.title}</StepperTitle>
+</StepperTrigger>
+```
+
+Never a function child such as ``{(count) => `${count} selected`}``. When the
+wording needs a plural, the consumer composes it from data it already has, or
+a record part reads the snapshot it acts on (`taskIds.length`). A live region
+that announces the count wraps the whole phrase and stays mounted, so the
+first change is announced.
+
+## Record families
+
+A feature composes a record family from the generic one. Record parts exist
+only where the record or a product rule is read; every other piece is the
+generic part used directly.
+
+```tsx
+<TaskActionMenu task={task} onActionError={setActionError}>
+  <ActionMenuTrigger aria-label={`Actions for ${task.title}`} />
+  <ActionMenuContent size="lg">
+    <TaskActionMenuRename>Rename</TaskActionMenuRename>
+    <TaskActionMenuDelete>Delete</TaskActionMenuDelete>
+  </ActionMenuContent>
+  <TaskActionMenuDeleteDialog>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete “{task.title}”?</AlertDialogTitle>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <TaskActionMenuDeleteConfirm variant="destructive">Delete</TaskActionMenuDeleteConfirm>
+    </AlertDialogFooter>
+  </TaskActionMenuDeleteDialog>
+</TaskActionMenu>
+```
+
+- **Record root.** `TaskActionMenu` receives the record once and shares it,
+  the dialog-open state, and a required failure sink through one context.
+  Its actions read the record from there instead of taking `task` each.
+- **Record parts.** `TaskActionMenuRename` binds a mutation;
+  `TaskActionMenuDelete` reads a permission and opens the dialog;
+  `TaskActionMenuDeleteDialog` binds the dialog to the record root's open
+  state. Each spreads the generic part's props and composes its handlers.
+- **No pass-through wrappers.** `ActionMenuTrigger` and `ActionMenuContent`
+  carry no record logic, so the consumer uses them directly. A
+  `TaskActionMenuContent` that only forwards props is dead code.
+- **Copy from outside.** Labels, dialog titles, and descriptions are the
+  consumer's children. A record part renders record fields
+  (`{member.name}`, an enum label map such as `crewRoleLabel[member.role]`),
+  never default action or status copy.
+- **Record item part.** A list row that renders the same record anatomy at
+  two call sites is one record part with the record as a prop:
+  `ShiftCrewRosterItem member={member} locked={locked}`. The screen computes a
+  rule that needs the whole collection (the last lead) once and passes the
+  result, rather than each row re-reading the collection.
+- **Where results surface.** An optimistic delete unmounts the row and the
+  dialog it hosts, so failures go to a sink owned by a surviving parent, set
+  from the mutation promise.
 
 ## Required bindings after a spread
 
@@ -122,22 +165,25 @@ The consumer's props are spread first, its handler runs before the family's,
 and the binding the family depends on is applied last:
 
 ```tsx
-function ComboboxInput({
-  className,
-  onValueChange,
+function ComboboxItem({
+  value,
+  onSelect,
   ...props
-}: React.ComponentProps<typeof CommandInput>) {
-  const combobox = useCombobox("ComboboxInput")
+}: Omit<React.ComponentProps<typeof CommandItem>, "value"> & {
+  value: string | undefined
+}) {
+  const combobox = useCombobox("ComboboxItem")
+  const checked = combobox.value === value
 
   return (
-    <CommandInput
-      data-slot="combobox-input"
-      className={cn("h-9", className)}
+    <CommandItem
       {...props}
-      value={combobox.query}
-      onValueChange={(query) => {
-        onValueChange?.(query)
-        combobox.onQueryChange(query)
+      data-slot="combobox-item"
+      data-checked={checked}
+      aria-checked={checked}
+      onSelect={(itemValue) => {
+        onSelect?.(itemValue)
+        combobox.select(value)
       }}
     />
   )
@@ -153,8 +199,8 @@ children.
 
 The same applies to leftover `phase`, `mode`, or `layout` props. When the
 consumer already expresses the mode by swapping, omitting, or reordering
-slots, do not also label the root unless descendants need that value for
-shared behavior or styling. A family-wide `variant="pill"` remains valid.
+parts, do not also label the root. A visual `variant="line"` is a `cva`
+value on the container part, not a root prop.
 
 ## Feature adapters
 
@@ -163,8 +209,8 @@ each capability; a generic root never decides who may act.
 
 When the viewport changes the interaction primitive, such as a dropdown menu
 on desktop and a sheet on mobile, the adapter renders one surface or the other
-instead of spreading `isMobile` branches through generic slots. Responsive CSS
-inside a slot is fine when it is intrinsic to that slot's layout.
+instead of spreading `isMobile` branches through generic parts. Responsive CSS
+inside a part is fine when it is intrinsic to that part's layout.
 
 ## Names and JSX
 

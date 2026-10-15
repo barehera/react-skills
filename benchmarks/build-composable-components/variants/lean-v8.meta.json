@@ -1,0 +1,10 @@
+{
+  "id": "lean-v8",
+  "source": "path:skills/build-composable-components",
+  "note": "v4.0.0: UI-only families, consumer-mapped lists with status parts, record parts, cva + data-* visual config without context",
+  "createdAt": "2026-10-15T10:16:58.784Z",
+  "words": {
+    "core": 1618,
+    "total": 5694
+  }
+}

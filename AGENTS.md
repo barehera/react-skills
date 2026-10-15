@@ -18,7 +18,9 @@ framework-neutral or add interchangeable technology branches without an
 approved change to the stack guide.
 
 Keep Form, Stepper, server state, local Zustand state, transport, and visual
-component responsibilities separate. Place every rule and example in one of
+component responsibilities separate. Components know only UI: data, copy, and
+config come from outside, the consumer maps query data inside list parts, and
+visual config is a `cva` with `data-*` attributes, never a context. Place every rule and example in one of
 the three layers named in the technology contract: primitive, composable
 family, or feature adapter. Reuse existing skills through explicit companion
 routing instead of duplicating their rules in a new skill.

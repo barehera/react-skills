@@ -275,3 +275,39 @@ slots — a slot inside the root's DOM reads the root's group or variable (T4
 Recommendation: promote lean-v6 to `skills/build-composable-components`, update
 `docs/technology-stack.md` for the `components/ui` placement decision with a
 decision-ledger entry, and run `npm run validate`.
+
+## it6 — v3.3.0 (lean-v7) vs v3.2.0 (lean-v6, reused from it5), 1 rep
+
+v3.3.0 adds the "Smallest complete change" ladder (PR #58) and rewords the
+core to stay at 219 lines. v3.2.0's SKILL.md is byte-identical to lean-v6, so
+its it5 runs (same tasks, rubric v2, grader, Opus 5.5 high) are reused; only
+lean-v7 ran (T1-T5 × 1). Blind pairs compare it5 lean-v6 r1 with it6 lean-v7 r1.
+
+| Variant | T1 | T2 | T3 | T4 | T5 | T1-T5 | /10 | Words | Lines added T1/T2/T4/T5 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| lean-v6 (v3.2.0) | 100 | 100 | 100 | 100 | 100 | 100.0 | 8.7 | 4545 | 391-408 / 556-636 / 24-31 / 468-507 |
+| lean-v7 (v3.3.0) | 68.2 | 100 | 100 | 91.2 | 100 | 91.9 | 8.0 | 4586 | 271 / 536 / 46 / 460 |
+
+Blind pairs (v320-vs-v330): lean-v7 3, tie 1, lean-v6 1. T1, T2 slight and T4
+clear for lean-v7; T3 tie; T5 slight for lean-v6.
+
+- T1 regression is real (grader evidence matches the code): the subject wrote
+  "No new generic `components/ui` family. DropdownMenu, AlertDialog and Button
+  already cover these roles" and listed the family under `Skipped:`. The
+  ladder's rungs 1-2 (skip what nobody asked for; use what the repository
+  already has) overrode the request "build it as a reusable component" and the
+  owner's rule that generic anatomy lives in `components/ui`. Layering and
+  slot-props scored 0. The blind judge preferred it for simplicity, but its
+  generic quality bar contradicts the owner's stated structure, so the owner's
+  rule wins.
+- T4 lost `root-owned-config` (size/variant on `TabsList`, not the root); the
+  judge preferred that version for nested-group isolation. Rubric vs judge
+  disagree; one rep, treat as noise until repeated.
+- Code size: T1 -32% (from the skipped family), T2 -4..-16%, T5 -2..-9%,
+  T4 +15..+22 lines. The ladder does shrink code, but the T1 cut is the wrong
+  kind.
+
+Decision proposal (owner's call): lean-v8 = lean-v7 + one rule in the ladder:
+an existing primitive (DropdownMenu, Popover) is not a reason to skip the
+generic family when the task asks for reuse or two call sites share the
+anatomy; the extract-once contract wins. Re-run T1 (and T4) × 1 to confirm.

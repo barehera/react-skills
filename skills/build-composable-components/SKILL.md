@@ -1,12 +1,12 @@
 ---
 name: build-composable-components
-description: Design, implement, refactor, or audit maintainable React component families that extend repository-native primitives without losing their contracts. Use for compound components, shadcn or Radix extensions, reusable feature UI, menus, tabs, tables, dialogs, pickers, lists, responsive adapters, scoped Zustand component state, controlled or uncontrolled APIs, root-owned size and variant propagation, and optimistic mutation boundaries inside a component family. Route React Hook Form field families to build-forms and query, mutation, or cache design to manage-server-state.
+description: Design, implement, refactor, or audit React component families that know only UI while data, copy, and config come from outside, extending repository-native primitives without losing their contracts. Use for compound components, shadcn or Radix extensions, reusable feature UI, menus, tabs, tables, dialogs, pickers, lists, record parts, responsive adapters, scoped Zustand component state, controlled or uncontrolled APIs, cva size and variant on container parts, and optimistic mutation boundaries inside a component family. Route React Hook Form field families to build-forms and query, mutation, or cache design to manage-server-state.
 ---
 
 # Build Composable Components
 
-Build component families on the repository's own primitives that stay open to
-composition as product requirements grow.
+Build component families that know only UI: data, copy, and configuration come
+from outside, and every visible piece is a part the consumer composes.
 
 ## Version
 
@@ -14,37 +14,35 @@ Read `../VERSION` and include `React Skills v<version>` in the final handoff.
 
 ## Layer placement
 
-React Skills code lives in one of three layers: primitives (shadcn/Radix and
-`cn`), composable families (compound roots, structural slots, item boundaries,
-focused actions, scoped stores), and feature adapters (screens, schemas,
-queries, mutations, product rules). Dependencies point downward only.
-
-This skill owns the composable-family layer and the primitive extensions it
-needs. A family never imports a feature module, reads a query, calls a
-mutation, or encodes a product rule. Placement test: code that changes when the
-product changes belongs in the feature adapter; code that changes when the
-design system changes belongs in the family or the primitive. A generic family
-is named for its UI role, not a record type.
+Three layers, dependencies pointing down: primitives (shadcn/Radix, `cn`),
+composable families (roots, parts, item scopes, scoped stores), and feature
+adapters (screens, record parts, queries, mutations, product rules). This
+skill owns the family layer, the primitive extensions it needs, and the record
+parts a feature composes from a family. A generic family never imports a
+feature, query, mutation, record type, or product rule, and never fetches,
+enumerates data, or holds product copy. Placement test: code that changes with
+the product belongs in the feature adapter; code that changes with the design
+system belongs in the family or the primitive.
 
 ## Required workflow
 
 1. Read the repository's instructions, primitives, and neighboring families.
    Classify the task as `create`, `extend`, `refactor`, or `audit`.
-2. Find current consumers and infer likely extensions from concrete product
-   requirements (roadmaps, backlogs, plans, designs, and sibling screens count
-   as concrete requirements, in both create and audit mode). Preserve behavior
-   unless a change is requested.
-3. Sketch the family before JSX: its files and names, what the root shares, the
-   structural slots and item boundary, which domain items the feature adapter
-   composes, which content can unmount and which overlays persist, and who owns
-   state and side effects, then build it by the ladder below.
+2. Find current consumers and concrete requirements (roadmaps, backlogs,
+   plans, designs, sibling screens), in create and audit mode. Preserve
+   behavior unless a change is requested.
+3. Sketch before JSX: the generic parts, what the root shares, the container
+   that owns each variant, the record parts, the consumer that reads the query
+   and maps the data, which overlays persist, and who owns state and side
+   effects. Then build it by the ladder below.
 4. Run the [extension test](references/review-and-testing.md#extension-scenarios):
-   add, omit, and reorder an item; insert a consumer separator; add a size; mount
-   two instances; open an overlay from content that can unmount; fail a mutation.
+   add, omit, relabel, and reorder a part; insert a consumer separator; add a
+   size; mount two instances; open an overlay from content that can unmount;
+   fail a mutation.
 5. Run the repository's checks in proportion to risk. Report decisions,
-   preserved primitive contracts, and open assumptions. End with one `Skipped:`
-   line for what was left out on purpose and one `Not checked:` line for what
-   could not be verified.
+   preserved primitive contracts, and open assumptions. End with one
+   `Skipped:` line (left out on purpose) and one `Not checked:` line (not
+   verified).
 
 ## Smallest complete change
 
@@ -56,117 +54,122 @@ option that fully works:
    parts face only the [over-engineering decision test](references/review-and-testing.md#judge-over-engineering).
 2. What the repository already has: a family, a part, or a simpler pattern.
 3. A shadcn/Radix primitive that owns the role (`Card`, `Alert`, `Empty`,
-   `Item`) instead of a restyled `div`, or a new `size` or `variant` on it.
-4. A semantic element, data attributes, or named groups before JavaScript.
+   `Badge`), or a value it already has (`Button size="icon-lg"`) or a new value
+   on its variant definition, instead of a restyled `div` or a class patch.
+4. A semantic element, `data-*` attributes, and named groups before JavaScript.
 5. Props, then context, then a scoped store, as State escalates below.
-6. The smallest coherent family that meets the core contracts. Export only the
-   parts consumers compose and the hooks they need to build their own parts.
+6. The smallest coherent generic family plus the record parts the feature
+   reads. Export only the parts consumers compose.
 
+- An existing primitive is not a reason to skip the generic family. When the
+  task asks for reuse or two call sites share the anatomy, build
+  `components/ui/<role>.tsx` over the primitive and compose it in the feature.
 - Finish every place the change reaches: callers, tests, fixtures, and
   exports. Primitive props, refs, ARIA, focus, keyboard behavior, consumer
-  `className` overrides, and anything the user asked for are never cut.
+  `className` overrides, error handling that prevents data loss, and anything
+  the user asked for are never cut.
 - Mark a deliberate limit with one comment: `// shortcut: <limit>, <when to upgrade>`.
 
 ## Core contracts
 
+The component knows only UI; data, copy, and config come from outside. A
+consumer composes a family like this (copy the shape, not the names):
+
+```tsx
+<SelectableList value={selectedTaskIds} onValueChange={setSelectedTaskIds} itemValues={taskIds}>
+  {canBulkEdit && (
+    <SelectableListHeader>
+      <SelectableListSelectAll aria-label="Select all tasks" />
+      <SelectableListToolbar aria-label="Bulk task actions">
+        <span><SelectableListCount /> selected</span>
+        <TaskSelectableListMarkDone>Mark done</TaskSelectableListMarkDone>
+        <TaskSelectableListDelete>Delete</TaskSelectableListDelete>
+      </SelectableListToolbar>
+    </SelectableListHeader>
+  )}
+  <SelectableListContent density={density}>
+    {tasksQuery.isPending && <SelectableListLoading>Loading tasks…</SelectableListLoading>}
+    {tasksQuery.isError && <SelectableListError>Tasks unavailable</SelectableListError>}
+    {tasksQuery.data?.length === 0 && <SelectableListEmpty>No tasks yet</SelectableListEmpty>}
+    {tasksQuery.data?.map((task) => (
+      <TaskSelectableListItem key={task.id} task={task} />
+    ))}
+  </SelectableListContent>
+</SelectableList>
+```
+
 Root and parts:
 
-- The root holds only what several parts coordinate: controlled state (`open`,
-  `value`), family-wide `size`, `variant`, `density`, or `tone`, and IDs from
-  `React.useId()`. An adapter that binds several actions to one record passes
-  the record once to its root, not to every action.
-- Displayed copy is the `children` of the part that renders it; context may
-  carry a label ID, never the copy. A part that shows a family-derived value,
-  such as a count, passes the value to a function child that returns the
-  wording, so the family holds no product wording.
-- `disabled`, loading, and event props belong to the action that owns them, so
-  one action can stay enabled while another is disabled. A root lock or handler
-  exists only for behavior all parts share: a fieldset lock or `onOpenChange`.
-- Each public part renders one primitive or DOM role and accepts that
-  primitive's props as `React.ComponentProps<typeof Primitive>`, which includes
-  `ref` in React 19, so parts need no `forwardRef`. A `triggerProps`,
-  `contentProps`, or `itemProps` bag means the child should be a slot. A
-  convenience component may exist only as a thin composition of the same open
-  slots.
-- Consumers choose capability and order by omitting, reordering, or swapping
-  slots, not through boolean switch props. Structural slots stay structural;
-  they do not hide independently optional actions, fields, separators, or
-  status branches.
-- Extend a wrapped primitive's contract instead of replacing it: props, refs,
-  events, accessibility, keyboard behavior, defaults, variants, and `asChild`.
-  An omitted family prop renders like the base primitive. Spread consumer
-  props, merge `className` last with `cn(base, className)`, compose
-  observational handlers, then apply required bindings after the spread:
-  `<Text {...props} id={titleId} />`.
-- UI or logic that two call sites would repeat is extracted once: generic
-  anatomy as a family part, record anatomy as one component in the feature that
-  owns the record, because copies drift apart.
-- A part that groups controls or reports changing status follows its ARIA
-  pattern, because the primitives do not provide it: `role="toolbar"` with an
-  accessible name for an action group, a polite live region for a selection
-  count or async result, and an accessible name on every icon-only trigger.
+- The root holds only shared state: `value`/`onValueChange`, `open`, dialog
+  state, the record passed once (record root), and ids an aggregate needs
+  (`itemValues` for select-all or a count). Never items to render, loading or
+  error flags, copy, `aria-*`, or visual config: the part that renders them
+  takes them. A root with no element renders only its provider; a root over a
+  primitive root keeps that primitive's props.
+- Every visible piece is a child part the consumer can omit, reorder, or
+  relabel. Copy is the `children` of the part that renders it, or a
+  `placeholder` on that part. No part, generic or record, defaults its copy.
+- A derived value is its own part with no function child; the consumer writes
+  the wording around it: `<span><SelectableListCount /> selected</span>`.
+- Each part renders one primitive or DOM role, takes
+  `React.ComponentProps<typeof Primitive>` (no `forwardRef`), sets
+  `data-slot`, spreads props, then applies required bindings
+  (`<Checkbox {...props} checked={item.selected} />`), with
+  `cn(base, className)`. A `triggerProps` bag means the child should be a part.
+- `disabled`, loading, and event props belong to the action that owns them;
+  consumers choose capability and order through parts, not boolean switches.
+- Extend a wrapped primitive's contract (props, refs, events, accessibility,
+  keyboard, defaults, variants, `asChild`); an omitted prop renders the base.
+- Grouped controls get `role="toolbar"` and a name, a changing count or async
+  result a polite live region, every icon-only trigger an accessible name.
 
-Collections:
+Lists and record parts:
 
-- Set item identity once at the item boundary and use the same ID as the React
-  `key`. Nested leaves derive their item, selection, and position from it;
-  repeated `id`, `index`, or `selected` props go stale on reorder.
-- When the call site owns a presentational array, the consumer `.map()`s it
-  inside a structural list slot; a root that only derives an aggregate, such as
-  all-selected or a total, takes the item IDs and never renders from them. Move
-  a collection to the root only when the family owns a controlled snapshot,
-  virtualization, sorting, or cohesive loading, error, and empty gating; then
-  enumerate through a render callback that leaves item anatomy to the consumer.
-  Never both: the consumer does not map an array it also passed to the root.
+- The consumer reads the query and maps the data inside the list part. Never
+  `items` on the root, a render-function child for items, or a `Collection`
+  part. Loading, error, and empty are child parts inside the list, rendered
+  from the consumer's query state.
+- Item identity is set once on the item part and matches the React `key`;
+  parts inside the item read it from an item scope, not from repeated `id`,
+  `index`, or `selected` props.
+- A record part (feature adapter) exists only where the record or a product rule is read:
+  `TaskSelectableListItem task={task}` writes the row anatomy once;
+  `TaskSelectableListMarkDone` binds a mutation and a permission. It takes the
+  record as a prop or from its record root. Every other part is the generic
+  part used directly; no pass-through wrappers. Anatomy two call sites would
+  repeat is extracted once: generic as a family part, record as a record part.
 
 State:
 
-- Non-visual state escalates from ordinary props, to React context for stable
-  values, to one scoped Zustand vanilla store per root for independent reactive
-  slices. A module-global store breaks repeated instances.
-- Derive what props and item IDs already determine, such as selected, checked,
-  indeterminate, counts, and position, during render. Do not store it or sync
-  it in an effect, because the copy goes stale.
-- A parent-owned clearable value can be controlled-only (`value: T | undefined`
-  with a required `onValueChange`). A dual-mode family detects controlledness
-  with `"value" in props`, as Radix's `useControllableState` does, because a
-  `value !== undefined` check turns a cleared value uncontrolled, and resolves
-  every controllable value through one helper in its own file.
+- Contexts carry shared behaviour state only: selection, open, the record.
+  One context and one throwing hook per family; an item scope only when parts
+  inside an item need its identity. Independent reactive behaviour slices use
+  one scoped Zustand vanilla store per root, never a module-global store.
+- Derive selected, checked, counts, and position during render; never sync
+  them in an effect. A parent-owned value can be controlled-only; a dual-mode
+  family detects control with `"value" in props`, never `radix-ui/internal`.
 
 Styling:
 
-- Visual configuration follows the DOM first: root data attributes, named
-  Tailwind groups, and inherited CSS variables, each slot mapping the value to
-  its own styles, so a visual-only change does not re-render every slot through
-  context. Use context only for portaled slots or values JavaScript behavior,
-  not only CSS, must read. Copying a root value onto slot attributes is styling.
-- Call-site `className` is for one composition's layout, such as width, margin,
-  alignment, or grid placement. A size, spacing, typography, or color treatment
-  that belongs to the component is a typed `size` or `variant` on the family or
-  the primitive, because a class patch bypasses that API and has to be copied
-  to every call site.
-- When a call site needs a primitive in another role, such as a destructive
-  `AlertDialogAction` or a smaller `Avatar`, add that variant to the primitive
-  in `components/ui` through its existing variant definition. The new value
-  keeps the base classes and default as written and applies its classes only
-  under itself, so every call site that omits it renders exactly as before.
+- Visual config (`size`, `variant`, `density`) is a `cva` on the container
+  part that owns the look (`TabsList`, `ActionMenuContent`,
+  `SelectableListContent`), mirrored as `data-*` plus a `group/<name>` class.
+  Descendants read it with `group-data-[size=lg]/<name>:` selectors;
+  combinations use `compoundVariants`. No context or store carries a
+  visual-only value. A part outside that container, such as a trigger, uses
+  its primitive's own variant (`Button size="icon-lg"`).
+- Call-site `className` is for layout (width, margin, grid placement); a
+  component treatment is a `cva` value, never a class patch copied per site.
 
 Overlays and side effects:
 
-- An overlay launched from content that can unmount (menu, popover, or sheet
-  content, or any part rendered conditionally) lives outside that content as a
-  persistent sibling, and its open state lives in the component that renders
-  both. The consumer composes overlays for optional actions explicitly; the
-  root auto-mounts only overlays every valid instance needs.
-- A confirm dialog's action calls `event.preventDefault()`, stays disabled
-  while its mutation is pending, and closes on success, even for optimistic
-  mutations. If the optimistic update unmounts the item hosting the dialog,
-  report the failure from a surviving parent; do not hoist one shared dialog
-  above the items, which detaches it from each item's capability check.
-- Effects that depend on the result, such as closing, navigating, or resetting
-  state, run after confirmed success through `mutateAsync` or mutation-level
-  callbacks, because callbacks passed to `mutate()` do not run once the
-  launching content has unmounted. Cache keys and mechanics stay in server state.
+- An overlay opened from content that can unmount (menu content, a
+  conditional part) is a persistent sibling of it; its open state lives in the
+  record root or the component that renders both.
+- A confirm action calls `event.preventDefault()`, stays disabled while
+  pending, and closes on success; a parent that survives an optimistic unmount
+  reports the failure. Result effects (close, navigate, reset) run through
+  `mutateAsync` or mutation-level callbacks; cache code stays in server state.
 
 ## Companion skill routing
 
@@ -191,29 +194,24 @@ project's saved agents. If the user declines, continue and do not ask again.
 
 ## References
 
-- [composition.md](references/composition.md): API shapes for parts,
-  collections, item identity, adapters, names, and JSX.
+- [composition.md](references/composition.md): open parts, consumer-mapped
+  lists, aggregates, derived values, record families, names and JSX.
 - [state-styling-and-effects.md](references/state-styling-and-effects.md):
-  variant propagation, class lists, scoped Zustand, overlays, mutations.
-- [review-and-testing.md](references/review-and-testing.md): audits, the
-  over-engineering decision test, extension scenarios.
-- [examples/layered-family](examples/layered-family): read before building a
-  family a feature drives from remote data. A type-checked generic `Roster`,
-  a `ShiftCrewRoster` adapter, and its optimistic mutation; copy the layering.
+  cva and group selectors, scoped Zustand, overlays, mutations.
+- [review-and-testing.md](references/review-and-testing.md): audit flags,
+  over-engineering test, extension scenarios.
+- [examples/layered-family](examples/layered-family): type-checked `Roster`
+  family, `ShiftCrewRoster` consumer, `ShiftCrewRosterItem` record part, and
+  an optimistic mutation; copy the layering.
 
 ## Decision defaults
 
 Use these only when the repository has no established convention:
 
-- Primitives and generic families live in `components/ui/<role>.tsx`. The root
-  takes the role name with no suffix and every part is `<Root><Part>`, as in
-  shadcn (`roster.tsx` exporting `Roster`, `RosterList`, `RosterItem`). A
-  record composition lives in `features/<feature>/components/<record>-<role>.tsx`,
-  named for the record it renders, not the field or screen that uses it, and
-  reuses the generic role name verbatim (`roster.tsx` -> `shift-crew-roster.tsx`).
-- One cohesive family (root, context or store, parts, overlays) lives in one
-  file of plain function components, with `data-slot` on each part's element,
-  one context hook that throws outside the root, and one named export list at
-  the end with no default export, so every family reads the same.
-- Each family-wide value has one exported type reused by the root and every
-  part; a `cva` primitive's props use `VariantProps<typeof variants>`.
+- A generic family is `components/ui/<role>.tsx`; the root takes the role name
+  and parts are `<Root><Part>` (`Roster`, `RosterList`). Record parts live in
+  `features/<feature>/components/<record>-<role>.tsx` and prefix the generic
+  name (`ShiftCrewRosterItem`, `TaskSelectableListMarkDone`).
+- One family, one file of plain function components, one named export list at
+  the end, no default export, no exported types, hooks, or variant functions
+  nobody imports. Under React Compiler, no `useMemo`, `useCallback`, `memo`.

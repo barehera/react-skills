@@ -2,41 +2,44 @@
 
 [← React Skills catalog](../../README.md)
 
-Design, implement, refactor, or review React component families that stay
-composable as styling, state, permissions, overlays, and server-state behavior
-become more demanding.
+Design, implement, refactor, or review React component families that know
+only UI. Data, copy, and configuration come from outside, so a family stays
+composable as styling, permissions, overlays, and server-state behavior become
+more demanding.
 
-The skill is repository-aware. It extends existing shadcn, Radix, or custom
-primitives while preserving their props, refs, accessibility, defaults, sizes,
-and variants. Its central styling rule is that the family root owns semantic
-configuration and each connected slot renders that configuration. A consumer
-can write `size="lg"` once on the root instead of patching heights and padding
-onto every child.
+The skill is repository-aware. It builds a generic family in
+`components/ui/<role>.tsx` over existing shadcn, Radix, or custom primitives,
+preserving their props, refs, accessibility, defaults, and variants, even when
+a primitive already covers one call site and the task asks for reuse.
 
-Structural slots remain open to composition: consumers can omit, reorder,
-separate, or conditionally render focused fields and actions while those leaf
-components keep their own logic. Displayed copy is passed as slot `children`,
-and independently variable action props stay on the action instead of becoming
-a root callback bag. Collection item identity is supplied once at the item
-boundary, so nested controls derive the current item and position without
-repeated `id` or `index` props.
+- **The root holds only shared state**: the controlled value, open state, the
+  record passed once, and the ids an aggregate such as select-all needs. It
+  never takes items, loading or error flags, copy, `aria-*`, or visual config.
+- **Every visible piece is a part** the consumer can omit, reorder, or
+  relabel. Copy is the part's `children`; no part defaults it. A derived value
+  is its own part: `<span><SelectableListCount /> selected</span>`.
+- **The consumer maps the data** inside the list part and renders loading,
+  error, and empty parts from its own query state. No `items` prop, render
+  callback, or `Collection` part.
+- **Record parts** live in the feature and exist only where the record or a
+  product rule is read, such as a row that renders one record or an action
+  that binds a mutation and a permission. Everything else is the generic part
+  used directly.
+- **Visual config is a `cva`** on the container part that owns the look,
+  mirrored as `data-*` with a named group that descendants select from, as in
+  shadcn's `TabsList`. No context or store carries a visual-only value; scoped
+  Zustand is reserved for shared behaviour state.
 
-Each exported part accepts the props of the primitive it renders. Trigger,
-content, item, label, and control customization stays on those slots instead of
-being tunneled through root-level `triggerProps`, `contentProps`, or similar
-prop bags. Compact convenience components remain thin compositions of the same
-open slots.
-
-Consumers map presentational arrays by default. A collection moves to the root
-only when the family coordinates a controlled snapshot, virtualization,
-sorting, or cohesive loading/error/empty gating; then its collection boundary
-enumerates through a render callback while the consumer still owns item
-anatomy.
-
-Visual configuration follows shadcn-style DOM propagation first: merged
-classes, semantic data attributes, named groups, and inherited CSS variables.
-React context is reserved for stable non-visual transport; frequently changing
-compound state uses a scoped Zustand vanilla store with selector subscriptions.
+```tsx
+<SelectableList value={selectedTaskIds} onValueChange={setSelectedTaskIds} itemValues={taskIds}>
+  <SelectableListContent density="compact">
+    {tasksQuery.isPending && <SelectableListLoading>Loading tasks…</SelectableListLoading>}
+    {tasksQuery.data?.map((task) => (
+      <TaskSelectableListItem key={task.id} task={task} />
+    ))}
+  </SelectableListContent>
+</SelectableList>
+```
 
 ## Install
 
@@ -64,23 +67,23 @@ alone, add `barehera/react-skills/build-composable-components`. See the
 ## Use
 
 ```text
-Use $build-composable-components to refactor this task action menu.
-Preserve its Radix behavior, keep only genuinely shared resource data at the
-root, propagate size and variant through connected slots, and keep the delete
-dialog alive after the menu closes.
+Use $build-composable-components to make this task action menu reusable on the
+list rows and the detail header. Build a generic ActionMenu, pass the task once
+to a record root, keep the delete dialog alive after the menu closes, and give
+the header a large size.
 ```
 
 ```text
-Use $build-composable-components to design a reusable bulk-selection table.
-Support controlled and uncontrolled selection, isolated instances,
-permission-aware action composition, optimistic rollback, and root-owned
-size and density.
+Use $build-composable-components to design a reusable bulk-selection list.
+The screen reads the tasks query and maps the rows; add select-all, a selected
+count, permission-aware bulk actions, optimistic rollback, and a compact
+density.
 ```
 
 ```text
 Use $build-composable-components to audit this Tabs extension.
-Do not edit files. Check base-contract compatibility, variant propagation,
-keyboard behavior, and maintainability.
+Do not edit files. Check base-contract compatibility, where size and variant
+live, keyboard behavior, and maintainability.
 ```
 
 ## Guidance
@@ -90,8 +93,10 @@ keyboard behavior, and maintainability.
 - [State, styling, and effects](references/state-styling-and-effects.md)
 - [Review and testing](references/review-and-testing.md)
 - [Complete layered example](examples/layered-family): a generic `Roster`
-  family, a `ShiftCrewRoster` feature adapter with one documented product rule,
-  and the optimistic TanStack Query mutation it calls
+  family with a `cva` size on `RosterList` and status parts; a
+  `ShiftCrewRoster` screen that reads the query and maps members inside the
+  list; a `ShiftCrewRosterItem` record part; one documented product rule; and
+  the optimistic TanStack Query mutation it calls
 
 The shared `.agents/skills/VERSION` file records the React Skills release that
 supplied the installed workflow.

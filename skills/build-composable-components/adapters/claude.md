@@ -1,6 +1,6 @@
 ---
 name: build-composable-components
-description: Design, implement, refactor, or audit maintainable React component families that extend repository-native primitives without losing their contracts. Use for compound components, shadcn or Radix extensions, reusable feature UI, menus, tabs, tables, dialogs, pickers, lists, responsive adapters, scoped Zustand component state, controlled or uncontrolled APIs, root-owned size and variant propagation, and optimistic mutation boundaries inside a component family. Route React Hook Form field families to build-forms and query, mutation, or cache design to manage-server-state.
+description: Design, implement, refactor, or audit React component families that know only UI while data, copy, and config come from outside, extending repository-native primitives without losing their contracts. Use for compound components, shadcn or Radix extensions, reusable feature UI, menus, tabs, tables, dialogs, pickers, lists, record parts, responsive adapters, scoped Zustand component state, controlled or uncontrolled APIs, cva size and variant on container parts, and optimistic mutation boundaries inside a component family. Route React Hook Form field families to build-forms and query, mutation, or cache design to manage-server-state.
 ---
 
 Read and follow `.agents/skills/build-composable-components/SKILL.md`, and the references,

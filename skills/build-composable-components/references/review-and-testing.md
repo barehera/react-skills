@@ -3,6 +3,7 @@
 ## Contents
 
 - [Audit order](#audit-order)
+- [Audit flags](#audit-flags)
 - [Judge over-engineering](#judge-over-engineering)
 - [Audit findings](#audit-findings)
 - [Extension scenarios](#extension-scenarios)
@@ -14,20 +15,41 @@ that covers the touched area, in this order:
 
 1. Trace root context or store creation; two mounted roots need isolated state
    and unique IDs.
-2. Trace one structural slot and one domain item.
-3. Trace overlays across content that unmounts.
-4. Trace a mutation through cache effects, rollback, and success side effects.
-5. Inspect every consumer for repeated props, classes, and product-policy
-   switches.
-6. Compare the family's styles with the base variant contract; omitted props
+2. Trace what the root accepts against the [audit flags](#audit-flags): only
+   shared state, the record, and aggregate ids may stay there.
+3. Trace one list from the consumer's query to its status parts and one
+   record part to the record or rule it reads.
+4. Trace overlays across content that unmounts.
+5. Trace a mutation through cache effects, rollback, and success side effects.
+6. Inspect every consumer for repeated props, classes, copy, and
+   product-policy switches.
+7. Compare the family's styles with the base variant contract; omitted props
    still render like the base.
-7. Report every `cond ? <X/> : null` branch and every non-boolean `&&` as a
+8. Report every `cond ? <X/> : null` branch and every non-boolean `&&` as a
    convention finding ([Names and JSX](composition.md#names-and-jsx)), and
-   every class patch repeated across consumers as a missing `size` or
-   `variant`, because these are the defects a reader copies next.
+   every class patch repeated across consumers as a missing `cva` value,
+   because these are the defects a reader copies next.
 
 Report root causes with the smallest architectural correction first, then the
-convention findings from step 7; a small finding is still reported.
+convention findings from step 8; a small finding is still reported.
+
+## Audit flags
+
+Each flag is a finding with the correction beside it.
+
+| Flag | Looks like | Correction |
+| --- | --- | --- |
+| Closed record component | `<MemberCombobox items placeholder triggerClassName onActionError?>` renders every piece itself | Drop the wrapper; the consumer composes generic parts plus record parts where the record or a rule is read |
+| Props on the root that belong to parts | `className`, `aria-label`, `size`, `placeholder`, or `emptyText` on the root | Move each to the part that renders it; the root keeps shared state |
+| Items, loading, or error on the root | `items={results}`, `loading={isPending}`, `error={error}`, a root-derived `status` | The consumer maps inside the list part and renders status parts from its query state |
+| Render-function items | `<ComboboxCollection>{(item) => …}</ComboboxCollection>`, `renderItem` | Consumer `.map()` inside the list part; a record item part for repeated anatomy |
+| Function child for a derived value | ``<Count>{(n) => `${n} selected`}</Count>`` | `<span><Count /> selected</span>` |
+| Copy props or default copy | `deleteLabel`, `unselectedLabel`, `children ?? "Delete"`, a fixed dialog title in a record part | Copy is the consumer's children, or `placeholder` on the part that renders it |
+| Visual context or store | `size` in context, a root `size` copied to parts, a store for a hover highlight | `cva` on the container part, `data-*` plus `group/<name>`, CSS `hover:` |
+| Pass-through record wrapper | `TaskActionMenuContent` that only forwards props | Use the generic part directly |
+| Skipped generic family | A feature composes `DropdownMenu*` directly at two call sites, or the task asked for reuse | Add `components/ui/<role>.tsx` over the primitive and compose it |
+| Silent error sink | `onActionError?.()` optional, so failures vanish when omitted | Make the sink required, or report from a surviving parent |
+| Live region mounted with its text | `{count > 0 && <span aria-live="polite">…</span>}` | Keep the region mounted and gate only its content |
 
 ## Judge over-engineering
 
@@ -134,14 +156,18 @@ Forward-test the scenarios relevant to the task. Each one fails if it requires
 editing a structural slot, duplicating base-item behavior, or adding props
 across consumers.
 
-- **Add a size or variant**: one type addition and slot mappings; active,
-  disabled, focus-visible, and selected states still work. A base primitive
-  takes only domain-neutral variants.
-- **Recompose**: omit, reorder, and conditionally render actions and insert a
-  consumer separator, leaving no broken separators or empty groups. Reorder the
-  collection; position-aware leaves still derive their index.
-- **Customize items**: change an item's anatomy through `children` or the
-  render callback without moving the array or reading it twice.
+- **Add a size or variant**: one `cva` key on the container part and group
+  selectors in its descendants; active, disabled, focus-visible, and selected
+  states still work, and nested instances keep their own look. A base
+  primitive takes only domain-neutral variants.
+- **Recompose**: omit, reorder, relabel, and conditionally render actions and
+  insert a consumer separator, leaving no broken separators or empty groups.
+  Reorder the list; position-aware parts still derive their index.
+- **Customize items**: change an item's anatomy through `children` or a new
+  record item part without moving the array, reading it twice, or editing the
+  family.
+- **Swap the status copy**: relabel or omit loading, error, and empty without
+  touching the family.
 - **Mount two instances**: open, mutate, and close each independently.
 - **Unmount the launcher**: close the menu or hide the conditional part that
   opened an overlay; the overlay stays open.
