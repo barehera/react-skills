@@ -74,7 +74,9 @@ recommend a consuming-repo change.
 8. Run `node <installed-skill>/scripts/validate-feedback.mjs <report>` when
    Node.js is available; otherwise check the same required fields by hand.
 9. Show the user the report path and a short list of the proposed improvements.
-   Ask for correction only where intent remains uncertain.
+   Ask for correction only where intent remains uncertain. End with one
+   `Skipped:` line for what was left out on purpose and one `Not checked:` line
+   for what could not be verified.
 
 ### Ingest mode
 
@@ -94,7 +96,8 @@ recommend a consuming-repo change.
    than a missing universal rule.
 5. Read [evaluation-and-integration.md](references/evaluation-and-integration.md)
    before deciding placement or changing a source skill, and put each accepted
-   finding in the smallest durable destination it lists. Use
+   finding in the smallest durable destination it lists, chosen in the order
+   of [Smallest complete change](#smallest-complete-change). Use
    [worked-example.md](references/worked-example.md) when the report concerns
    code style, component composition, or another example-driven rule.
 6. Match the user's requested action:
@@ -105,7 +108,27 @@ recommend a consuming-repo change.
 7. Report a decision for every finding: `accepted`, `adapted`,
    `already-covered`, `project-only`, `needs-evidence`, or `rejected`, with a
    short reason. Keep unresolved product choices explicit instead of silently
-   choosing them.
+   choosing them. End with one `Skipped:` line for what was left out on
+   purpose and one `Not checked:` line for what could not be verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. No skill change when the finding is already covered, fixed, project-only,
+   or unsupported by evidence; the decision ledger records it.
+2. Sharpen the existing rule that should have caught it. Prefer replacing or
+   deleting a rule over adding one.
+3. A focused reference, when context changes the answer.
+4. An example, or a validator when the invariant is deterministic.
+5. A new core rule in `SKILL.md`, only when the behavior is frequent,
+   high-impact, and broadly applicable.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Evidence, a decision for every finding, and anything the user asked
+  for are never cut.
+- A deleted or merged rule keeps its acceptance test.
 
 ## Evidence rules
 
