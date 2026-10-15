@@ -29,11 +29,11 @@ invitation to make canonical React Skills examples technology-agnostic.
 | --- | --- | --- |
 | UI runtime | React with TypeScript | Use typed function components and current React APIs. |
 | UI primitives | shadcn/ui and Radix | Extend existing primitives and preserve their props, refs, accessibility, focus, and composition contracts. |
-| Component API | Compound components | Give each visible part its natural primitive props; roots own only shared bindings and state. Form fields add one compact adapter per control whose typed `slotProps` configure those same slots (`build-forms`). |
-| Styling | Tailwind CSS with the repository `cn` convention | Preserve primitive classes, variants, named groups, and consumer `className` overrides. |
+| Component API | Compound components | The component knows only UI; data, copy, and config come from outside. Give each visible part its natural primitive props; roots own only shared state. The consumer maps data inside list parts. Form fields add one compact adapter per control whose typed `slotProps` configure those same slots (`build-forms`). |
+| Styling | Tailwind CSS with the repository `cn` convention | Visual config (`size`, `variant`, `density`) is a `cva` on the part that owns the look, mirrored as `data-*` and read by descendants through `group-data-[…]/<name>:` selectors. Preserve primitive classes, variants, and consumer `className` overrides. |
 | Form state | React Hook Form | Own submitted values, validation lifecycle, field registration, errors, reset, and submission. |
 | Runtime validation | Zod | Define schemas at trust boundaries and infer TypeScript values when the schema is authoritative. |
-| Shared client state | Zustand vanilla stores | Create one scoped store per root and subscribe through narrow selectors; never share one module-global store across repeated component instances. |
+| Shared client state | Zustand vanilla stores | Create one scoped store per root for shared behaviour state and subscribe through narrow selectors; never share one module-global store across repeated component instances, and never use a store or context for visual-only values. |
 | Remote state | TanStack Query | Own queries, mutations, request status, retries, invalidation, and cache synchronization. |
 | HTTP transport | Axios through a project transport wrapper | Keep authentication, cancellation, normalization, and transport errors below feature query code. |
 | Query identity | TanStack Query keys and Query Key Factory where useful | Centralize stable query identity and use targeted cache effects. |
@@ -61,8 +61,8 @@ re-explaining the split.
 | Layer | Contains | Knows about | Default location |
 | --- | --- | --- | --- |
 | Primitive | shadcn/Radix components and the `cn` utility | Interaction, focus, ARIA, base styling | `components/ui` |
-| Composable family | Compound roots, structural slots, item boundaries, focused actions, scoped stores | Its own controlled values, generated IDs, family-wide `size` and `variant` | `components/ui/<role>.tsx`, named for its UI role (`combobox.tsx`, `roster.tsx`) |
-| Feature adapter | Screens, domain components, schemas, typed forms, queries, mutations, cache effects, product rules | The product: which records exist, who may act, what a selection means | `features/<feature>` |
+| Composable family | Compound roots, structural slots, item boundaries, status parts, focused actions, scoped behaviour stores | UI only: its own controlled values, generated IDs, and `cva` visual config on its container parts; never data, copy, or product rules | `components/ui/<role>.tsx`, named for its UI role (`combobox.tsx`, `roster.tsx`) |
+| Feature adapter | Screens, record parts, schemas, typed forms, queries, mutations, cache effects, product rules | The product: which records exist, who may act, what a selection means | `features/<feature>` |
 
 Dependencies point downward only. A feature adapter composes families and
 primitives; a family composes primitives; a primitive never imports a family.
@@ -72,6 +72,28 @@ module, reads a query, calls a mutation, or encodes a product rule. A family is
 named for its UI role, never a record type; record-specific anatomy is composed
 once in the feature that owns the record
 (`features/<feature>/components/<record>-<role>.tsx`).
+
+The component knows only UI; everything else is given from outside. The
+consumer (a screen or feature component) reads the query and maps the data
+inside the family's list part, renders loading, error, and empty parts inside
+that list from the query state, and writes the copy as children. A family root
+holds only shared state, such as `value`, `onValueChange`, `open`, or the ids
+it needs for an aggregate; it never takes items to render, loading flags,
+copy, or visual config. A record part (`TaskSelectableListItem`,
+`TaskSelectableListDelete`) exists only where the record or a product rule is
+read; every other part is the generic part used directly:
+
+```tsx
+<SelectableList value={selectedTaskIds} onValueChange={setSelectedTaskIds} itemValues={taskIds}>
+  <SelectableListContent density={density}>
+    {tasksQuery.isPending && <SelectableListLoading>Loading tasks…</SelectableListLoading>}
+    {tasksQuery.isError && <SelectableListError>Tasks unavailable</SelectableListError>}
+    {tasksQuery.data?.map((task) => (
+      <TaskSelectableListItem key={task.id} task={task} />
+    ))}
+  </SelectableListContent>
+</SelectableList>
+```
 
 Placement test: ask whether the code would change if the product changed but
 the design system stayed the same. If yes, it belongs in the feature adapter.
@@ -97,9 +119,11 @@ vocabulary without reading this document.
 
 The canonical layered example is
 [the shift-crew roster](../skills/build-composable-components/examples/layered-family):
-a generic `Roster` family under `components/ui`, and a `ShiftCrewRoster` feature
-adapter that maps crew members, applies the lead-retention rule, and calls an
-optimistic TanStack Query mutation.
+a generic `Roster` family under `components/ui` that knows only UI, a
+`ShiftCrewRoster` screen that reads the query and maps crew members inside the
+list with its status parts, and a `ShiftCrewRosterItem` record part; the
+feature applies the lead-retention rule and calls an optimistic TanStack Query
+mutation.
 
 ## Responsibility boundaries
 
@@ -223,6 +247,10 @@ The Vitest addition for unit and contract tests is recorded in
 [the rule-tests decision ledger](skill-feedback/2026-09-24-decisions.md). It
 names the canonical runner for a repository without one; an existing runner
 stays in place and is not migrated.
+
+The v4 UI-only composition contract (consumer-mapped lists, record parts,
+`cva` + `data-*` visual config without context) is recorded in
+[the v4 decision ledger](skill-feedback/2026-10-15-v4-ui-only-composition-decisions.md).
 
 The smallest complete change contract and the per-skill ladders are recorded
 in

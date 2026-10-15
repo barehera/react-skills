@@ -47,9 +47,10 @@ the layer model, and responsibility boundaries.
 More skills can be added without changing the installation workflow.
 
 The composable-component skill covers the cases that usually break down as a
-design system grows: extending shadcn and Radix contracts, root-owned size and
-variant propagation, consumer-mapped presentational lists, controlled or gated
-collections with consumer-owned item anatomy, controlled optional values,
+design system grows: extending shadcn and Radix contracts, `cva` size and
+variant on the container part read through `data-*` attributes, families that
+know only UI while the consumer maps query data and status parts inside the
+list, record parts that read the record once, controlled optional values,
 per-root Zustand stores, persistent overlays, and optimistic server-state
 boundaries. Its worked examples progress from ordinary props to advanced and
 expert compound families.
@@ -177,8 +178,8 @@ skill if the submission requires API and cache work.
 
 ```text
 Use $build-composable-components to refactor this task action family.
-Preserve its shadcn contracts, inherit size from the root, keep optional
-overlays explicit, and expose collection item anatomy through render callbacks.
+Preserve its shadcn contracts, put size on the content as a cva, keep optional
+overlays explicit, and let each call site compose the actions as child parts.
 ```
 
 ```text
