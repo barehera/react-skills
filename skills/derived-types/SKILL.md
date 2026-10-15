@@ -29,8 +29,8 @@ applies to every kind of code:
 | Hook | `useDisclosure(defaultOpen?: boolean)` | `useShipmentStatusFilter(shipments)` over `Pick<Shipment, "status">` |
 | Helper | `formatDate(value: Date \| string)` | `isShipmentStatusFilter(value): value is ShipmentStatusFilter` |
 
-Reusable code never imports feature or record types; a type import follows the
-same downward direction as a value import.
+Reusable code never imports a feature, schema, query, or record type; a type
+import follows the same downward direction as a value import.
 
 ## Required workflow
 
@@ -43,12 +43,34 @@ same downward direction as a value import.
 4. Remove the redeclared shapes, widened parameters, casts, and needless
    annotations the derivation replaces. Preserve runtime behavior.
 5. Run the type check. Fix every reported consumer at the feature edge by
-   converting, formatting, or narrowing there; never widen reusable code or add
-   a cast to make the error disappear.
+   converting, formatting, or narrowing; never widen reusable code or cast.
 6. Report each type as `derived`, `owned on purpose`, or `left manual` with a
-   reason, and include `React Skills v<version>`.
+   reason, and include `React Skills v<version>`. End with one `Skipped:` line
+   for what was left out on purpose and one `Not checked:` line for what could
+   not be verified.
 
 Audit mode: for existing drift, follow [drift-audit.md](references/drift-audit.md).
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. No new type: leave query data, hook results, and helper returns inferred.
+   Skip aliases, exports, and type parameters nobody asked for and no recorded
+   requirement (roadmap, backlog, plan, design, sibling screen) names; name
+   them in the handoff.
+2. An indexed access or `Pick` from the owner (see Owners).
+3. `as const` or `satisfies` on the value itself.
+4. A type guard built from the owner when a primitive hands back a wider type.
+5. In reusable code, an owned UI or platform contract, extracted only for a
+   current or recorded second consumer or a design-system concept.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Narrowing at the trust boundary, no casts, and anything the user
+  asked for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Owners
 
@@ -75,12 +97,10 @@ describe UI or platform values, not records:
   `Omit<ComponentProps<"time">, "dateTime" | "children"> & { value: Date | string }`
   or `ComponentProps<typeof Badge>`. Omit only the keys the component
   replaces, spread the rest, and merge `className` last.
-- Never import a feature, schema, query, or record type.
 
 ## Feature code derives
 
-A component, hook, or helper in `features/<feature>` derives every product
-type:
+Components, hooks, and helpers in `features/<feature>` derive product types:
 
 | Need | Derivation |
 | --- | --- |
@@ -92,7 +112,6 @@ type:
 | One primitive prop | `NonNullable<ComponentProps<typeof Badge>["variant"]>` |
 | Family callback | `ComponentProps<typeof Roster>["onValueChange"]` |
 | Hook state | `useState<ShipmentStatusFilter>("all")` |
-| Query data, hook results, helper returns | inferred; never annotate what the compiler already knows |
 
 Pick the fields the code reads; use the whole record type only when it reads
 nearly all of them. Map records to reusable props and arguments at the edge
@@ -144,24 +163,17 @@ values or renders children stays non-generic. `ComponentProps<typeof X>`
 resolves a generic `T` to its constraint, so type a callback an adapter passes
 on from the owner: `(status: Shipment["status"]) => void`.
 
-Extract to reusable code only for a second consumer or a design-system
-concept; route component anatomy to `$build-composable-components` and helper
-extraction to `$extract-named-helpers`.
-
 ## Do not overengineer
 
 - No branded or nominal types, deep conditional or mapped types,
   `DeepPartial`-style utilities, or type re-export barrels unless the
-  repository already uses them.
-- No parallel DTO and domain interfaces when the schema already infers the
-  type, and no `types.ts` outside the owner that copies record shapes.
-- Export a derived alias only when two or more modules use it, and keep it
-  beside its owner. A module-private alias such as `BadgeVariant` may name a
-  long derivation inside one file.
-- Do not export a component's props type just in case; consumers read
+  repository already uses them; no parallel DTO or domain interfaces, and no
+  `types.ts` outside the owner that copies record shapes.
+- Export a derived alias only when two or more modules use it, beside its
+  owner; a module-private alias (`BadgeVariant`) may name a long derivation.
+  Never export a props type just in case; consumers read
   `ComponentProps<typeof X>`, `Parameters<typeof fn>`, or
-  `ReturnType<typeof useX>`.
-- Use `type` aliases for props.
+  `ReturnType<typeof useX>`. Props use `type` aliases.
 
 ## Companion skill routing
 
@@ -181,8 +193,7 @@ to install it and continue without it when declined.
 
 ## References
 
-- [drift-audit.md](references/drift-audit.md): search patterns, fix order,
-  verification, and the report table for an existing codebase.
+- [drift-audit.md](references/drift-audit.md): searches, fix order, report.
 - [examples/shipment-tracking](examples/shipment-tracking/src): every file
   type-checks. Start from the owner, then follow it outward:
   - [schemas.ts](examples/shipment-tracking/src/features/shipments/server-state/schemas.ts)
@@ -202,8 +213,7 @@ to install it and continue without it when declined.
 
 Use these only when the repository has no established convention:
 
-- Record types live in `features/<feature>/server-state/types.ts`, inferred
-  from `schemas.ts` beside them; record helpers and hooks in
-  `features/<feature>/model/`.
+- Record types: `features/<feature>/server-state/types.ts`, inferred from
+  `schemas.ts` beside them; helpers and hooks: `features/<feature>/model/`.
 - Reusable components live in `components/ui/<role>.tsx`; record adapters in
   `features/<feature>/components/<record>-<role>.tsx`.
