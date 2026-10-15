@@ -7,22 +7,22 @@
     {
       "id": "layering",
       "weight": 3,
-      "text": "A generic picker family (outside the tasks/members features) has no knowledge of useMembersQuery, Member-specific fetching, or task policy; a feature adapter (assignee field) runs the query and composes the family. The family is reusable for reviewers without edits."
+      "text": "A generic picker family (src/components/ui, outside the tasks/members features) knows only UI: no useMembersQuery, Member type, member fetching, or task policy. The consumer (TaskAssigneeField) runs the query and composes the family; member-specific anatomy lives in a record part in the feature (e.g. MemberComboboxItem). The family is reusable for reviewers without edits."
     },
     {
       "id": "item-anatomy-open",
       "weight": 3,
-      "text": "The consumer owns each option's visible anatomy (avatar, name, email, check indicator) through composable item parts: either the consumer maps the array inside structural list slots, or the family enumerates through a render callback. A closed `<Results/>`/`renderItem`-free component that hardcodes avatar/name/email inside the family is a fail."
+      "text": "The consumer reads the members query and maps the members inside the list part into item parts (`members.data?.map((member) => <MemberComboboxItem key={member.id} member={member} />)`), and the avatar/name/email/check anatomy is written once in that record item part. Enumeration through a render-function child (`{(member) => ...}`), a Collection part, `items` passed to the root, or a closed component that hardcodes the anatomy inside the generic family are fails."
     },
     {
       "id": "collection-mode",
       "weight": 2,
-      "text": "The members array is passed in exactly one mode: either the consumer maps it, or the root owns it (for loading/error/empty gating) and enumerates it; never passed to the root AND mapped again by the consumer from the same external array."
+      "text": "Roots hold only shared state (value/onValueChange/open). Neither the generic root nor any member wrapper takes items, loading/error flags, placeholder or other copy, aria-*, or className: aria-labelledby and width go on the trigger part, the placeholder on the value part, the clear option's text as its children. A closed `<MemberCombobox aria-labelledby className projectId value onValueChange unselectedLabel />` is a fail."
     },
     {
       "id": "state-gating",
       "weight": 2,
-      "text": "Loading, error, and empty states are focused, replaceable parts (or adapter branches) and do not render alongside stale results incorrectly; consumers do not have to repeat `!loading && !error && items.map` logic in multiple places."
+      "text": "Loading, error, and empty are focused child parts placed inside the list and rendered from the consumer's query state (cmdk's Empty may self-gate on search results); they do not render alongside stale results incorrectly, and no root flag gates them."
     },
     {
       "id": "controlled-optional-value",
@@ -55,5 +55,5 @@
       "text": "TaskAssigneeField uses the picker with the existing props contract, search is wired to useMembersQuery, and the code typechecks."
     }
   ],
-  "rubricVersion": 2
+  "rubricVersion": 3
 }
