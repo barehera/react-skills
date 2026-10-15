@@ -55,10 +55,11 @@ those and connect them to server state through `$manage-server-state`.
    ARIA, focus, keyboard, input hints, constraints, defaults, and portals.
 5. Build on the incumbent. With none, implement the shared foundation and its
    compound slots, then one compact adapter per control, then the feature form.
-6. Run the [extension tests](references/review-and-testing.md#extension-tests) the task touches.
+6. Run the [extension tests](references/review-and-testing.md#extension-tests)
+   the task touches.
 7. Run the repository's format, lint, typecheck, interaction tests, and build
    in proportion to risk. Report preserved contracts, unresolved assumptions,
-   and [pre-existing contract violations](references/review-and-testing.md#handoff).
+   and [pre-existing violations](references/review-and-testing.md#handoff).
    End with one `Skipped:` line for what was left out on purpose and one
    `Not checked:` line for what could not be verified.
 
@@ -115,8 +116,9 @@ Field families:
   in the label row, composes those slots directly; they are the escape hatch.
 - Registration, generated IDs, invalid/disabled state, and accessibility
   relationships live once on the field root or shared field foundation.
-- Compose consumer refs and observational handlers before authoritative
-  bindings ([shared control rules](references/field-contracts.md#shared-control-rules)).
+- Compose consumer refs with the form-library ref, and run observational
+  handlers before authoritative bindings
+  ([shared control rules](references/field-contracts.md#shared-control-rules)).
 - A Radix Select provider wraps only trigger, value, content, and items inside
   `SelectFieldControl`; label, description, and error stay outside it.
 - `aria-describedby` lists the description ID only when that slot renders and
@@ -205,12 +207,10 @@ Use these only when the repository has no established convention:
   per family exporting the compact `<Control>Field` adapter and its
   `<Control>FieldRoot`, `<Control>FieldLabel`, `<Control>FieldControl`, and
   other slots. The generic Form and compound-field foundation sit together in
-  `components/ui/form.tsx`. Cross-family helpers live in `lib/<name>.ts`,
-  such as `lib/compose-refs.ts`.
+  `components/ui/form.tsx`; cross-family helpers live in `lib/<name>.ts`.
 - A consuming feature has one `<feature>-form.ts`, a `<feature>-screen.tsx`,
-  and `components/<feature>-<section>.tsx` for distinct rendered sections. Do
-  not create `schemas`, `types`, `constants`, or `logic` folders for one
-  form's small private artifacts.
+  and `components/<feature>-<section>.tsx` per rendered section; no `schemas`,
+  `types`, `constants`, or `logic` folders for one form's private artifacts.
 - React Hook Form is the state/controller boundary and Zod the schema source
   for fresh choices; preserve an established incumbent in consuming projects.
 - Scoped Zustand only for justified external form-wide properties.
