@@ -49,15 +49,40 @@ slices reach each other only through documented public module paths.
      a feature, migrate, audit.
    - [examples/next-app-router/README.md](examples/next-app-router/README.md):
      before creating a Next.js architecture or when placement is disputed.
-6. Make the smallest coherent change. Create folders only when they have real
-   content; do not prebuild every possible layer or segment.
+6. Place every new file, folder, and move by
+   [Smallest complete change](#smallest-complete-change).
 7. Update all imports and consumers in scope. Leave no compatibility barrels
    unless the user explicitly requests a staged legacy bridge.
 8. Run the repository's checks, including a production build, in proportion
    to the change. Do not add a new linter without approval.
 9. Report the layer set, the owner of each moved or new module, intentionally
    unmoved files, direct public paths, runtime boundaries, validation results,
-   and remaining migration debt.
+   and remaining migration debt. End with one `Skipped:` line for what was
+   left out on purpose and one `Not checked:` line for what could not be
+   verified.
+
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. The existing file in the owning slice and segment. Create no folder,
+   segment, layer, or public path without real content today, unless a
+   recorded requirement (roadmap, backlog, plan, design, sibling screen) names
+   it; name what you skipped in the handoff.
+2. An existing `shared` module that already fits, used through its current
+   API. New code reaches `shared` only by the promotion rule below.
+3. A new file in the owning slice's existing segment.
+4. A new purpose-named segment in the owning slice.
+5. A new slice or layer, only when the
+   [ownership model](references/architecture-and-placement.md#ownership-model)
+   names no existing owner.
+
+- Finish every place the change reaches: callers, tests, fixtures, and
+  exports. Dependency direction, the client/server boundary, and anything the
+  user asked for are never cut.
+- Mark a deliberate limit with one comment:
+  `// shortcut: <limit>, <when to upgrade>`.
 
 ## Core contracts
 
@@ -65,7 +90,7 @@ slices reach each other only through documented public module paths.
   primarily by global technical kinds.
 - Dependencies run `app → pages → widgets → features → entities → shared`. A
   slice may import lower layers and its own files, never a sibling slice on the
-  same layer. Omit layers that add no current value.
+  same layer.
 - Framework `app/`, `pages/`, `public/`, route handlers, middleware, and
   repository scripts are framework or operational roots, not ordinary slices.
 - Complete user-valued capabilities live in `features/<feature>`. Reusable
