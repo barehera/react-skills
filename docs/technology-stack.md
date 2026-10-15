@@ -6,6 +6,7 @@
 - [Preferred stack](#preferred-stack)
 - [Layer model](#layer-model)
 - [Responsibility boundaries](#responsibility-boundaries)
+- [Smallest complete change](#smallest-complete-change)
 - [Skill boundaries](#skill-boundaries)
 - [Canonical example rules](#canonical-example-rules)
 - [Changing the stack](#changing-the-stack)
@@ -123,6 +124,36 @@ Do not create fused `StepperForm`, `CardForm`, query-aware visual primitives, or
 global Zustand stores that blur these boundaries. Add a focused feature adapter
 when two independent APIs need coordination.
 
+## Smallest complete change
+
+Write only what the task needs, in the layer that owns it. Take the first
+option that fully works:
+
+1. Does it need to exist at all? Skip parts, props, options, and exports that
+   neither the task nor a recorded requirement names.
+2. Reuse what the repository already has in this layer.
+3. Use a shadcn/Radix primitive or a new value on its existing variant
+   definition; a house primitive beats a native widget.
+4. Use a native platform feature or a built-in of an installed stack library.
+5. Write one readable line.
+6. Write the minimum new code in the owning layer.
+
+Laziness works inside the layer model. It never skips the layer a rule
+belongs in, never merges layers, and never overrides "used twice, extract
+once" or "a component treatment is a typed `size` or `variant`".
+
+Never cut Zod parsing at trust boundaries, error handling that prevents data
+loss, authentication and security checks, accessibility contracts, or
+anything the user asked for. Finish every place the change reaches: callers,
+tests, fixtures, and exports. Mark a deliberate limit with one comment,
+`// shortcut: <limit>, <when to upgrade>`; `document-business-logic` keeps it
+as a technical comment. End the handoff with one `Skipped:` line for what was
+left out on purpose and one `Not checked:` line for what could not be
+verified.
+
+Each `SKILL.md` carries its own layer-specific ladder in a
+`## Smallest complete change` section.
+
 ## Skill boundaries
 
 Use and extend the existing skill that owns the concern:
@@ -192,6 +223,10 @@ The Vitest addition for unit and contract tests is recorded in
 [the rule-tests decision ledger](skill-feedback/2026-09-24-decisions.md). It
 names the canonical runner for a repository without one; an existing runner
 stays in place and is not migrated.
+
+The smallest complete change contract and the per-skill ladders are recorded
+in
+[the smallest complete change decision ledger](skill-feedback/2026-10-15-smallest-complete-change-decisions.md).
 
 Treat a preferred-library change as a repository architecture decision, not a
 local example preference. A proposal must include:

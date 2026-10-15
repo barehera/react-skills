@@ -30,6 +30,9 @@
 
 - [ ] `SKILL.md` has `Version`, `Layer placement`, and `Companion skill
       routing` sections, a workflow or mode section, and stays under 220 lines.
+- [ ] `SKILL.md` has a `Smallest complete change` section with a
+      layer-specific ladder, never-cut list, and `Skipped:` / `Not checked:`
+      handoff lines.
 - [ ] Every rule and example names the layer it governs: primitive,
       composable family, or feature adapter.
 - [ ] Shipped TypeScript examples are covered by `tsconfig.examples.json`.
