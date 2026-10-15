@@ -31,9 +31,10 @@
 
 ## Enforcement
 
-The quality contract in [adding-a-skill.md](../adding-a-skill.md) checks the
-section by review. The validator starts enforcing it once all ten skill pull
-requests have merged.
+`npm run validate` fails for any `SKILL.md` without a
+`## Smallest complete change` section; the quality contract in
+[adding-a-skill.md](../adding-a-skill.md) checks the ladder's content by
+review. The ten skill pull requests were combined into one with this check.
 
 ## Known gaps and follow-ups
 

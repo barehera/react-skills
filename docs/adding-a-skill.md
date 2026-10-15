@@ -104,7 +104,7 @@ template asks for the rest.
 | --- | --- | --- |
 | `SKILL.md` contains `## Version`, `## Layer placement`, and `## Companion skill routing` | Every installed skill reports the release, shares the layer vocabulary, and routes instead of duplicating | validator |
 | `SKILL.md` has a `## Required workflow` section, or mode sections when the skill branches on the user's situation | Agents follow numbered steps instead of improvising | review |
-| `SKILL.md` has a `## Smallest complete change` section with a layer-specific ladder, the never-cut list, the `// shortcut:` marker, and the `Skipped:` / `Not checked:` handoff lines | Agents write only what the task needs, in the owning layer, without cutting safety or leaving the change half-finished | review |
+| `SKILL.md` has a `## Smallest complete change` section with a layer-specific ladder, the never-cut list, the `// shortcut:` marker, and the `Skipped:` / `Not checked:` handoff lines | Agents write only what the task needs, in the owning layer, without cutting safety or leaving the change half-finished | validator (section); review (ladder content) |
 | `SKILL.md` stays under 220 lines and its description under 1024 characters | The core file is loaded on every task; detail belongs in `references/` | validator |
 | Every rule and example names its layer: primitive, composable family, or feature adapter | Agents place product policy, families, and primitives correctly without re-deriving the split | review |
 | The `description` does not claim a concern another skill owns | Overlapping triggers make agents pick the wrong skill | review |
@@ -112,9 +112,6 @@ template asks for the rest.
 | Product policy in an example lives in the feature adapter and carries one business-logic block when non-obvious | The examples demonstrate the split rather than describe it | review |
 | The adapter set is generated, complete, and registered: `adapters/claude.md`, `adapters/cursor.mdc`, `adapters/copilot.instructions.md`, `adapters/windsurf.md` | Every supported agent reaches the same canonical `SKILL.md` | `skills:sync --check` |
 | The skill item's `files` list matches the skill folder, and one generated item per agent adapter exists | An installed skill is never missing a reference or example, and a project installs only its agents' pointers | `skills:sync --check` |
-
-The validator starts enforcing `## Smallest complete change` once every skill
-carries the section.
 
 Run `npm run skills:sync` after adding, renaming, or removing any file in a
 skill folder. It rewrites the adapters from the `SKILL.md` frontmatter and
