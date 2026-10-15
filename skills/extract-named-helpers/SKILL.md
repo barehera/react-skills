@@ -19,7 +19,8 @@ stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.
 
 This skill owns no layer. A helper stays in the layer of the code it was
-extracted from: a derivation over product data stays in the feature adapter,
+extracted from: a derivation or formatter over product data stays with the
+consumer or record part in the feature adapter, never inside a generic family;
 a helper over slot props stays in the family, and a class helper stays with
 the primitive. Extraction must never create an import that points upward.
 

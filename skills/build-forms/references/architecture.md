@@ -164,8 +164,10 @@ const reviewGroupName = useProposalFormProperties(
 Submitted values, Stepper state, cached server records, and unrelated screen
 state never go in this store; React Hook Form, the Stepper, and the
 server-state layer own them. A section that needs query-backed options calls
-the query hook itself. The name `properties` avoids a collision with React
-Hook Form's resolver `context` option.
+the query hook itself, maps the data to `options`, and renders the query's
+loading and error states; the field family never queries. The name
+`properties` avoids a collision with React Hook Form's resolver `context`
+option.
 
 Both mechanisms satisfy the same contract: descendants read non-field state
 from the root, never from section props. Use the store for values that change

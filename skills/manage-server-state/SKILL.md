@@ -20,9 +20,14 @@ stores), and feature adapters (screens, schemas, queries, mutations, cache
 effects, product rules). Dependencies point downward only.
 
 This skill owns the remote-state part of the feature adapter: transport,
-contracts, query keys, hooks, mutations, and cache effects. Visual families and
-primitives never import this layer; a feature component or screen calls the
-hooks and passes results into families as ordinary props.
+contracts, query keys, hooks, mutations, and cache effects. Families, generic
+parts, and primitives never import this layer or call its hooks. The consumer
+(a screen or feature component) calls the query hook and maps `query.data`
+inside the family's list part into record parts that take the record as a
+prop. Loading, error, and empty are status parts inside that list, rendered
+from the consumer's query state (`isPending`, `isError`, an empty `data`),
+never root props or flags. A record part may call a mutation hook for its own
+action.
 
 ## Required workflow
 
@@ -102,8 +107,8 @@ gracefully. Do not throw solely because a server response failed schema parsing.
 
 When the request crosses the server-state boundary, check the installed catalog:
 
-- `$build-composable-components`: the component family that renders the data,
-  its slots, root-owned visuals, and where an optimistic boundary sits.
+- `$build-composable-components`: the family whose list, status, and record
+  parts render the data, its variants, and where an optimistic boundary sits.
 - `$build-forms`: the form that submits to a mutation, its schema, and field
   families.
 - `$document-business-logic`: whether a product rule around a request deserves

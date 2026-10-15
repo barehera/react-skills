@@ -91,7 +91,7 @@ Primitives and families in `components/ui`, shared hooks, and shared helpers
 describe UI or platform values, not records:
 
 - Accept UI or platform vocabulary: `value: Date | string`,
-  `label: ReactNode`, `variant`, `size`, `defaultOpen: boolean`. Owning
+  `label: ReactNode`, `variant`, `size`, `itemValues: string[]` ids. Owning
   `string` here is correct; it is the code's contract, not a copy of a field.
 - Components extend the element or primitive they render:
   `Omit<ComponentProps<"time">, "dateTime" | "children"> & { value: Date | string }`
@@ -104,7 +104,7 @@ Components, hooks, and helpers in `features/<feature>` derive product types:
 
 | Need | Derivation |
 | --- | --- |
-| Several fields of one record | `shipment: Pick<Shipment, "trackingCode" \| "status">`; pass the narrowed record, not loose primitive arguments |
+| A record part, or several fields of one record | `shipment: Pick<Shipment, "trackingCode" \| "status">`; the record comes from outside as a prop, not loose primitive arguments |
 | One field | `Shipment["estimatedArrival"]` |
 | Nested object or array element | `Shipment["carrier"]`, `Order["lines"][number]` |
 | Map keyed by a union | `satisfies Record<Shipment["status"], ...>`; a new server status fails compile in the map |
@@ -153,15 +153,15 @@ const shipmentStatusLabels = {
 
 ## Generics only when values flow back
 
-Make a component, hook, or helper generic only when it hands the caller's
-values back (`onValueChange`, a selected `value`, `getKey`, a filtered list)
-or must preserve a literal union through its API. Use one type parameter
-inferred from an argument; call sites never write `<T>`.
-`useShipmentStatusFilter<TShipment extends Pick<Shipment, "status">>` reads
-only `status` yet returns the caller's full records. Code that only reads
-values or renders children stays non-generic. `ComponentProps<typeof X>`
-resolves a generic `T` to its constraint, so type a callback an adapter passes
-on from the owner: `(status: Shipment["status"]) => void`.
+Make a hook or helper generic only when it hands the caller's values back (a
+filtered list, a selected record) or must preserve a literal union through its
+API. Use one type parameter inferred from an argument; call sites never write
+`<T>`. `useShipmentStatusFilter<TShipment extends Pick<Shipment, "status">>`
+reads only `status` yet returns the caller's full records. Families stay
+non-generic: no `items: T[]`, `getKey`, or render-callback props. The consumer
+maps records inside the list part and passes UI ids
+(`tasks.map((task) => task.id)`) as `itemValues`; a `string` callback value
+narrows through a guard, as in Narrow, never cast.
 
 ## Do not overengineer
 

@@ -105,8 +105,8 @@ content/title/description slots, and `Error`.
 The Option boundary owns one stable item value and generated ID; nested Item
 and option presentation read that identity, so consumers do not repeat IDs.
 Control owns RadioGroup props and the form value binding. Consumers `.map()`
-options when the root receives no options collection; if the root owns the
-collection, add a render-callback collection boundary instead.
+options into Option parts inside Control; Root never takes an options
+collection or a render-function child.
 
 ## Checkbox
 

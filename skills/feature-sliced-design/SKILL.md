@@ -20,8 +20,13 @@ stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.
 
 This skill owns where those layers live in the folder tree: primitives and
-generic families in `shared/ui`, named by UI role; feature adapters inside the
-business slice that owns them. It does not change what a layer may import;
+generic families in `shared/ui` (or the repository's `components/ui`), named
+by UI role; feature adapters inside the business slice that owns them. Record
+parts live in the owning slice's `ui` segment (`components` where the
+repository already uses it) as `<record>-<role>.tsx`
+(`task-selectable-list-item.tsx`); the screen or feature component that reads
+the query and maps records into a family lives in the page or feature slice
+that owns that screen. It does not change what a layer may import;
 an adapter still depends on families and primitives, never the reverse, and
 slices reach each other only through documented public module paths.
 

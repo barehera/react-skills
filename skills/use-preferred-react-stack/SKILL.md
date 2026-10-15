@@ -68,7 +68,7 @@ established library or native behavior during an unrelated task.
 | --- | --- | --- | --- |
 | Timing control | TanStack Pacer | lodash debounce, custom repeated timer loops | A one-shot delay can use `setTimeout`; Query owns request retries |
 | Remote state | TanStack Query | effect-driven fetch state, SWR | Framework server reads keep their runtime owner |
-| Shared reactive client state | Zustand | Redux, Jotai, broad mutable context bags | Local `useState` and stable context remain appropriate; scope stores per owner |
+| Shared reactive client state | Zustand | Redux, Jotai, broad mutable context bags | Stores and context hold shared behaviour state only; local `useState` stays appropriate; scope stores per owner; visual-only `size`/`variant`/`density` is `cva` + `data-*`, never a store or context |
 | URL state | nuqs | manual router replacement synchronization | Server components read/parse `searchParams`; URL is authoritative |
 | Forms and validation | React Hook Form + Zod + zodResolver | Formik or a parallel ad-hoc form state engine | Simple native controls need no form framework |
 | Next.js translations | next-intl | a second i18n library or inline translatable copy | Follow locale policy; do not retrofit Next.js into plain React |
