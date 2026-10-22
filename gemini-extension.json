@@ -1,5 +1,5 @@
 {
   "name": "react-skills",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Opinionated React and TypeScript skills: composable shadcn components, React Hook Form and Zod forms, TanStack Query server state, feature-sliced structure, and Vitest rule tests."
 }
