@@ -22,7 +22,7 @@
     {
       "id": "closed-anatomy",
       "weight": 2,
-      "text": "Flags that the root owns `entries` and hardcodes each item's anatomy (actor/message/details), blocking consumer customization such as reactions under the message (backlog ACT-9); recommends consumer-mapped item parts or a render callback."
+      "text": "Flags that the root owns `entries` and hardcodes each item's anatomy (actor/message/details), blocking consumer customization such as reactions under the message (backlog ACT-9); recommends that the consumer map entries inside a list part into composable item parts. Recommending a render callback instead is partial credit."
     },
     {
       "id": "title-in-context",
@@ -42,7 +42,7 @@
     {
       "id": "leaf-size-patches",
       "weight": 2,
-      "text": "Flags the repeated `min-h-10 px-4 text-base` item className patches in both consumers and recommends a root-level size (or variant) propagated to items."
+      "text": "Flags the repeated `min-h-10 px-4 text-base` item className patches in both consumers and recommends a typed size (or variant) as a `cva` on the timeline's container part, read by items through data attributes and named group selectors, instead of per-item patches or a context."
     },
     {
       "id": "remove-layout-switch",
@@ -80,5 +80,5 @@
       "text": "Findings are prioritized by user impact, cite files/lines, distinguish confirmed bugs from maintainability issues, and give a concrete correction for each. No invented requirements; no false positives presented as bugs."
     }
   ],
-  "rubricVersion": 2
+  "rubricVersion": 3
 }

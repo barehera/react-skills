@@ -311,3 +311,46 @@ Decision proposal (owner's call): lean-v8 = lean-v7 + one rule in the ladder:
 an existing primitive (DropdownMenu, Popover) is not a reason to skip the
 generic family when the task asks for reuse or two call sites share the
 anatomy; the extract-once contract wins. Re-run T1 (and T4) × 1 to confirm.
+
+## it7 — v4.0.0 (lean-v8) on rubric v3, with v3.2.0 and v3.3.0 re-graded
+
+Rubric v3 (rubricVersion 3) aligns 17 criteria across T1-T5 with the v4
+rules (docs/skill-feedback/2026-10-15-v4-ui-only-composition-decisions.md):
+generic family even over an existing primitive, call sites composing record
+parts, cva on the container part read through data-* group selectors, no
+context for visual values, consumer-mapped lists with status parts inside the
+list, no props/copy/aria on record roots. Weights and criterion ids are
+unchanged; old grades are kept as `grade.rubric-v2.json`. lean-v8 ran T1-T5
+× 1 (Opus 5.5 high); it6 lean-v7 and it5 lean-v6 r1 were re-graded on v3.
+
+| Variant | T1 | T2 | T3 | T4 | T5 | T1-T5 (v3) | /10 | T1-T5 (v2) | Words | Lines added T1/T2/T4/T5 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| lean-v6 (v3.2.0, r1) | 72.7 | 59.5 | 100 | 61.8 | 85.4 | 75.9 | 6.6 | 100 | 4545 | 391 / 556 / 24 / 468 |
+| lean-v7 (v3.3.0) | 54.5 | 57.1 | 96.6 | 100 | 85.4 | 78.7 | 6.8 | 91.9 | 4586 | 271 / 536 / 46 / 460 |
+| **lean-v8 (v4.0.0)** | **100** | **100** | 96.6 | **100** | **93.8** | **98.1** | **8.6** | — | 5694 | 434 / 353 / 39 / 662 |
+
+- T1: lean-v8 builds `components/ui/action-menu.tsx` plus task record parts;
+  both call sites compose trigger, content, actions, and dialog with their own
+  copy; size is a cva on the content and the trigger uses Button `icon-lg`.
+  lean-v6/v7 shipped closed `<TaskActionMenu task size onActionError />`.
+- T2: lean-v8 has a generic Combobox, a `MemberComboboxItem` record part, and
+  the consumer maps the members query inside the list with status parts.
+  lean-v6/v7 used `items` on the root, a render-function Collection, and a
+  closed `MemberCombobox` with copy and trigger props on its root.
+- T4: lean-v7 and lean-v8 both put a cva on TabsList (owner's preferred shape);
+  lean-v6 put string unions on the Tabs root.
+- T5: lean-v8 lost half a point for skipping an empty-state part; v6/v7 kept
+  early-return status states, root density, and a function-child count.
+- T3 (audit): lean-v8 recommends the v4 shape but fixes the repeated item size
+  patch by making it the base style, not a container cva (half credit).
+- Code size: composability costs lines where call sites compose parts (T1
+  +11%, T5 +41% vs v6); T2 is 37% smaller. Typecheck 5/5, 4.1 min average.
+
+Caveats: one repetition; lean-v6 and lean-v7 were authored for rubric v2, so
+their v3 scores measure distance from the owner's new shape, not regressions.
+The fixture's installed VERSION reads 2.0.1 (subjects print "React Skills
+v2.0.1"); harmless for grading, worth refreshing.
+
+Decision: keep v4 (lean-v8) as the promoted variant. Next candidates if a
+lean-v9 is wanted: an empty-state part in list examples, the container-cva fix
+in audit recommendations (T3), and shorter T5 call sites.

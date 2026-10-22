@@ -12,7 +12,7 @@
     {
       "id": "consumer-anatomy",
       "weight": 3,
-      "text": "The consumer maps its tasks into row parts and composes each row's cells (title, status badge) as children; the family does not hardcode task columns or task fields, and does not take a `tasks`/`items` array plus `columns`/`renderRow` config to render rows itself. A closed `<SelectableList items={tasks} />` that renders title/status inside the family is a fail. Header and row checkboxes are parts the consumer places."
+      "text": "The consumer reads the tasks query and maps the tasks inside the list content part into row parts (a task record row part such as TaskSelectableListItem is fine), composing each row's cells (title, status badge) once; loading, error, and empty are child parts inside the list rendered from the query state. The family does not hardcode task columns or fields and does not take a `tasks`/`items` array, `columns`/`renderRow` config, or loading flags to render rows itself; render-function children are a fail. Header and row checkboxes are parts the consumer places."
     },
     {
       "id": "selection-ownership",
@@ -27,12 +27,12 @@
     {
       "id": "density-propagation",
       "weight": 2,
-      "text": "Compact density is set once on the family root (e.g. `density=\"compact\"` exposed as a data attribute) and reaches rows, cells, header, and toolbar through named group selectors (group/... + group-data-[density=compact]/...:) and/or inherited CSS variables, or a deliberate typed slot mapping. No per-row or per-cell className patches at the DashboardPage/TaskList call sites; cloneElement is a fail. With density omitted, every part renders the base (current TaskList) look."
+      "text": "Compact density is a typed `cva` on the list container part (e.g. `SelectableListContent density=\"compact\"`), set once at the call site, mirrored as a data attribute with a named group, and read by rows and cells through `group-data-[density=compact]/<name>:` selectors. No React context or store carries density, no per-row or per-cell className patches at the DashboardPage/TaskList call sites; cloneElement is a fail. With density omitted, every part renders the base (current TaskList) look."
     },
     {
       "id": "toolbar-composition",
       "weight": 2,
-      "text": "The bulk toolbar is built from composable parts (e.g. toolbar container, selection count, action slot) that the adapter fills: it shows only while something is selected, the count comes from the family while the consumer supplies the wording, and actions are consumer-composed buttons rather than an `actions` config array or hardcoded Mark done/Delete inside the family. Each action owns its pending/disabled state (Mark done pending does not come from one family-wide loading flag that disables everything). The delete confirmation AlertDialog is controlled by adapter/root state and rendered as a persistent sibling, not inside a part that unmounts when the selection or toolbar visibility changes."
+      "text": "The bulk toolbar is built from composable parts (toolbar container, selection count, action parts) that the consumer fills: it shows only while something is selected, the count is its own part and the consumer writes the wording beside it (`<SelectableListCount /> selected`; a function child for the wording is partial credit), and actions are consumer-composed parts rather than an `actions` config array or hardcoded Mark done/Delete inside the family. Each action owns its pending/disabled state (no family-wide loading flag). The delete confirmation AlertDialog survives selection and toolbar changes (persistent sibling, or a part that stays mounted) and confirms the ids snapshotted when it opened."
     },
     {
       "id": "mutation-boundary",
@@ -60,5 +60,5 @@
       "text": "TaskList renders row checkboxes, the header select-all, and the bulk toolbar with both actions; viewers (canEditTask false) never see or can trigger bulk actions (hiding selection entirely for viewers is fine); DashboardPage renders the list in compact density set once; existing loading/error states still work; and the project typechecks."
     }
   ],
-  "rubricVersion": 2
+  "rubricVersion": 3
 }

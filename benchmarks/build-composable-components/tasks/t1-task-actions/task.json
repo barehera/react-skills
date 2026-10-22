@@ -7,7 +7,7 @@
     {
       "id": "layering",
       "weight": 3,
-      "text": "Generic, reusable menu family lives outside the feature (e.g. src/components/...) and never imports feature modules, queries, mutations, or policy. A tasks feature adapter composes it and owns the task-specific items, mutations, and the canDeleteTask decision. Full credit needs both the family/adapter split and no feature imports in the family."
+      "text": "Generic, reusable menu family lives outside the feature (e.g. src/components/ui/action-menu.tsx) even though DropdownMenu already exists, and never imports feature modules, queries, mutations, task types, or policy. Task-specific parts (task record root, rename/duplicate/delete actions with their mutations and the canDeleteTask decision) live in the tasks feature and compose it. Skipping the generic family because a primitive \"already covers the role\" is a fail. Full credit needs both the family/feature split and no feature imports in the family."
     },
     {
       "id": "persistent-overlay",
@@ -17,7 +17,7 @@
     {
       "id": "composition-over-switches",
       "weight": 2,
-      "text": "Capabilities are chosen by composing or omitting item parts (e.g. `{canDelete && <DeleteItem/>}`), not by boolean switch props on the root such as showDelete/canDelete/hideRename that select children inside the family."
+      "text": "Each call site composes the menu as child parts (trigger, content, the actions it wants, the delete dialog) with copy as children, so TaskList and TaskDetailHeader can omit, reorder, or relabel actions. A closed component configured from its root (e.g. `<TaskActionMenu task size onActionError />` that renders its trigger, items, copy, and dialog inside) or boolean switch props such as showDelete/canDelete/hideRename that select children are fails. The task record root may take the task once (and a shared error sink); nothing visual, no copy, no aria."
     },
     {
       "id": "slot-props",
@@ -32,7 +32,7 @@
     {
       "id": "size-propagation",
       "weight": 2,
-      "text": "The larger size is a root-level `size` (or equivalent) set once and propagated to connected parts via data attributes / named groups / CSS variables or a deliberate mapping, not per-item className patches at the call site. Omitting size renders like the base primitives."
+      "text": "The larger size is a typed `cva` on the menu content part (e.g. `ActionMenuContent size=\"lg\"`) mirrored as a data attribute with a named group, and items read it through `group-data-[size=lg]/<name>:` selectors; the trigger, which sits outside the content, uses its primitive's own variant (Button `icon-lg`). No React context or store carries the size, no root-level size prop, no per-item className patches at the call site. Omitting size renders like the base primitives."
     },
     {
       "id": "mutation-lifecycle",
@@ -52,7 +52,7 @@
     {
       "id": "conventions",
       "weight": 1,
-      "text": "Repository conventions: boolean-only optional JSX uses `&&` (no `cond ? <X/> : null`); no routine useMemo/useCallback/React.memo since React Compiler is enabled; no unnecessary Zustand/context machinery for a simple menu."
+      "text": "Repository conventions: boolean-only optional JSX uses `&&` (no `cond ? <X/> : null`); no routine useMemo/useCallback/React.memo since React Compiler is enabled; no context or store for visual-only values; no exported types or hooks nobody uses; no `radix-ui/internal` imports."
     },
     {
       "id": "wired-and-typed",
@@ -60,5 +60,5 @@
       "text": "Both TaskList rows and TaskDetailHeader use the new actions (detail header at the larger size), viewer permissions respected in both, and the project typechecks (see checks in CHANGES.patch context / no obvious type errors)."
     }
   ],
-  "rubricVersion": 2
+  "rubricVersion": 3
 }
