@@ -3,6 +3,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,6 +24,8 @@ import {
   findInstalledSkills,
   findLegacyPointers,
   findPruneCandidates,
+  globalSkillsCommand,
+  globalVersionPaths,
   mergeExcludeBlock,
   parseArguments,
   planItems,
@@ -59,6 +62,8 @@ Usage:
   ${command}                        Choose skills and agents
   ${command} <skill...> [options]   Install named skills
   ${command} update                 Update installed skills
+  ${command} --global               Install for every project (your user)
+  ${command} update --global        Update the global install
   ${command} list                   List skills and agents
 
 Selector:
@@ -77,6 +82,7 @@ Options:
   --yes              Accept every default without asking
   --dry-run          Preview the installation
   --silent           Reduce shadcn output
+  --global, -g       Install for your user in every project, through the skills CLI
   --cwd <path>       Install into a different project
   --help             Show this help
 `);
@@ -464,6 +470,70 @@ async function pruneOtherAgents(options, skills, skillNames, agentIds, interacti
   console.log(`\nRemoved ${summary}.`);
 }
 
+// The selector asks once where the skills go; flags and updates never ask.
+async function chooseGlobal(options, interactive) {
+  const opensSelector =
+    options.command === "install" && options.skillNames.length === 0 && !options.all;
+
+  if (options.global || !interactive || options.yes || !opensSelector) {
+    return false;
+  }
+
+  return ask({
+    type: "select",
+    name: "value",
+    message: "Where should the skills go?",
+    choices: [
+      { title: "This project", description: options.cwd, value: false },
+      { title: "Every project", description: "For your user, like the companion packs", value: true },
+    ],
+    initial: 0,
+  });
+}
+
+async function installGlobal(options, skills, skillNames, agentIds, companionIds, state, releaseVersion) {
+  const step = globalSkillsCommand(skillNames, agentIds);
+
+  console.log(
+    `\n${options.command === "update" ? "Updating" : "Installing"} ${skillNames.join(", ")} for ${agentLabels(agentIds).join(", ")} in every project...\n`,
+  );
+
+  if (options.dryRun) {
+    console.log(`Would run:\n  ${step.join(" ")}`);
+  } else {
+    const status = run(step, options.cwd);
+
+    if (status !== 0) {
+      process.exitCode = status;
+      return;
+    }
+  }
+
+  const installedCompanions = installCompanions(companionIds, agentIds, options);
+
+  if (options.dryRun) {
+    return;
+  }
+
+  for (const path of globalVersionPaths(agentIds)) {
+    await mkdir(dirname(resolve(options.cwd, path)), { recursive: true });
+    await writeFile(resolve(options.cwd, path), `${releaseVersion}\n`, "utf8");
+  }
+
+  const catalogNames = skills.map((skill) => skill.name);
+  const previousSkills = (state?.skills ?? []).filter((name) => catalogNames.includes(name));
+
+  await writeInstallState(options.cwd, {
+    version: releaseVersion,
+    skills: options.command === "update" ? skillNames : [...previousSkills, ...skillNames],
+    agents: agentIds,
+    companions: [...(state?.companions ?? []), ...installedCompanions],
+  });
+
+  console.log(`\nSaved your selection in ~/${stateFile}.`);
+  console.log(`Update later with: ${command} update --global\n`);
+}
+
 async function main() {
   const options = parseArguments(process.argv.slice(2));
 
@@ -488,10 +558,27 @@ async function main() {
   }
 
   const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY);
+
+  if (await chooseGlobal(options, interactive)) {
+    options.global = true;
+  }
+
+  // A global install keeps its state and VERSION under the home folder, so
+  // update, detection, and selection read the same files a project would.
+  if (options.global) {
+    options.cwd = homedir();
+  }
+
   const state = await readInstallState(options.cwd);
   const skillNames = await selectSkills(options, skills, state, releaseVersion, interactive);
   const agentIds = await selectAgents(options, state, interactive);
   const companionIds = await selectCompanions(options, state, agentIds, interactive);
+
+  if (options.global) {
+    await installGlobal(options, skills, skillNames, agentIds, companionIds, state, releaseVersion);
+    return;
+  }
+
   const overwrite = await decideOverwrite(
     options,
     skills,

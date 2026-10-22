@@ -19,6 +19,8 @@ import {
   findInstalledSkills,
   findLegacyPointers,
   findPruneCandidates,
+  globalSkillsCommand,
+  globalVersionPaths,
   mergeExcludeBlock,
   parseArguments,
   planItems,
@@ -94,6 +96,21 @@ test("companions are opt-in and install through each agent's channel", () => {
     "graphify cursor install",
   ])
   assert.deepEqual(commands("graphify", ["kiro"], false), [])
+})
+
+test("a global install runs the skills CLI and writes VERSION where skills land", () => {
+  assert.equal(parseArguments(["-g"]).global, true)
+  assert.equal(parseArguments(["--global", "--cwd", "."], "/project").global, true)
+  assert.throws(() => parseArguments(["--global", "--cwd", "other"], "/project"), /drop --cwd/)
+  assert.equal(
+    globalSkillsCommand(["build-forms", "derived-types"], ["cursor", "claude"]).join(" "),
+    "npx --yes skills add barehera/react-skills --skill build-forms derived-types --agent claude-code cursor --global --yes",
+  )
+  assert.deepEqual(globalVersionPaths(["cursor", "codex", "claude", "kiro"]), [
+    ".agents/skills/VERSION",
+    ".claude/skills/VERSION",
+    ".kiro/skills/VERSION",
+  ])
 })
 
 test("the catalog lists skills, and every skill has one item per adapter agent", async () => {

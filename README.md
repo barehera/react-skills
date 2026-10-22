@@ -63,13 +63,15 @@ Run the installer from your project root:
 npx --yes github:barehera/react-skills
 ```
 
-1. **Pick skills.** `↑` / `↓` move, `Space` selects, `a` toggles all, and
+1. **Pick where.** This project, or every project for your user; see
+   [Install for every project](#install-for-every-project).
+2. **Pick skills.** `↑` / `↓` move, `Space` selects, `a` toggles all, and
    `Enter` continues.
-2. **Pick your agents.** Agents already set up in the project, such as a
+3. **Pick your agents.** Agents already set up in the project, such as a
    `.cursor` folder, are pre-selected.
-3. **Pick companions.** Optional third-party packs for those agents; see
+4. **Pick companions.** Optional third-party packs for those agents; see
    [Companion packs](#companion-packs).
-4. **Done.** shadcn writes the files, and the installer keeps them out of git.
+5. **Done.** shadcn writes the files, and the installer keeps them out of git.
 
 Press `Ctrl+C` at any point to cancel.
 
@@ -123,6 +125,7 @@ npx --yes github:barehera/react-skills --all --agent claude,cursor --companions 
 | `--prune` | Remove React Skills pointer files for agents you did not pick. |
 | `--dry-run` | Show what would change without writing. |
 | `--yes` | Accept every default without asking. |
+| `--global`, `-g` | Install for your user in every project instead of this project. |
 | `--cwd <path>` | Install into another folder. |
 
 See the skills, agents, and companions without installing:
@@ -130,6 +133,26 @@ See the skills, agents, and companions without installing:
 ```bash
 npx --yes github:barehera/react-skills list
 ```
+
+### Install for every project
+
+```bash
+npx --yes github:barehera/react-skills --global
+npx --yes github:barehera/react-skills --global --all --agent claude,cursor --companions karpathy
+npx --yes github:barehera/react-skills update --global
+```
+
+`--global` (or `-g`, or "Every project" in the selector) installs the skills
+for your user, the same way the companion packs install. The
+[skills CLI](https://github.com/vercel-labs/skills) puts each skill once in
+`~/.agents/skills/<skill>/`, which Cursor, Copilot, Codex, Gemini CLI,
+OpenCode, and Cline read, and links it into `~/.claude/skills`,
+`~/.codeium/windsurf/skills`, or `~/.kiro/skills` for Claude Code, Windsurf,
+and Kiro. Every agent reads the full skill, so no pointer file is needed. Your
+selection and the release live in `~/.agents/skills/react-skills.json` and
+`VERSION`; `update --global` reinstalls them from the latest release. Projects
+stay untouched, so nothing goes into git. Install a skill either globally or
+in a project, not both, or the agent sees it twice.
 
 ### Install as a plugin or extension
 

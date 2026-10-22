@@ -8,7 +8,9 @@ export const skillsRoot = ".agents/skills";
 // The editor decides which files are read, not the model picked inside it.
 // Most agents read `.agents/skills` natively and need no extra file; the rest
 // get one generated SKILL.md pointer in their own skills folder.
-// `skillsAgent` is the agent id of the `npx skills` CLI used for companions.
+// `skillsAgent` is the agent id of the `npx skills` CLI, used for companions and
+// global installs; `globalRoot` is where that CLI puts the agent's user skills
+// (`.agents/skills` for agents that read the shared folder).
 const pointerAdapter = "adapters/pointer.md";
 
 export const agents = [
@@ -19,6 +21,7 @@ export const agents = [
     targetPath: (skill) => `.claude/skills/${skill}/SKILL.md`,
     markers: [".claude", "CLAUDE.md"],
     skillsAgent: "claude-code",
+    globalRoot: ".claude/skills",
   },
   {
     id: "cursor",
@@ -27,6 +30,7 @@ export const agents = [
     targetPath: null,
     markers: [".cursor", ".cursorrules"],
     skillsAgent: "cursor",
+    globalRoot: ".agents/skills",
   },
   {
     id: "copilot",
@@ -35,6 +39,7 @@ export const agents = [
     targetPath: null,
     markers: [".github/copilot-instructions.md", ".github/instructions", ".github/skills"],
     skillsAgent: "github-copilot",
+    globalRoot: ".agents/skills",
   },
   {
     id: "windsurf",
@@ -43,6 +48,7 @@ export const agents = [
     targetPath: null,
     markers: [".windsurf", ".windsurfrules", ".devin"],
     skillsAgent: "windsurf",
+    globalRoot: ".codeium/windsurf/skills",
   },
   {
     id: "codex",
@@ -51,6 +57,7 @@ export const agents = [
     targetPath: null,
     markers: [".codex", "AGENTS.md"],
     skillsAgent: "codex",
+    globalRoot: ".agents/skills",
   },
   {
     id: "gemini",
@@ -59,6 +66,7 @@ export const agents = [
     targetPath: null,
     markers: [".gemini", "GEMINI.md"],
     skillsAgent: "gemini-cli",
+    globalRoot: ".agents/skills",
   },
   {
     id: "opencode",
@@ -67,6 +75,7 @@ export const agents = [
     targetPath: null,
     markers: [".opencode", "opencode.json"],
     skillsAgent: "opencode",
+    globalRoot: ".agents/skills",
   },
   {
     id: "kiro",
@@ -75,6 +84,7 @@ export const agents = [
     targetPath: (skill) => `.kiro/skills/${skill}/SKILL.md`,
     markers: [".kiro"],
     skillsAgent: "kiro-cli",
+    globalRoot: ".kiro/skills",
   },
   {
     id: "cline",
@@ -83,6 +93,7 @@ export const agents = [
     targetPath: (skill) => `.cline/skills/${skill}/SKILL.md`,
     markers: [".cline", ".clinerules"],
     skillsAgent: "cline",
+    globalRoot: ".agents/skills",
   },
 ];
 
