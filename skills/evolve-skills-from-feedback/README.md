@@ -29,18 +29,18 @@ npx --yes github:barehera/react-skills evolve-skills-from-feedback
 ```
 
 The installer asks which agents you use and writes only their files: the skill
-in `.agents/skills/evolve-skills-from-feedback/`, plus one pointer each for Claude Code, Cursor,
-GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
-question with `--agent`, for example `--agent cursor`.
+in `.agents/skills/evolve-skills-from-feedback/`, which Cursor, GitHub Copilot, Windsurf, Codex,
+Gemini CLI, and OpenCode read directly, plus one pointer for Claude Code, Kiro,
+or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 
-Or install it with shadcn, choosing the item for your agent:
+Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback-cursor
+npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
 ```
 
-Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
-alone, add `barehera/react-skills/evolve-skills-from-feedback`. See the
+Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
+agents need. See the
 [install guide](../../README.md#install) for every option.
 
 ## Capture in a product project

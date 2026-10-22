@@ -103,7 +103,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/build-composable-components/SKILL.md"
         }
@@ -114,63 +114,43 @@
       }
     },
     {
-      "name": "build-composable-components-cursor",
+      "name": "build-composable-components-kiro",
       "type": "registry:item",
-      "title": "Build Composable Components for Cursor",
-      "description": "Cursor pointer that loads the Build Composable Components skill.",
+      "title": "Build Composable Components for Kiro",
+      "description": "Kiro pointer that loads the Build Composable Components skill.",
       "registryDependencies": [
         "barehera/react-skills/build-composable-components"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/build-composable-components.mdc"
+          "target": "~/.kiro/skills/build-composable-components/SKILL.md"
         }
       ],
       "meta": {
         "skill": "build-composable-components",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "build-composable-components-copilot",
+      "name": "build-composable-components-cline",
       "type": "registry:item",
-      "title": "Build Composable Components for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Build Composable Components skill.",
+      "title": "Build Composable Components for Cline",
+      "description": "Cline pointer that loads the Build Composable Components skill.",
       "registryDependencies": [
         "barehera/react-skills/build-composable-components"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/build-composable-components.instructions.md"
+          "target": "~/.cline/skills/build-composable-components/SKILL.md"
         }
       ],
       "meta": {
         "skill": "build-composable-components",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "build-composable-components-windsurf",
-      "type": "registry:item",
-      "title": "Build Composable Components for Windsurf",
-      "description": "Windsurf pointer that loads the Build Composable Components skill.",
-      "registryDependencies": [
-        "barehera/react-skills/build-composable-components"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/build-composable-components.md"
-        }
-      ],
-      "meta": {
-        "skill": "build-composable-components",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

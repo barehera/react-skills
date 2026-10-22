@@ -5,7 +5,7 @@
 // Usage: node scripts/sync-skill-package.mjs [--check]
 //   --check  exit non-zero instead of writing when something is out of date.
 
-import { readdir, readFile, stat, writeFile, mkdir } from "node:fs/promises";
+import { readdir, readFile, rm, stat, writeFile, mkdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,27 +20,6 @@ import {
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillsRoot = resolve(root, "skills");
 const checkOnly = process.argv.includes("--check");
-
-// File globs that make an editor rule attach to the code a skill owns. A skill
-// without an entry falls back to every TypeScript file.
-const skillGlobs = {
-  "build-composable-components": ["**/components/**/*.{ts,tsx}"],
-  "build-forms": ["**/form*/**/*.{ts,tsx}", "**/*-form.{ts,tsx}"],
-  "manage-server-state": [
-    "**/server-state/**/*.{ts,tsx}",
-    "**/*query*.{ts,tsx}",
-    "**/*mutation*.{ts,tsx}",
-  ],
-  "document-business-logic": ["**/*.{ts,tsx}"],
-  "evolve-skills-from-feedback": ["**/.agents/feedback/**/*.md", "**/skills/**/SKILL.md"],
-  "feature-sliced-design": ["**/src/**/*.{ts,tsx}", "**/app/**/*.{ts,tsx}"],
-  "extract-named-helpers": ["**/*.{ts,tsx}"],
-  "derived-types": ["**/*.{ts,tsx}"],
-  "use-preferred-react-stack": ["**/*.{ts,tsx}", "**/package.json"],
-  "write-feature-tests": ["**/*.test.{ts,tsx}", "**/tests/**/*.{ts,tsx}"],
-};
-
-const defaultGlobs = ["**/*.{ts,tsx}"];
 
 function toPosixPath(path) {
   return path.replaceAll("\\", "/");
@@ -73,10 +52,6 @@ function readYamlString(yaml, field) {
   return match ? match[1] : "";
 }
 
-function quoteYaml(value) {
-  return JSON.stringify(value);
-}
-
 function pointerBody(name, shortDescription) {
   return [
     `Read and follow \`${pointerMarker(name)}\`, and the references,`,
@@ -94,42 +69,17 @@ function pointerBody(name, shortDescription) {
   ].join("\n");
 }
 
-function renderAdapters({ name, description, shortDescription, globs }) {
-  const body = pointerBody(name, shortDescription);
-
+// Agents that read `.agents/skills` natively need nothing; the rest share one
+// SKILL.md pointer with the skill's own name and description.
+function renderAdapters({ name, description, shortDescription }) {
   return {
-    "adapters/claude.md": [
+    "adapters/pointer.md": [
       "---",
       `name: ${name}`,
       `description: ${description}`,
       "---",
       "",
-      body,
-    ].join("\n"),
-    "adapters/cursor.mdc": [
-      "---",
-      `description: ${description}`,
-      "globs:",
-      ...globs.map((glob) => `  - ${quoteYaml(glob)}`),
-      "alwaysApply: false",
-      "---",
-      "",
-      body,
-    ].join("\n"),
-    "adapters/copilot.instructions.md": [
-      "---",
-      `applyTo: ${quoteYaml(globs.join(", "))}`,
-      "---",
-      "",
-      body,
-    ].join("\n"),
-    "adapters/windsurf.md": [
-      "---",
-      "trigger: glob",
-      `globs: ${quoteYaml(globs.join(", "))}`,
-      "---",
-      "",
-      body,
+      pointerBody(name, shortDescription),
     ].join("\n"),
   };
 }
@@ -221,12 +171,21 @@ for (const name of skillNames) {
     name,
     description,
     shortDescription: readYamlString(agentMetadata, "short_description"),
-    globs: skillGlobs[name] ?? defaultGlobs,
   });
 
   for (const [path, content] of Object.entries(adapters)) {
     if (await syncFile(resolve(skillDirectory, path), content)) {
       changed.push(`skills/${name}/${path}`);
+    }
+  }
+
+  for (const stale of await readdir(resolve(skillDirectory, "adapters"))) {
+    if (!(`adapters/${stale}` in adapters)) {
+      changed.push(`skills/${name}/adapters/${stale} (remove)`);
+
+      if (!checkOnly) {
+        await rm(resolve(skillDirectory, "adapters", stale));
+      }
     }
   }
 

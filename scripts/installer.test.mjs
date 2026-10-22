@@ -5,12 +5,19 @@ import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import test from "node:test"
 
+import {
+  companionPlan,
+  companions,
+  recommendedCompanions,
+  supportedAgents,
+} from "../bin/companions.mjs"
 import { adapterAgents, agentItemName, agents } from "../bin/install-targets.mjs"
 import {
   catalogSkills,
   detectAgents,
   findExistingTargets,
   findInstalledSkills,
+  findLegacyPointers,
   findPruneCandidates,
   mergeExcludeBlock,
   parseArguments,
@@ -58,6 +65,37 @@ test("arguments select a command, skills, agents, and flags", () => {
   assert.throws(() => parseArguments(["--ref", "main"]), /Unknown option/)
 })
 
+test("companions are opt-in and install through each agent's channel", () => {
+  assert.equal(parseArguments([]).companionIds, null)
+  assert.deepEqual(parseArguments(["--companions", "karpathy,Caveman", "--companion", "karpathy"]).companionIds, [
+    "karpathy",
+    "caveman",
+  ])
+  assert.deepEqual(parseArguments(["--companions", "none"]).companionIds, [])
+  assert.throws(() => parseArguments(["--companions", "ponytail"]), /Unknown companion: ponytail/)
+  assert.deepEqual(recommendedCompanions, ["karpathy"])
+
+  const pack = (id) => companions.find((companion) => companion.id === id)
+  const commands = (id, agentIds, hasClaudeCli) =>
+    companionPlan(pack(id), agentIds, { hasClaudeCli }).steps.map((step) => step.join(" "))
+
+  assert.deepEqual(commands("karpathy", ["claude", "cursor", "gemini"], true), [
+    "claude plugin marketplace add forrestchang/andrej-karpathy-skills --scope user",
+    "claude plugin install andrej-karpathy-skills@karpathy-skills --scope user",
+    "npx --yes skills add forrestchang/andrej-karpathy-skills --skill * --agent cursor gemini-cli --global --yes",
+  ])
+  assert.deepEqual(commands("caveman", ["claude"], false), [
+    "npx --yes skills add JuliusBrussee/caveman --skill * --agent claude-code --global --yes",
+  ])
+  assert.equal(companionPlan(pack("caveman"), ["claude"], { hasClaudeCli: false }).notes.length, 2)
+  assert.deepEqual(supportedAgents(pack("claude-mem"), ["cursor", "claude"]), ["claude"])
+  assert.deepEqual(commands("graphify", ["cursor", "kiro"], false), [
+    "uv tool install graphifyy",
+    "graphify cursor install",
+  ])
+  assert.deepEqual(commands("graphify", ["kiro"], false), [])
+})
+
 test("the catalog lists skills, and every skill has one item per adapter agent", async () => {
   const items = await readCatalog(resolve(root, "registry.json"))
   const skills = catalogSkills(items)
@@ -77,12 +115,14 @@ test("the catalog lists skills, and every skill has one item per adapter agent",
 })
 
 test("a plan installs each skill once plus only the selected agents' pointers", () => {
-  assert.deepEqual(planItems(["build-forms"], ["cursor"]), [
+  assert.deepEqual(planItems(["build-forms"], ["claude", "cursor"]), [
     "barehera/react-skills/build-forms",
-    "barehera/react-skills/build-forms-cursor",
+    "barehera/react-skills/build-forms-claude",
   ])
-  assert.deepEqual(planItems(["build-forms"], ["codex"]), ["barehera/react-skills/build-forms"])
-  assert.equal(planItems(["a", "b"], ["claude", "windsurf", "codex"]).length, 6)
+  assert.deepEqual(planItems(["build-forms"], ["cursor", "copilot", "windsurf", "codex", "gemini"]), [
+    "barehera/react-skills/build-forms",
+  ])
+  assert.equal(planItems(["a", "b"], ["claude", "kiro", "cline", "codex"]).length, 8)
 })
 
 test("the git exclude block lists every React Skills path and replaces itself", () => {
@@ -145,14 +185,21 @@ test("install state round-trips and ignores unknown agents", async () => {
       version: "1.2.3",
       skills: ["b", "a", "a"],
       agents: ["windsurf", "claude"],
+      companions: ["caveman", "karpathy"],
     })
     assert.deepEqual(await readInstallState(cwd), {
       version: "1.2.3",
       skills: ["a", "b"],
       agents: ["claude", "windsurf"],
+      companions: ["karpathy", "caveman"],
     })
-    await put(cwd, ".agents/skills/react-skills.json", '{"skills":["a"],"agents":["claude","vim"]}')
+    await put(
+      cwd,
+      ".agents/skills/react-skills.json",
+      '{"skills":["a"],"agents":["claude","vim"],"companions":["ponytail"]}',
+    )
     assert.deepEqual((await readInstallState(cwd)).agents, ["claude"])
+    assert.deepEqual((await readInstallState(cwd)).companions, [])
   })
 })
 
@@ -164,13 +211,13 @@ test("existing targets and installed skills come from the project folder", async
     ]
 
     await put(cwd, ".agents/skills/a/SKILL.md")
-    await put(cwd, ".cursor/rules/a.mdc")
-    await put(cwd, ".windsurf/rules/a.md")
+    await put(cwd, ".claude/skills/a/SKILL.md")
+    await put(cwd, ".kiro/skills/a/SKILL.md")
 
     assert.deepEqual(findInstalledSkills(cwd, skills), ["a"])
-    assert.deepEqual(findExistingTargets(cwd, skills, ["a", "b"], ["cursor"]), [
+    assert.deepEqual(findExistingTargets(cwd, skills, ["a", "b"], ["claude", "cursor"]), [
       ".agents/skills/a/SKILL.md",
-      ".cursor/rules/a.mdc",
+      ".claude/skills/a/SKILL.md",
     ])
   })
 })
@@ -179,26 +226,39 @@ test("pruning removes only generated pointers for unselected agents", async () =
   await withProject(async (cwd) => {
     const pointer = "Read and follow `.agents/skills/a/SKILL.md`."
 
-    await put(cwd, ".cursor/rules/a.mdc", pointer)
-    await put(cwd, ".windsurf/rules/a.md", pointer)
+    await put(cwd, ".kiro/skills/a/SKILL.md", pointer)
+    await put(cwd, ".cline/skills/a/SKILL.md", "Hand-written team skill")
     await put(cwd, ".claude/skills/a/SKILL.md", pointer)
-    await put(cwd, ".github/instructions/a.instructions.md", "Hand-written team rule")
     await put(cwd, ".github/workflows/ci.yml")
 
-    const candidates = await findPruneCandidates(cwd, ["a"], ["cursor"])
+    const candidates = await findPruneCandidates(cwd, ["a"], ["claude"])
 
     assert.deepEqual(
       candidates.map((candidate) => candidate.path),
-      [".claude/skills/a/SKILL.md", ".windsurf/rules/a.md"],
+      [".kiro/skills/a/SKILL.md"],
     )
 
     await removeFiles(cwd, candidates.map((candidate) => candidate.path))
 
-    assert.equal(existsSync(join(cwd, ".claude")), false)
-    assert.equal(existsSync(join(cwd, ".windsurf")), false)
-    assert.equal(await readFile(join(cwd, ".cursor/rules/a.mdc"), "utf8"), pointer)
-    assert.ok(existsSync(join(cwd, ".github/instructions/a.instructions.md")))
+    assert.equal(existsSync(join(cwd, ".kiro")), false)
+    assert.equal(await readFile(join(cwd, ".claude/skills/a/SKILL.md"), "utf8"), pointer)
+    assert.ok(existsSync(join(cwd, ".cline/skills/a/SKILL.md")))
     assert.ok(existsSync(join(cwd, ".github/workflows/ci.yml")))
+  })
+})
+
+test("rule pointers from older releases are found for removal, hand-written rules are kept", async () => {
+  await withProject(async (cwd) => {
+    const pointer = "Read and follow `.agents/skills/a/SKILL.md`."
+
+    await put(cwd, ".cursor/rules/a.mdc", pointer)
+    await put(cwd, ".windsurf/rules/a.md", pointer)
+    await put(cwd, ".github/instructions/a.instructions.md", "Hand-written team rule")
+
+    assert.deepEqual(await findLegacyPointers(cwd, ["a", "b"]), [
+      ".cursor/rules/a.mdc",
+      ".windsurf/rules/a.md",
+    ])
   })
 })
 

@@ -44,7 +44,7 @@ invitation to make canonical React Skills examples technology-agnostic.
 | Next.js environment | `@t3-oss/env-nextjs` | Centralize typed environment validation with separate server/client access. |
 | Unit and contract tests | Vitest in a Node environment | Lock feature-adapter decisions with one shared case runner and one table per decision; keep baked config defaults on a separate schema contract. |
 | Render optimization | React Compiler when enabled | Verify build configuration; avoid routine new manual memoization and unrelated legacy cleanup. |
-| Registry and installation | shadcn registry | Publish each skill as a skill-local registry item plus one generated item per agent adapter, composed by the root catalog; install only the agents a project selects. |
+| Registry and installation | shadcn registry | Publish each skill as a skill-local registry item, installed once to `.agents/skills`, plus one generated pointer item per agent that does not read that folder, composed by the root catalog; install only the agents a project selects. The repository root also ships plugin manifests over the same `skills/` folder. |
 
 Use the smallest applicable part of the stack. A presentational component does
 not need Zustand, a local synchronous form does not need TanStack Query, and a
@@ -198,6 +198,13 @@ A new skill may compose these capabilities, but it must route to the owning
 skill rather than copying its complete rules. Recommend an uninstalled
 companion once, explain the concrete benefit, and require approval before
 installation.
+
+Third-party packs (Karpathy guidelines, Superpowers, Caveman, claude-mem,
+Graphify) are optional installer companions listed in
+`bin/companions.mjs`, not catalog skills. No `SKILL.md` names or routes to
+them, and none of their rules replaces a skill's ladder, layer model, or
+handoff. The reasons for each pack, and for leaving Ponytail out, are in
+[the companion packs decision ledger](skill-feedback/2026-10-22-companion-packs-decisions.md).
 
 ## Canonical example rules
 

@@ -103,7 +103,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/derived-types/SKILL.md"
         }
@@ -114,63 +114,43 @@
       }
     },
     {
-      "name": "derived-types-cursor",
+      "name": "derived-types-kiro",
       "type": "registry:item",
-      "title": "Derived Types for Cursor",
-      "description": "Cursor pointer that loads the Derived Types skill.",
+      "title": "Derived Types for Kiro",
+      "description": "Kiro pointer that loads the Derived Types skill.",
       "registryDependencies": [
         "barehera/react-skills/derived-types"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/derived-types.mdc"
+          "target": "~/.kiro/skills/derived-types/SKILL.md"
         }
       ],
       "meta": {
         "skill": "derived-types",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "derived-types-copilot",
+      "name": "derived-types-cline",
       "type": "registry:item",
-      "title": "Derived Types for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Derived Types skill.",
+      "title": "Derived Types for Cline",
+      "description": "Cline pointer that loads the Derived Types skill.",
       "registryDependencies": [
         "barehera/react-skills/derived-types"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/derived-types.instructions.md"
+          "target": "~/.cline/skills/derived-types/SKILL.md"
         }
       ],
       "meta": {
         "skill": "derived-types",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "derived-types-windsurf",
-      "type": "registry:item",
-      "title": "Derived Types for Windsurf",
-      "description": "Windsurf pointer that loads the Derived Types skill.",
-      "registryDependencies": [
-        "barehera/react-skills/derived-types"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/derived-types.md"
-        }
-      ],
-      "meta": {
-        "skill": "derived-types",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

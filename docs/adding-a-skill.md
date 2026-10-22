@@ -106,18 +106,19 @@ template asks for the rest.
 | `SKILL.md` has a `## Required workflow` section, or mode sections when the skill branches on the user's situation | Agents follow numbered steps instead of improvising | review |
 | `SKILL.md` has a `## Smallest complete change` section with a layer-specific ladder, the never-cut list, the `// shortcut:` marker, and the `Skipped:` / `Not checked:` handoff lines | Agents write only what the task needs, in the owning layer, without cutting safety or leaving the change half-finished | validator (section); review (ladder content) |
 | `SKILL.md` stays under 220 lines and its description under 1024 characters | The core file is loaded on every task; detail belongs in `references/` | validator |
+| Rules use plain-case imperative wording and give their reason; quality words become checkable criteria, with no capitals for emphasis and no pressure or hype | Current models follow instructions literally and overreact to shouted rules; a stated reason lets them generalize | validator (capitals in `SKILL.md`); review |
 | Every rule and example names its layer: primitive, composable family, or feature adapter | Agents place product policy, families, and primitives correctly without re-deriving the split | review |
 | The `description` does not claim a concern another skill owns | Overlapping triggers make agents pick the wrong skill | review |
 | A skill that ships TypeScript examples includes them in `tsconfig.examples.json` | Prose examples drift against real package APIs unnoticed | validator |
 | Product policy in an example lives in the feature adapter and carries one business-logic block when non-obvious | The examples demonstrate the split rather than describe it | review |
-| The adapter set is generated, complete, and registered: `adapters/claude.md`, `adapters/cursor.mdc`, `adapters/copilot.instructions.md`, `adapters/windsurf.md` | Every supported agent reaches the same canonical `SKILL.md` | `skills:sync --check` |
+| The pointer adapter is generated and registered: `adapters/pointer.md`, one item per pointer agent | Agents that do not read `.agents/skills` (Claude Code, Kiro, Cline) reach the same canonical `SKILL.md`; the rest read it directly | `skills:sync --check` |
 | The skill item's `files` list matches the skill folder, and one generated item per agent adapter exists | An installed skill is never missing a reference or example, and a project installs only its agents' pointers | `skills:sync --check` |
 
 Run `npm run skills:sync` after adding, renaming, or removing any file in a
 skill folder. It rewrites the adapters from the `SKILL.md` frontmatter and
 `agents/openai.yaml`, regenerates the skill item's `files` array, and
-generates one registry item per agent adapter (`<skill>-claude`,
-`<skill>-cursor`, `<skill>-copilot`, `<skill>-windsurf`). The agent list lives
+generates one registry item per pointer agent (`<skill>-claude`,
+`<skill>-kiro`, `<skill>-cline`). The agent list lives
 in `bin/install-targets.mjs`, shared by the sync script, the validator, and
 the installer. Give
 a new skill an entry in the glob table inside
@@ -144,18 +145,17 @@ skills/
     scripts/
     assets/
     adapters/
-      claude.md
-      cursor.mdc
-      copilot.instructions.md
-      windsurf.md
+      pointer.md
 ```
 
 Only create optional folders that the skill uses. `adapters/` is not optional:
-`npm run skills:sync` generates it. Each adapter ships in its own registry item
-and installs to `.claude/skills`, `.cursor/rules`, `.github/instructions`, or
-`.windsurf/rules` as a thin pointer to the canonical
-`.agents/skills/<name>/SKILL.md`, only for the agents a project selects. Codex
-reads the canonical folder and `agents/openai.yaml` directly.
+`npm run skills:sync` generates it. The pointer ships in one registry item per
+pointer agent and installs to `.claude/skills`, `.kiro/skills`, or
+`.cline/skills` as a thin pointer to the canonical
+`.agents/skills/<name>/SKILL.md`, only for the agents a project selects.
+Cursor, Copilot, Windsurf, Codex, Gemini CLI, and OpenCode read the canonical
+folder directly. The same `skills/` folder is the plugin payload for the
+manifests at the repository root.
 
 - Root `VERSION` is generated from the canonical GitHub release. Do not edit it
   manually or add a skill-local version.
