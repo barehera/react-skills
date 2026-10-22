@@ -372,6 +372,14 @@ for (const { item, registryPath } of resolvedSkillItems) {
     );
   }
 
+  // The description is a plain YAML scalar; strict parsers such as the skills
+  // CLI drop a skill whose description holds ": " or " #".
+  if (/: | #|^["'&*!|>%@`[{]/.test(description)) {
+    throw new Error(
+      `${item.name}/SKILL.md description must be a plain YAML scalar; reword ": ", " #", or the leading character`,
+    );
+  }
+
   const skillLineCount = skill.trimEnd().split("\n").length;
 
   if (skillLineCount > maxSkillLines) {

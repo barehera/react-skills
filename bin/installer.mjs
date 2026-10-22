@@ -29,6 +29,8 @@ const passthroughFlags = new Map([
   ["--silent", "silent"],
   ["-s", "silent"],
   ["--all", "all"],
+  ["--global", "global"],
+  ["-g", "global"],
 ]);
 
 export function parseArguments(argumentList, cwd = process.cwd()) {
@@ -39,6 +41,7 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
     // null until --companions names packs; an empty list means none.
     companionIds: null,
     all: false,
+    global: false,
     cwd,
     overwrite: false,
     prune: false,
@@ -108,6 +111,10 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
   }
 
   options.agentIds = [...new Set(options.agentIds)];
+
+  if (options.global && resolve(options.cwd) !== resolve(cwd)) {
+    throw new Error("--global installs for your user in every project; drop --cwd.");
+  }
 
   return options;
 }
@@ -188,6 +195,35 @@ export function planItems(skillNames, agentIds) {
     `${registryAddress}/${skill}`,
     ...adapterIds.map((id) => `${registryAddress}/${agentItemName(skill, id)}`),
   ]);
+}
+
+// A global install goes through the skills CLI, which knows every agent's user
+// skills folder and links each one to the shared copy in `~/.agents/skills`.
+export function globalSkillsCommand(skillNames, agentIds) {
+  return [
+    "npx",
+    "--yes",
+    "skills",
+    "add",
+    registryAddress,
+    "--skill",
+    ...skillNames,
+    "--agent",
+    ...agents.filter((agent) => agentIds.includes(agent.id)).map((agent) => agent.skillsAgent),
+    "--global",
+    "--yes",
+  ];
+}
+
+// Skills read `../VERSION`, so every user skills folder a global install
+// writes to gets the release next to the skills.
+export function globalVersionPaths(agentIds) {
+  return [
+    ...new Set([
+      skillsRoot,
+      ...agents.filter((agent) => agentIds.includes(agent.id)).map((agent) => agent.globalRoot),
+    ]),
+  ].map((root) => `${root}/VERSION`);
 }
 
 export function agentLabels(agentIds) {
