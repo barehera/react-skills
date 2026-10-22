@@ -5,36 +5,44 @@ export const registryAddress = "barehera/react-skills";
 
 export const skillsRoot = ".agents/skills";
 
-// Every agent reads the canonical skill folder. An agent with an adapter also
-// gets one generated pointer file; Codex reads the canonical folder directly.
+// The editor decides which files are read, not the model picked inside it.
+// Most agents read `.agents/skills` natively and need no extra file; the rest
+// get one generated SKILL.md pointer in their own skills folder.
+// `skillsAgent` is the agent id of the `npx skills` CLI used for companions.
+const pointerAdapter = "adapters/pointer.md";
+
 export const agents = [
   {
     id: "claude",
     label: "Claude Code",
-    adapterPath: "adapters/claude.md",
+    adapterPath: pointerAdapter,
     targetPath: (skill) => `.claude/skills/${skill}/SKILL.md`,
-    markers: [".claude"],
+    markers: [".claude", "CLAUDE.md"],
+    skillsAgent: "claude-code",
   },
   {
     id: "cursor",
     label: "Cursor",
-    adapterPath: "adapters/cursor.mdc",
-    targetPath: (skill) => `.cursor/rules/${skill}.mdc`,
+    adapterPath: null,
+    targetPath: null,
     markers: [".cursor", ".cursorrules"],
+    skillsAgent: "cursor",
   },
   {
     id: "copilot",
     label: "GitHub Copilot",
-    adapterPath: "adapters/copilot.instructions.md",
-    targetPath: (skill) => `.github/instructions/${skill}.instructions.md`,
-    markers: [".github/copilot-instructions.md", ".github/instructions"],
+    adapterPath: null,
+    targetPath: null,
+    markers: [".github/copilot-instructions.md", ".github/instructions", ".github/skills"],
+    skillsAgent: "github-copilot",
   },
   {
     id: "windsurf",
-    label: "Windsurf",
-    adapterPath: "adapters/windsurf.md",
-    targetPath: (skill) => `.windsurf/rules/${skill}.md`,
-    markers: [".windsurf", ".windsurfrules"],
+    label: "Windsurf / Devin",
+    adapterPath: null,
+    targetPath: null,
+    markers: [".windsurf", ".windsurfrules", ".devin"],
+    skillsAgent: "windsurf",
   },
   {
     id: "codex",
@@ -42,10 +50,51 @@ export const agents = [
     adapterPath: null,
     targetPath: null,
     markers: [".codex", "AGENTS.md"],
+    skillsAgent: "codex",
+  },
+  {
+    id: "gemini",
+    label: "Gemini CLI / Antigravity",
+    adapterPath: null,
+    targetPath: null,
+    markers: [".gemini", "GEMINI.md"],
+    skillsAgent: "gemini-cli",
+  },
+  {
+    id: "opencode",
+    label: "OpenCode",
+    adapterPath: null,
+    targetPath: null,
+    markers: [".opencode", "opencode.json"],
+    skillsAgent: "opencode",
+  },
+  {
+    id: "kiro",
+    label: "Kiro",
+    adapterPath: pointerAdapter,
+    targetPath: (skill) => `.kiro/skills/${skill}/SKILL.md`,
+    markers: [".kiro"],
+    skillsAgent: "kiro-cli",
+  },
+  {
+    id: "cline",
+    label: "Cline",
+    adapterPath: pointerAdapter,
+    targetPath: (skill) => `.cline/skills/${skill}/SKILL.md`,
+    markers: [".cline", ".clinerules"],
+    skillsAgent: "cline",
   },
 ];
 
 export const adapterAgents = agents.filter((agent) => agent.adapterPath);
+
+// Pointer files React Skills v4 and earlier wrote for agents that now read
+// `.agents/skills` themselves. Updates remove them so a skill loads once.
+export const legacyTargets = [
+  (skill) => `.cursor/rules/${skill}.mdc`,
+  (skill) => `.github/instructions/${skill}.instructions.md`,
+  (skill) => `.windsurf/rules/${skill}.md`,
+];
 
 export function agentItemName(skill, agentId) {
   return `${skill}-${agentId}`;

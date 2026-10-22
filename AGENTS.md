@@ -29,11 +29,14 @@ Every new or changed skill must satisfy the Skill quality contract in
 [docs/adding-a-skill.md](docs/adding-a-skill.md): `Version`, `Layer placement`,
 and `Companion skill routing` sections in `SKILL.md`, a core file under 220
 lines, a type-checked example when it ships code, and the
-generated adapter set for Claude Code, Cursor, GitHub Copilot, and Windsurf.
+generated pointer adapter for the agents that do not read `.agents/skills`
+(Claude Code, Kiro, Cline).
 Each `SKILL.md` also carries a `Smallest complete change` section with its
 layer-specific ladder from the technology contract.
 Run `npm run skills:sync` after adding or renaming skill files; it regenerates
-adapters and registry file lists.
+adapters and registry file lists. Plugin manifests (`.claude-plugin`,
+`.cursor-plugin`, `.codex-plugin`, `.github/plugin`, `gemini-extension.json`)
+carry the release version; `npm run release:sync-version` writes it.
 
 Run `npm run validate` before handoff. For feedback reports, also run
 `node skills/evolve-skills-from-feedback/scripts/validate-feedback.mjs <report>`.

@@ -8,6 +8,12 @@ import { fileURLToPath } from "node:url";
 
 import prompts from "prompts";
 
+import {
+  companionPlan,
+  companions,
+  recommendedCompanions,
+  supportedAgents,
+} from "./companions.mjs";
 import { agents, registryAddress, skillsRoot } from "./install-targets.mjs";
 import {
   agentLabels,
@@ -15,6 +21,7 @@ import {
   detectAgents,
   findExistingTargets,
   findInstalledSkills,
+  findLegacyPointers,
   findPruneCandidates,
   mergeExcludeBlock,
   parseArguments,
@@ -63,7 +70,8 @@ Selector:
 Options:
   --agent <ids>      Agents to install for: ${agents.map((agent) => agent.id).join(", ")}
                      (comma-separated; saved for the next update)
-  --all              Select every skill
+  --companions <ids> Third-party packs to add: ${companions.map((companion) => companion.id).join(", ")}, or none
+  --all            Select every skill
   --overwrite        Replace existing React Skills files without asking
   --prune            Remove React Skills pointer files for agents you did not select
   --yes              Accept every default without asking
@@ -87,6 +95,12 @@ function printCatalog(skills, releaseVersion) {
 
   for (const agent of agents) {
     console.log(`  ${agent.id.padEnd(9)}${agentChoiceTitle(agent)}`);
+  }
+
+  console.log("\nCompanion packs (--companions):");
+
+  for (const companion of companions) {
+    console.log(`  ${companion.id.padEnd(12)}${companion.summary}`);
   }
 
   console.log("");
@@ -151,6 +165,22 @@ async function chooseAgents(preselected) {
   return selected;
 }
 
+async function chooseCompanions(available) {
+  return ask({
+    type: "multiselect",
+    name: "value",
+    message: "Add companion packs for your agents? (third-party, optional)",
+    hint: "Space to select. Enter to submit, or skip with none selected.",
+    instructions: false,
+    choices: available.map((companion) => ({
+      title: companion.recommended ? `${companion.label} (recommended)` : companion.label,
+      description: companion.summary,
+      value: companion.id,
+      selected: recommendedCompanions.includes(companion.id),
+    })),
+  });
+}
+
 function countFiles(count) {
   return `${count} React Skills ${count === 1 ? "file" : "files"}`;
 }
@@ -174,6 +204,84 @@ function runShadcn(addresses, flags, cwd) {
   }
 
   return result.status ?? 1;
+}
+
+function run(commandArguments, cwd, stdio = "inherit") {
+  const result =
+    process.platform === "win32"
+      ? spawnSync(commandArguments.join(" "), { cwd, shell: true, stdio })
+      : spawnSync(commandArguments[0], commandArguments.slice(1), { cwd, stdio });
+
+  return result.error ? 1 : (result.status ?? 1);
+}
+
+function hasCommand(name, cwd) {
+  return run([name, "--version"], cwd, "ignore") === 0;
+}
+
+// Companion packs are third-party, so they are asked for once and never
+// chosen by --yes; update leaves them to each pack's own updater.
+async function selectCompanions(options, state, agentIds, interactive) {
+  if (options.companionIds !== null) {
+    return options.companionIds;
+  }
+
+  if (options.command === "update" || options.yes || !interactive) {
+    return [];
+  }
+
+  const installed = state?.companions ?? [];
+  const available = companions.filter(
+    (companion) =>
+      !installed.includes(companion.id) && supportedAgents(companion, agentIds).length > 0,
+  );
+
+  return available.length === 0 ? [] : chooseCompanions(available);
+}
+
+function installCompanions(companionIds, agentIds, options) {
+  const installed = [];
+  const hasClaudeCli = agentIds.includes("claude") && hasCommand("claude", options.cwd);
+
+  for (const companion of companions.filter((item) => companionIds.includes(item.id))) {
+    const supported = supportedAgents(companion, agentIds);
+    const skipped = agentLabels(agentIds.filter((id) => !supported.includes(id)));
+    const { steps, notes } = companionPlan(companion, agentIds, { hasClaudeCli });
+    const listed = (lines) => lines.map((line) => `  ${line}`).join("\n");
+
+    if (skipped.length > 0) {
+      console.log(`\n${companion.label} has no install for ${skipped.join(", ")}.`);
+    }
+
+    if (supported.length === 0) {
+      continue;
+    }
+
+    if (options.dryRun) {
+      console.log(`\nWould add ${companion.label}:\n${listed(steps.map((step) => step.join(" ")))}`);
+      continue;
+    }
+
+    if (steps.length > 0 && !hasCommand(steps[0][0], options.cwd)) {
+      console.log(`\n${companion.label}: \`${steps[0][0]}\` is not on PATH. Run these yourself:
+${listed([...steps.map((step) => step.join(" ")), ...notes])}`);
+      continue;
+    }
+
+    console.log(`\nAdding ${companion.label}...`);
+
+    if (steps.every((step) => run(step, options.cwd) === 0)) {
+      installed.push(companion.id);
+    } else {
+      console.log(`${companion.label} did not finish. Retry with:\n${listed(steps.map((step) => step.join(" ")))}`);
+    }
+
+    if (notes.length > 0) {
+      console.log(`In Claude Code, add ${companion.label} as a plugin (with its hooks):\n${listed(notes)}`);
+    }
+  }
+
+  return installed;
 }
 
 function git(args, cwd) {
@@ -305,6 +413,25 @@ async function decideOverwrite(options, skills, skillNames, agentIds, releaseVer
   );
 }
 
+// Cursor, Copilot, and Windsurf now read `.agents/skills` themselves, so the
+// rule pointers older releases wrote for them would load each skill twice.
+async function removeLegacyPointers(options, skills, skillNames) {
+  const installed = [...new Set([...skillNames, ...findInstalledSkills(options.cwd, skills)])];
+  const paths = await findLegacyPointers(options.cwd, installed);
+
+  if (paths.length === 0) {
+    return;
+  }
+
+  if (options.dryRun) {
+    console.log(`\nWould remove ${countFiles(paths.length)} from older releases:\n  ${paths.join("\n  ")}`);
+    return;
+  }
+
+  await removeFiles(options.cwd, paths);
+  console.log(`\nRemoved ${countFiles(paths.length)} from older releases; their agents read ${skillsRoot} now.`);
+}
+
 async function pruneOtherAgents(options, skills, skillNames, agentIds, interactive) {
   const installed = [...new Set([...skillNames, ...findInstalledSkills(options.cwd, skills)])];
   const candidates = await findPruneCandidates(options.cwd, installed, agentIds);
@@ -364,6 +491,7 @@ async function main() {
   const state = await readInstallState(options.cwd);
   const skillNames = await selectSkills(options, skills, state, releaseVersion, interactive);
   const agentIds = await selectAgents(options, state, interactive);
+  const companionIds = await selectCompanions(options, state, agentIds, interactive);
   const overwrite = await decideOverwrite(
     options,
     skills,
@@ -390,6 +518,9 @@ async function main() {
   }
 
   await pruneOtherAgents(options, skills, skillNames, agentIds, interactive);
+  await removeLegacyPointers(options, skills, skillNames);
+
+  const installedCompanions = installCompanions(companionIds, agentIds, options);
 
   if (options.dryRun) {
     return;
@@ -402,6 +533,7 @@ async function main() {
     version: (await readInstalledVersion(options.cwd)) ?? releaseVersion,
     skills: options.command === "update" ? skillNames : [...previousSkills, ...skillNames],
     agents: agentIds,
+    companions: [...(state?.companions ?? []), ...installedCompanions],
   });
 
   const installed = findInstalledSkills(options.cwd, skills);

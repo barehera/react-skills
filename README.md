@@ -67,25 +67,35 @@ npx --yes github:barehera/react-skills
    `Enter` continues.
 2. **Pick your agents.** Agents already set up in the project, such as a
    `.cursor` folder, are pre-selected.
-3. **Done.** shadcn writes the files, and the installer keeps them out of git.
+3. **Pick companions.** Optional third-party packs for those agents; see
+   [Companion packs](#companion-packs).
+4. **Done.** shadcn writes the files, and the installer keeps them out of git.
 
 Press `Ctrl+C` at any point to cancel.
 
-Only the files for the agents you pick are written:
+Every skill lands once in `.agents/skills/<skill>/`. Most agents read that
+folder directly, so they need nothing else; three get one pointer file:
 
-| Agent | Files for each skill |
-| --- | --- |
-| Every agent | `.agents/skills/<skill>/`, the skill itself |
-| Claude Code | `.claude/skills/<skill>/SKILL.md` |
-| Cursor | `.cursor/rules/<skill>.mdc` |
-| GitHub Copilot | `.github/instructions/<skill>.instructions.md` |
-| Windsurf | `.windsurf/rules/<skill>.md` |
-| Codex | Nothing extra; it reads `.agents/skills` |
+| Agent | `--agent` | Extra file for each skill |
+| --- | --- | --- |
+| Cursor | `cursor` | None |
+| GitHub Copilot (VS Code, CLI, cloud agent) | `copilot` | None |
+| Windsurf / Devin | `windsurf` | None |
+| Codex | `codex` | None |
+| Gemini CLI / Antigravity | `gemini` | None |
+| OpenCode | `opencode` | None |
+| Claude Code | `claude` | `.claude/skills/<skill>/SKILL.md` |
+| Kiro | `kiro` | `.kiro/skills/<skill>/SKILL.md` |
+| Cline | `cline` | `.cline/skills/<skill>/SKILL.md` |
 
-Each agent file is a thin pointer that attaches to the files the skill owns and
-sends the agent to the same canonical `SKILL.md`. The installer also writes
-`.agents/skills/VERSION`, the React Skills release, and
-`.agents/skills/react-skills.json`, your skills and agents.
+Amp, Roo Code, Junie, and Zed also read `.agents/skills`; install with any
+agent and they find the skills. The editor decides which files it reads, not
+the model: Cursor running Claude, Gemini, or GPT models reads the same
+`.agents/skills`, so pick `cursor`, not `claude`, for Cursor.
+
+A pointer sends its agent to the canonical `SKILL.md`. The installer also
+writes `.agents/skills/VERSION`, the React Skills release, and
+`.agents/skills/react-skills.json`, your skills, agents, and companions.
 
 ### Keep the skills out of git
 
@@ -101,12 +111,13 @@ with shadcn directly does not change `.git/info/exclude`.
 
 ```bash
 npx --yes github:barehera/react-skills build-forms manage-server-state --agent cursor
-npx --yes github:barehera/react-skills --all --agent claude,cursor
+npx --yes github:barehera/react-skills --all --agent claude,cursor --companions karpathy
 ```
 
 | Option | What it does |
 | --- | --- |
-| `--agent <ids>` | `claude`, `cursor`, `copilot`, `windsurf`, `codex`, comma-separated. Saved for updates. |
+| `--agent <ids>` | Agent ids from the table above, comma-separated. Saved for updates. |
+| `--companions <ids>` | Companion packs to add, comma-separated, or `none`. Never chosen by `--yes`. |
 | `--all` | Every skill in the catalog. |
 | `--overwrite` | Replace existing React Skills files without asking. |
 | `--prune` | Remove React Skills pointer files for agents you did not pick. |
@@ -114,31 +125,71 @@ npx --yes github:barehera/react-skills --all --agent claude,cursor
 | `--yes` | Accept every default without asking. |
 | `--cwd <path>` | Install into another folder. |
 
-See the skills and agents without installing:
+See the skills, agents, and companions without installing:
 
 ```bash
 npx --yes github:barehera/react-skills list
 ```
 
+### Install as a plugin or extension
+
+The repository is also a plugin for every agent with a plugin channel. A plugin
+installs all skills for your user, in every project, and updates through the
+agent; the installer above picks skills per project.
+
+| Agent | Commands |
+| --- | --- |
+| Claude Code | `/plugin marketplace add barehera/react-skills`, then `/plugin install react-skills@react-skills` |
+| Codex | `codex plugin marketplace add barehera/react-skills`, then `codex plugin add react-skills@react-skills` |
+| GitHub Copilot CLI | `copilot plugin marketplace add barehera/react-skills`, then `copilot plugin install react-skills@react-skills` |
+| Gemini CLI | `gemini extensions install https://github.com/barehera/react-skills` |
+| Cursor | Use the installer; `.cursor-plugin/plugin.json` is ready for a local or marketplace plugin |
+
+Use one route per agent: a plugin and a project install of the same skill load
+it twice.
+
 ### Install with shadcn directly
 
-Every skill has one registry item for the skill and one per agent. An agent
-item installs the skill too:
+Every skill has one registry item, plus one per pointer agent. A pointer item
+installs the skill too:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/build-forms-cursor
-npx shadcn@latest add barehera/react-skills/build-forms-claude
 npx shadcn@latest add barehera/react-skills/build-forms
+npx shadcn@latest add barehera/react-skills/build-forms-claude
 ```
 
-The last line installs the skill alone, which is all Codex needs. Agent items
-end in `-claude`, `-cursor`, `-copilot`, or `-windsurf`. Review an item
-before installing it:
+The first line is all Cursor, Copilot, Windsurf, Codex, Gemini CLI, and
+OpenCode need. Pointer items end in `-claude`, `-kiro`, or `-cline`. Review an
+item before installing it:
 
 ```bash
 npx shadcn@latest view barehera/react-skills/build-forms
-npx shadcn@latest add barehera/react-skills/build-forms-cursor --dry-run
+npx shadcn@latest add barehera/react-skills/build-forms-claude --dry-run
 ```
+
+### Companion packs
+
+The installer offers third-party packs after the skills, for the agents you
+picked. None is installed without your choice. Packs are personal tools, so
+they install for your user, not into the project, through the best channel
+each agent has:
+
+| Id | Pack | Claude Code | Other agents | What to know |
+| --- | --- | --- | --- | --- |
+| `karpathy` | [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) | Plugin | `npx skills` | Recommended. A short rule set that agrees with the skills: think first, simplest code, surgical diffs. |
+| `superpowers` | [superpowers](https://github.com/obra/superpowers) | Plugin | `npx skills` | Brainstorm, plan, TDD, and subagent gates on every task. Good for large features; slow for small edits. |
+| `caveman` | [caveman](https://github.com/JuliusBrussee/caveman) | Plugin | `npx skills` | Terse replies in every session. Its CLI sends telemetry unless `DO_NOT_TRACK=1`. |
+| `claude-mem` | [claude-mem](https://github.com/thedotmack/claude-mem) | Plugin | Not offered | Memory across sessions through a background worker that records tool calls. Review its privacy settings. |
+| `graphify` | [graphify](https://github.com/Graphify-Labs/graphify) | `graphify install` | Cursor, Codex, Copilot, Gemini CLI, OpenCode | Code knowledge graph in `graphify-out/`. Needs [uv](https://docs.astral.sh/uv/). |
+
+`npx skills` is the [skills CLI](https://github.com/vercel-labs/skills) and
+needs Node 22.20 or later. Plugins add a pack's hooks as well as its skills;
+without the `claude` command on your PATH, Claude Code gets the skills through
+`npx skills` and the installer prints the `/plugin` commands that add the
+hooks. Ponytail is not offered: every skill's `Smallest complete change`
+section already carries its ladder and handoff lines. Packs bring their own
+instructions; when one disagrees with a skill about code that skill owns, tell
+the agent to follow the skill.
 
 ## Update
 
@@ -150,16 +201,24 @@ npx --yes github:barehera/react-skills update
 release, replaces their files, and lists catalog skills you have not installed
 yet. Without a saved selection, for example after installing with shadcn
 directly or with an older installer, it finds the installed skills and asks for
-your agents once.
+your agents once. Companion packs update through their own channel.
 
 - Add a skill with your saved agents:
   `npx --yes github:barehera/react-skills write-feature-tests`
 - Change agents: `npx --yes github:barehera/react-skills update --agent cursor,claude`
-- Remove pointer files for agents you do not use, for example Windsurf and
-  Copilot files from an install made before agents were selectable:
+- Remove pointer files for agents you do not use:
   `npx --yes github:barehera/react-skills update --agent cursor --prune`.
   Only generated React Skills pointers are removed; a file you rewrote so it no
   longer points to its skill is kept.
+
+### Upgrade from v4
+
+v5 stops writing `.cursor/rules/<skill>.mdc`,
+`.github/instructions/<skill>.instructions.md`, and `.windsurf/rules/<skill>.md`:
+those agents read `.agents/skills` now, and the old rule would load each skill
+twice. Any install or update removes the generated ones and keeps any you
+rewrote. The shadcn items ending in `-cursor`, `-copilot`, and `-windsurf` are
+gone; use the skill item itself.
 
 ## Use an installed skill
 
@@ -169,6 +228,28 @@ Name the skill in your request:
 Use $manage-server-state to add the Products server state.
 Inspect this repository and its API documentation before writing code.
 ```
+
+### Ask for senior-quality UI
+
+Current models follow a request closely, so the request sets the quality bar.
+Say who the work is for, the problem they have, what done looks like, and
+point at two or three examples:
+
+```text
+Use $build-composable-components to build the shift handover screen.
+Who: our ops manager reviews 40 handovers a shift and misses the ones with
+open incidents.
+Done: open incidents come first, it works at phone width, loading, empty, and
+error states read clearly, and a keyboard user can resolve a handover.
+Examples: the incident list in features/incidents and the Linear inbox.
+Go beyond the basics: add a count of open incidents and sort by severity.
+```
+
+The who, the problem, and the done list carry the effect. Hype such as "make
+them say WOW" or "a senior engineer must think you wrote it" adds little on
+current models, and capitals or "MUST" make them overreact; the
+[2026-10-22 decision ledger](docs/skill-feedback/2026-10-22-companion-packs-decisions.md)
+has the sources.
 
 ```text
 Use $build-forms to create a multi-step onboarding form with composable shadcn

@@ -76,7 +76,15 @@
         "assets": [
           "VERSION",
           "package.json",
-          "package-lock.json"
+          "package-lock.json",
+          "skills/VERSION",
+          ".claude-plugin/plugin.json",
+          ".claude-plugin/marketplace.json",
+          ".cursor-plugin/plugin.json",
+          ".codex-plugin/plugin.json",
+          ".github/plugin/plugin.json",
+          ".github/plugin/marketplace.json",
+          "gemini-extension.json"
         ],
         "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }

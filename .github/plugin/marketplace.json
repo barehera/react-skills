@@ -1,0 +1,17 @@
+{
+  "name": "react-skills",
+  "description": "Opinionated React and TypeScript skills: composable shadcn components, React Hook Form and Zod forms, TanStack Query server state, feature-sliced structure, and Vitest rule tests.",
+  "owner": {
+    "name": "barehera",
+    "url": "https://github.com/barehera"
+  },
+  "plugins": [
+    {
+      "name": "react-skills",
+      "description": "Opinionated React and TypeScript skills: composable shadcn components, React Hook Form and Zod forms, TanStack Query server state, feature-sliced structure, and Vitest rule tests.",
+      "version": "4.0.0",
+      "source": "./",
+      "skills": "skills/"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import {
   agentItemName,
   registryAddress,
 } from "../bin/install-targets.mjs";
+import { manifestVersions, pluginManifests, pluginVersionFile } from "./plugin-manifests.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillsRoot = resolve(root, "skills");
@@ -24,6 +25,8 @@ const requiredSkillSections = [
 ];
 const maxSkillLines = 220;
 const maxDescriptionLength = 1024;
+// Current models overreact to shouted rules; a rule states its reason instead.
+const shoutedWords = /\b(MUST|NEVER|ALWAYS|CRITICAL|IMPORTANT)\b/;
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
@@ -201,7 +204,11 @@ async function validateAgentItem(item, registryPath) {
   const absoluteFilePath = resolve(dirname(registryPath), file.path);
 
   await stat(absoluteFilePath);
-  registerFile(item.name, absoluteFilePath);
+
+  // Agents with a pointer share the skill's one adapter file.
+  if (!registeredFiles.has(toRepositoryPath(absoluteFilePath))) {
+    registerFile(item.name, absoluteFilePath);
+  }
 }
 
 for (const { item, registryPath } of resolvedSkillItems) {
@@ -370,6 +377,14 @@ for (const { item, registryPath } of resolvedSkillItems) {
   if (skillLineCount > maxSkillLines) {
     throw new Error(
       `${item.name}/SKILL.md has ${skillLineCount} lines; keep the core under ${maxSkillLines} and move detail to references`,
+    );
+  }
+
+  const shouted = skill.match(shoutedWords)?.[0];
+
+  if (shouted) {
+    throw new Error(
+      `${item.name}/SKILL.md shouts "${shouted}"; write the rule in plain case with its reason`,
     );
   }
 
@@ -563,6 +578,23 @@ if (
   );
 }
 
+for (const path of pluginManifests) {
+  const manifest = await readJson(resolve(root, path));
+  const versions = manifestVersions(manifest);
+
+  if (
+    manifest.name !== "react-skills" ||
+    versions.length === 0 ||
+    versions.some((version) => version !== releaseVersion)
+  ) {
+    throw new Error(`${path} must name react-skills and carry release v${releaseVersion}`);
+  }
+}
+
+if ((await readFile(resolve(root, pluginVersionFile), "utf8")).trim() !== releaseVersion) {
+  throw new Error(`${pluginVersionFile} must match the release VERSION`);
+}
+
 const releaseConfig = await readJson(resolve(root, ".releaserc.json"));
 const githubReleasePlugin = releaseConfig.plugins?.find(
   (plugin) =>
@@ -595,6 +627,8 @@ if (
   !gitReleaseAssets.has("VERSION") ||
   !gitReleaseAssets.has("package.json") ||
   !gitReleaseAssets.has("package-lock.json") ||
+  !gitReleaseAssets.has(pluginVersionFile) ||
+  pluginManifests.some((path) => !gitReleaseAssets.has(path)) ||
   !gitReleaseOptions?.message?.includes("[skip ci]") ||
   githubReleaseOptions?.releaseNameTemplate !== "v<%= nextRelease.version %>" ||
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Changes") ||

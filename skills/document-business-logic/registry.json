@@ -38,7 +38,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/document-business-logic/SKILL.md"
         }
@@ -49,63 +49,43 @@
       }
     },
     {
-      "name": "document-business-logic-cursor",
+      "name": "document-business-logic-kiro",
       "type": "registry:item",
-      "title": "Document Business Logic for Cursor",
-      "description": "Cursor pointer that loads the Document Business Logic skill.",
+      "title": "Document Business Logic for Kiro",
+      "description": "Kiro pointer that loads the Document Business Logic skill.",
       "registryDependencies": [
         "barehera/react-skills/document-business-logic"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/document-business-logic.mdc"
+          "target": "~/.kiro/skills/document-business-logic/SKILL.md"
         }
       ],
       "meta": {
         "skill": "document-business-logic",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "document-business-logic-copilot",
+      "name": "document-business-logic-cline",
       "type": "registry:item",
-      "title": "Document Business Logic for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Document Business Logic skill.",
+      "title": "Document Business Logic for Cline",
+      "description": "Cline pointer that loads the Document Business Logic skill.",
       "registryDependencies": [
         "barehera/react-skills/document-business-logic"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/document-business-logic.instructions.md"
+          "target": "~/.cline/skills/document-business-logic/SKILL.md"
         }
       ],
       "meta": {
         "skill": "document-business-logic",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "document-business-logic-windsurf",
-      "type": "registry:item",
-      "title": "Document Business Logic for Windsurf",
-      "description": "Windsurf pointer that loads the Document Business Logic skill.",
-      "registryDependencies": [
-        "barehera/react-skills/document-business-logic"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/document-business-logic.md"
-        }
-      ],
-      "meta": {
-        "skill": "document-business-logic",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

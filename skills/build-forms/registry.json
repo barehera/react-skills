@@ -113,7 +113,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/build-forms/SKILL.md"
         }
@@ -124,63 +124,43 @@
       }
     },
     {
-      "name": "build-forms-cursor",
+      "name": "build-forms-kiro",
       "type": "registry:item",
-      "title": "Build Forms for Cursor",
-      "description": "Cursor pointer that loads the Build Forms skill.",
+      "title": "Build Forms for Kiro",
+      "description": "Kiro pointer that loads the Build Forms skill.",
       "registryDependencies": [
         "barehera/react-skills/build-forms"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/build-forms.mdc"
+          "target": "~/.kiro/skills/build-forms/SKILL.md"
         }
       ],
       "meta": {
         "skill": "build-forms",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "build-forms-copilot",
+      "name": "build-forms-cline",
       "type": "registry:item",
-      "title": "Build Forms for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Build Forms skill.",
+      "title": "Build Forms for Cline",
+      "description": "Cline pointer that loads the Build Forms skill.",
       "registryDependencies": [
         "barehera/react-skills/build-forms"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/build-forms.instructions.md"
+          "target": "~/.cline/skills/build-forms/SKILL.md"
         }
       ],
       "meta": {
         "skill": "build-forms",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "build-forms-windsurf",
-      "type": "registry:item",
-      "title": "Build Forms for Windsurf",
-      "description": "Windsurf pointer that loads the Build Forms skill.",
-      "registryDependencies": [
-        "barehera/react-skills/build-forms"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/build-forms.md"
-        }
-      ],
-      "meta": {
-        "skill": "build-forms",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

@@ -63,7 +63,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/evolve-skills-from-feedback/SKILL.md"
         }
@@ -74,63 +74,43 @@
       }
     },
     {
-      "name": "evolve-skills-from-feedback-cursor",
+      "name": "evolve-skills-from-feedback-kiro",
       "type": "registry:item",
-      "title": "Evolve Skills from Feedback for Cursor",
-      "description": "Cursor pointer that loads the Evolve Skills from Feedback skill.",
+      "title": "Evolve Skills from Feedback for Kiro",
+      "description": "Kiro pointer that loads the Evolve Skills from Feedback skill.",
       "registryDependencies": [
         "barehera/react-skills/evolve-skills-from-feedback"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/evolve-skills-from-feedback.mdc"
+          "target": "~/.kiro/skills/evolve-skills-from-feedback/SKILL.md"
         }
       ],
       "meta": {
         "skill": "evolve-skills-from-feedback",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "evolve-skills-from-feedback-copilot",
+      "name": "evolve-skills-from-feedback-cline",
       "type": "registry:item",
-      "title": "Evolve Skills from Feedback for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Evolve Skills from Feedback skill.",
+      "title": "Evolve Skills from Feedback for Cline",
+      "description": "Cline pointer that loads the Evolve Skills from Feedback skill.",
       "registryDependencies": [
         "barehera/react-skills/evolve-skills-from-feedback"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/evolve-skills-from-feedback.instructions.md"
+          "target": "~/.cline/skills/evolve-skills-from-feedback/SKILL.md"
         }
       ],
       "meta": {
         "skill": "evolve-skills-from-feedback",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "evolve-skills-from-feedback-windsurf",
-      "type": "registry:item",
-      "title": "Evolve Skills from Feedback for Windsurf",
-      "description": "Windsurf pointer that loads the Evolve Skills from Feedback skill.",
-      "registryDependencies": [
-        "barehera/react-skills/evolve-skills-from-feedback"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/evolve-skills-from-feedback.md"
-        }
-      ],
-      "meta": {
-        "skill": "evolve-skills-from-feedback",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

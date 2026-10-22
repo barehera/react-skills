@@ -58,7 +58,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/feature-sliced-design/SKILL.md"
         }
@@ -69,63 +69,43 @@
       }
     },
     {
-      "name": "feature-sliced-design-cursor",
+      "name": "feature-sliced-design-kiro",
       "type": "registry:item",
-      "title": "Feature-Sliced Design for Cursor",
-      "description": "Cursor pointer that loads the Feature-Sliced Design skill.",
+      "title": "Feature-Sliced Design for Kiro",
+      "description": "Kiro pointer that loads the Feature-Sliced Design skill.",
       "registryDependencies": [
         "barehera/react-skills/feature-sliced-design"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/feature-sliced-design.mdc"
+          "target": "~/.kiro/skills/feature-sliced-design/SKILL.md"
         }
       ],
       "meta": {
         "skill": "feature-sliced-design",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "feature-sliced-design-copilot",
+      "name": "feature-sliced-design-cline",
       "type": "registry:item",
-      "title": "Feature-Sliced Design for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Feature-Sliced Design skill.",
+      "title": "Feature-Sliced Design for Cline",
+      "description": "Cline pointer that loads the Feature-Sliced Design skill.",
       "registryDependencies": [
         "barehera/react-skills/feature-sliced-design"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/feature-sliced-design.instructions.md"
+          "target": "~/.cline/skills/feature-sliced-design/SKILL.md"
         }
       ],
       "meta": {
         "skill": "feature-sliced-design",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "feature-sliced-design-windsurf",
-      "type": "registry:item",
-      "title": "Feature-Sliced Design for Windsurf",
-      "description": "Windsurf pointer that loads the Feature-Sliced Design skill.",
-      "registryDependencies": [
-        "barehera/react-skills/feature-sliced-design"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/feature-sliced-design.md"
-        }
-      ],
-      "meta": {
-        "skill": "feature-sliced-design",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

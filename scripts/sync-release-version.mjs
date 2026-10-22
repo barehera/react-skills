@@ -3,6 +3,8 @@ import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { pluginManifests, pluginVersionFile, withVersion } from "./plugin-manifests.mjs";
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function readLatestReleaseVersion() {
@@ -36,8 +38,19 @@ if (packageLock.packages?.[""]) {
   packageLock.packages[""].version = version;
 }
 
+const manifests = await Promise.all(
+  pluginManifests.map(async (path) => [
+    path,
+    withVersion(JSON.parse(await readFile(resolve(root, path), "utf8")), version),
+  ]),
+);
+
 await Promise.all([
   writeFile(resolve(root, "VERSION"), `${version}\n`),
+  writeFile(resolve(root, pluginVersionFile), `${version}\n`),
+  ...manifests.map(([path, manifest]) =>
+    writeFile(resolve(root, path), `${JSON.stringify(manifest, null, 2)}\n`),
+  ),
   writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`),
   writeFile(packageLockPath, `${JSON.stringify(packageLock, null, 2)}\n`),
 ]);

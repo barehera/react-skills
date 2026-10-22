@@ -28,9 +28,9 @@ system belongs in the family or the primitive.
 
 1. Read the repository's instructions, primitives, and neighboring families.
    Classify the task as `create`, `extend`, `refactor`, or `audit`.
-2. Find current consumers and concrete requirements (roadmaps, backlogs,
-   plans, designs, sibling screens), in create and audit mode. Preserve
-   behavior unless a change is requested.
+2. Find current consumers and concrete requirements (who uses it and the
+   problem the request names, roadmaps, backlogs, designs, sibling screens),
+   in create and audit mode. Preserve behavior unless a change is requested.
 3. Sketch before JSX: the generic parts, what the root shares, the container
    that owns each variant, the record parts, the consumer that reads the query
    and maps the data, which overlays persist, and who owns state and side

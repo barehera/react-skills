@@ -5,11 +5,13 @@ import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, rmdir, writeFile } from "node:fs/promises";
 import { dirname, resolve, sep } from "node:path";
 
+import { companions, parseCompanionIds } from "./companions.mjs";
 import {
   adapterAgents,
   agentItemName,
   agents,
   isGeneratedPointer,
+  legacyTargets,
   pointerMarker,
   registryAddress,
   skillsRoot,
@@ -34,6 +36,8 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
     command: "install",
     skillNames: [],
     agentIds: [],
+    // null until --companions names packs; an empty list means none.
+    companionIds: null,
     all: false,
     cwd,
     overwrite: false,
@@ -62,6 +66,18 @@ export function parseArguments(argumentList, cwd = process.cwd()) {
 
     if (passthroughFlags.has(argument)) {
       options[passthroughFlags.get(argument)] = true;
+      continue;
+    }
+
+    if (argument === "--companions" || argument === "--companion") {
+      const value = argumentList[index + 1];
+
+      if (!value || value.startsWith("-")) {
+        throw new Error(`${argument} requires a value`);
+      }
+
+      options.companionIds = [...new Set([...(options.companionIds ?? []), ...parseCompanionIds(value)])];
+      index += 1;
       continue;
     }
 
@@ -228,6 +244,9 @@ export async function readInstallState(cwd) {
       agents: Array.isArray(state.agents)
         ? state.agents.filter((id) => agents.some((agent) => agent.id === id))
         : [],
+      companions: Array.isArray(state.companions)
+        ? state.companions.filter((id) => companions.some((companion) => companion.id === id))
+        : [],
     };
   } catch (error) {
     if (error.code === "ENOENT") return null;
@@ -241,6 +260,9 @@ export async function writeInstallState(cwd, state) {
     version: state.version,
     skills: [...new Set(state.skills)].sort(),
     agents: agents.map((agent) => agent.id).filter((id) => state.agents.includes(id)),
+    companions: companions
+      .map((companion) => companion.id)
+      .filter((id) => (state.companions ?? []).includes(id)),
   };
 
   await mkdir(dirname(path), { recursive: true });
@@ -300,6 +322,28 @@ export async function findPruneCandidates(cwd, skillNames, agentIds) {
   }
 
   return candidates;
+}
+
+// Pointers an earlier release generated for agents that now read the
+// canonical folder. A file rewritten by hand no longer names its skill and is kept.
+export async function findLegacyPointers(cwd, skillNames) {
+  const found = [];
+
+  for (const targetPath of legacyTargets) {
+    for (const skill of skillNames) {
+      const target = targetPath(skill);
+
+      try {
+        if ((await readFile(resolve(cwd, target), "utf8")).includes(pointerMarker(skill))) {
+          found.push(target);
+        }
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
+    }
+  }
+
+  return found;
 }
 
 export async function removeFiles(cwd, paths) {

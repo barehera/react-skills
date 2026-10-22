@@ -48,7 +48,7 @@
       ],
       "files": [
         {
-          "path": "adapters/claude.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
           "target": "~/.claude/skills/extract-named-helpers/SKILL.md"
         }
@@ -59,63 +59,43 @@
       }
     },
     {
-      "name": "extract-named-helpers-cursor",
+      "name": "extract-named-helpers-kiro",
       "type": "registry:item",
-      "title": "Extract Named Helpers for Cursor",
-      "description": "Cursor pointer that loads the Extract Named Helpers skill.",
+      "title": "Extract Named Helpers for Kiro",
+      "description": "Kiro pointer that loads the Extract Named Helpers skill.",
       "registryDependencies": [
         "barehera/react-skills/extract-named-helpers"
       ],
       "files": [
         {
-          "path": "adapters/cursor.mdc",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.cursor/rules/extract-named-helpers.mdc"
+          "target": "~/.kiro/skills/extract-named-helpers/SKILL.md"
         }
       ],
       "meta": {
         "skill": "extract-named-helpers",
-        "agent": "cursor"
+        "agent": "kiro"
       }
     },
     {
-      "name": "extract-named-helpers-copilot",
+      "name": "extract-named-helpers-cline",
       "type": "registry:item",
-      "title": "Extract Named Helpers for GitHub Copilot",
-      "description": "GitHub Copilot pointer that loads the Extract Named Helpers skill.",
+      "title": "Extract Named Helpers for Cline",
+      "description": "Cline pointer that loads the Extract Named Helpers skill.",
       "registryDependencies": [
         "barehera/react-skills/extract-named-helpers"
       ],
       "files": [
         {
-          "path": "adapters/copilot.instructions.md",
+          "path": "adapters/pointer.md",
           "type": "registry:file",
-          "target": "~/.github/instructions/extract-named-helpers.instructions.md"
+          "target": "~/.cline/skills/extract-named-helpers/SKILL.md"
         }
       ],
       "meta": {
         "skill": "extract-named-helpers",
-        "agent": "copilot"
-      }
-    },
-    {
-      "name": "extract-named-helpers-windsurf",
-      "type": "registry:item",
-      "title": "Extract Named Helpers for Windsurf",
-      "description": "Windsurf pointer that loads the Extract Named Helpers skill.",
-      "registryDependencies": [
-        "barehera/react-skills/extract-named-helpers"
-      ],
-      "files": [
-        {
-          "path": "adapters/windsurf.md",
-          "type": "registry:file",
-          "target": "~/.windsurf/rules/extract-named-helpers.md"
-        }
-      ],
-      "meta": {
-        "skill": "extract-named-helpers",
-        "agent": "windsurf"
+        "agent": "cline"
       }
     }
   ]

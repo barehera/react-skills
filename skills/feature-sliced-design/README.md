@@ -23,18 +23,18 @@ npx --yes github:barehera/react-skills feature-sliced-design
 ```
 
 The installer asks which agents you use and writes only their files: the skill
-in `.agents/skills/feature-sliced-design/`, plus one pointer each for Claude Code, Cursor,
-GitHub Copilot, or Windsurf. Codex reads `.agents/skills` directly. Skip the
-question with `--agent`, for example `--agent cursor`.
+in `.agents/skills/feature-sliced-design/`, which Cursor, GitHub Copilot, Windsurf, Codex,
+Gemini CLI, and OpenCode read directly, plus one pointer for Claude Code, Kiro,
+or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 
-Or install it with shadcn, choosing the item for your agent:
+Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/feature-sliced-design-cursor
+npx shadcn@latest add barehera/react-skills/feature-sliced-design
 ```
 
-Use `-claude`, `-copilot`, or `-windsurf` instead of `-cursor`; for Codex
-alone, add `barehera/react-skills/feature-sliced-design`. See the
+Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
+agents need. See the
 [install guide](../../README.md#install) for every option.
 
 ## Use
