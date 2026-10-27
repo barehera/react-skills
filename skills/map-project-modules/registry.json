@@ -7,7 +7,7 @@
       "title": "Map Project Modules",
       "description": "Keep a one-page Markdown map of modules, entry points, and hub files, and search through it.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -29,7 +29,7 @@
       "title": "Map Project Modules for Claude Code",
       "description": "Claude Code pointer that loads the Map Project Modules skill.",
       "registryDependencies": [
-        "barehera/react-skills/map-project-modules"
+        "barehera/thinstack/map-project-modules"
       ],
       "files": [
         {
@@ -49,7 +49,7 @@
       "title": "Map Project Modules for Kiro",
       "description": "Kiro pointer that loads the Map Project Modules skill.",
       "registryDependencies": [
-        "barehera/react-skills/map-project-modules"
+        "barehera/thinstack/map-project-modules"
       ],
       "files": [
         {
@@ -69,7 +69,7 @@
       "title": "Map Project Modules for Cline",
       "description": "Cline pointer that loads the Map Project Modules skill.",
       "registryDependencies": [
-        "barehera/react-skills/map-project-modules"
+        "barehera/thinstack/map-project-modules"
       ],
       "files": [
         {

@@ -7,7 +7,7 @@
       "title": "Build Forms",
       "description": "Design and refactor accessible React form systems on the incumbent typed form factory or a fresh one, with compact field adapters, typed slot props, typed feature hooks, and independent workflow orchestration.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -109,7 +109,7 @@
       "title": "Build Forms for Claude Code",
       "description": "Claude Code pointer that loads the Build Forms skill.",
       "registryDependencies": [
-        "barehera/react-skills/build-forms"
+        "barehera/thinstack/build-forms"
       ],
       "files": [
         {
@@ -129,7 +129,7 @@
       "title": "Build Forms for Kiro",
       "description": "Kiro pointer that loads the Build Forms skill.",
       "registryDependencies": [
-        "barehera/react-skills/build-forms"
+        "barehera/thinstack/build-forms"
       ],
       "files": [
         {
@@ -149,7 +149,7 @@
       "title": "Build Forms for Cline",
       "description": "Cline pointer that loads the Build Forms skill.",
       "registryDependencies": [
-        "barehera/react-skills/build-forms"
+        "barehera/thinstack/build-forms"
       ],
       "files": [
         {

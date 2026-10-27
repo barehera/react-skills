@@ -216,7 +216,7 @@ shared version item:
 ```json
 {
   "registryDependencies": [
-    "barehera/react-skills/react-skills-version"
+    "barehera/thinstack/thinstack-version"
   ]
 }
 ```

@@ -14,7 +14,7 @@ memories it reads, nothing more. Every agent that can read files can use it.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills keep-project-memory
+npx --yes github:barehera/thinstack keep-project-memory
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -26,7 +26,7 @@ Claude Code, Kiro, or Cline. Skip the question with `--agent`, for example
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/keep-project-memory
+npx shadcn@latest add barehera/thinstack/keep-project-memory
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -70,8 +70,8 @@ or secrets.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose. Your memory
+This updates all installed Thinstack skills for the agents you chose. Your memory
 files are yours and are never touched by an update.

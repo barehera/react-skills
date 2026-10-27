@@ -1,6 +1,6 @@
 # Derived Types
 
-[React Skills catalog](../../README.md)
+[Thinstack catalog](../../README.md)
 
 Give every type one owner so a changed field reaches every component, hook,
 and helper through the compiler, not a cast.
@@ -10,7 +10,7 @@ and helper through the compiler, not a cast.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills derived-types
+npx --yes github:barehera/thinstack derived-types
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -21,7 +21,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/derived-types
+npx shadcn@latest add barehera/thinstack/derived-types
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -52,7 +52,7 @@ Complete examples live in [examples](examples). Installation adds guidance, not 
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

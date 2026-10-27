@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "react-skills",
+  "name": "thinstack",
   "description": "Opinionated React and TypeScript skills: composable shadcn components, React Hook Form and Zod forms, TanStack Query server state, feature-sliced structure, and Vitest rule tests.",
   "owner": {
     "name": "barehera",
@@ -8,7 +8,7 @@
   },
   "plugins": [
     {
-      "name": "react-skills",
+      "name": "thinstack",
       "description": "Opinionated React and TypeScript skills: composable shadcn components, React Hook Form and Zod forms, TanStack Query server state, feature-sliced structure, and Vitest rule tests.",
       "version": "5.2.0",
       "source": "./",

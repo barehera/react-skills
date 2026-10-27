@@ -1,7 +1,7 @@
 # Architecture and placement
 
 This skill follows the official Feature-Sliced Design layers, slices, and
-segments, but adapts its usual `index.ts` public API to the React Skills
+segments, but adapts its usual `index.ts` public API to the Thinstack
 direct-import and no-re-export-barrel contract.
 
 ## Ownership model

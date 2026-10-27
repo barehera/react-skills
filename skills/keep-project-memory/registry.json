@@ -7,7 +7,7 @@
       "title": "Keep Project Memory",
       "description": "Remember project decisions, gotchas, and preferences across sessions in plain Markdown files.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -29,7 +29,7 @@
       "title": "Keep Project Memory for Claude Code",
       "description": "Claude Code pointer that loads the Keep Project Memory skill.",
       "registryDependencies": [
-        "barehera/react-skills/keep-project-memory"
+        "barehera/thinstack/keep-project-memory"
       ],
       "files": [
         {
@@ -49,7 +49,7 @@
       "title": "Keep Project Memory for Kiro",
       "description": "Kiro pointer that loads the Keep Project Memory skill.",
       "registryDependencies": [
-        "barehera/react-skills/keep-project-memory"
+        "barehera/thinstack/keep-project-memory"
       ],
       "files": [
         {
@@ -69,7 +69,7 @@
       "title": "Keep Project Memory for Cline",
       "description": "Cline pointer that loads the Keep Project Memory skill.",
       "registryDependencies": [
-        "barehera/react-skills/keep-project-memory"
+        "barehera/thinstack/keep-project-memory"
       ],
       "files": [
         {

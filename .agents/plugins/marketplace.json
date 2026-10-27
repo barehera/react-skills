@@ -1,14 +1,14 @@
 {
-  "name": "react-skills",
+  "name": "thinstack",
   "interface": {
-    "displayName": "React Skills"
+    "displayName": "Thinstack"
   },
   "plugins": [
     {
-      "name": "react-skills",
+      "name": "thinstack",
       "source": {
         "source": "url",
-        "url": "https://github.com/barehera/react-skills.git",
+        "url": "https://github.com/barehera/thinstack.git",
         "ref": "main"
       },
       "policy": {

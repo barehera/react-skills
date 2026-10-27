@@ -10,7 +10,7 @@ from outside, and every visible piece is a part the consumer composes.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff.
+Read `../VERSION` and include `Thinstack v<version>` in the final handoff.
 
 ## Layer placement
 
@@ -189,7 +189,7 @@ When the request crosses the family boundary, check the installed catalog:
 If a useful companion is missing, explain its concrete benefit once and ask
 whether to install it. Install only after approval and only through the
 environment's supported installer, otherwise offer
-`npx --yes github:barehera/react-skills <skill>`, which installs it for the
+`npx --yes github:barehera/thinstack <skill>`, which installs it for the
 project's saved agents. If the user declines, continue and do not ask again.
 
 ## References

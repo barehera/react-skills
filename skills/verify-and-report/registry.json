@@ -7,7 +7,7 @@
       "title": "Verify and Report",
       "description": "Prove every claim before making it and report results in a compact, fixed shape.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -29,7 +29,7 @@
       "title": "Verify and Report for Claude Code",
       "description": "Claude Code pointer that loads the Verify and Report skill.",
       "registryDependencies": [
-        "barehera/react-skills/verify-and-report"
+        "barehera/thinstack/verify-and-report"
       ],
       "files": [
         {
@@ -49,7 +49,7 @@
       "title": "Verify and Report for Kiro",
       "description": "Kiro pointer that loads the Verify and Report skill.",
       "registryDependencies": [
-        "barehera/react-skills/verify-and-report"
+        "barehera/thinstack/verify-and-report"
       ],
       "files": [
         {
@@ -69,7 +69,7 @@
       "title": "Verify and Report for Cline",
       "description": "Cline pointer that loads the Verify and Report skill.",
       "registryDependencies": [
-        "barehera/react-skills/verify-and-report"
+        "barehera/thinstack/verify-and-report"
       ],
       "files": [
         {

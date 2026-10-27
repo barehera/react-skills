@@ -17,7 +17,10 @@ import {
   skillsRoot,
 } from "./install-targets.mjs";
 
-export const stateFile = `${skillsRoot}/react-skills.json`;
+export const stateFile = `${skillsRoot}/thinstack.json`;
+// Releases before v6 were named React Skills and saved the selection here. It
+// is read when the new file is missing and removed on the next save.
+export const legacyStateFile = `${skillsRoot}/react-skills.json`;
 
 const passthroughFlags = new Map([
   ["--overwrite", "overwrite"],
@@ -232,7 +235,7 @@ export function agentLabels(agentIds) {
     .map((agent) => agent.label);
 }
 
-// A folder that holds only React Skills pointers was created by an earlier
+// A folder that holds only Thinstack pointers was created by an earlier
 // install, not by the agent, so it does not count as using that agent.
 async function hasOwnFiles(path) {
   const entries = await readdir(path, { withFileTypes: true }).catch(() => null);
@@ -271,8 +274,12 @@ export async function detectAgents(cwd) {
 }
 
 export async function readInstallState(cwd) {
+  return (await readStateFile(cwd, stateFile)) ?? (await readStateFile(cwd, legacyStateFile));
+}
+
+async function readStateFile(cwd, file) {
   try {
-    const state = JSON.parse(await readFile(resolve(cwd, stateFile), "utf8"));
+    const state = JSON.parse(await readFile(resolve(cwd, file), "utf8"));
 
     return {
       version: typeof state.version === "string" ? state.version : undefined,
@@ -286,7 +293,7 @@ export async function readInstallState(cwd) {
     };
   } catch (error) {
     if (error.code === "ENOENT") return null;
-    throw new Error(`Could not read ${stateFile}: ${error.message}`);
+    throw new Error(`Could not read ${file}: ${error.message}`);
   }
 }
 
@@ -303,6 +310,7 @@ export async function writeInstallState(cwd, state) {
 
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, `${JSON.stringify(content, null, 2)}\n`, "utf8");
+  await rm(resolve(cwd, legacyStateFile), { force: true });
 }
 
 export async function readInstalledVersion(cwd) {
@@ -416,16 +424,27 @@ export function projectPaths(skillNames) {
   ];
 }
 
-const excludeStart = "# >>> React Skills: installed for this clone only";
-const excludeEnd = "# <<< React Skills";
+const excludeStart = "# >>> Thinstack: installed for this clone only";
+const excludeEnd = "# <<< Thinstack";
+// The block React Skills wrote before v6; a merge replaces it with the new one.
+const legacyExcludeStart = "# >>> React Skills: installed for this clone only";
+const legacyExcludeEnd = "# <<< React Skills";
+
+function withoutBlock(lines, startLine, endLine) {
+  const start = lines.indexOf(startLine);
+  const end = start < 0 ? -1 : lines.indexOf(endLine, start);
+
+  return end < 0 ? lines : [...lines.slice(0, start), ...lines.slice(end + 1)];
+}
 
 // `.git/info/exclude` works like `.gitignore` but is never committed, so the
 // skills stay on this machine without changing any file the team shares.
 export function mergeExcludeBlock(content, patterns) {
-  const lines = content.split(/\r?\n/);
-  const start = lines.indexOf(excludeStart);
-  const end = start < 0 ? -1 : lines.indexOf(excludeEnd, start);
-  const kept = end < 0 ? lines : [...lines.slice(0, start), ...lines.slice(end + 1)];
+  const kept = withoutBlock(
+    withoutBlock(content.split(/\r?\n/), excludeStart, excludeEnd),
+    legacyExcludeStart,
+    legacyExcludeEnd,
+  );
   const block = patterns.length > 0 ? [excludeStart, ...patterns, excludeEnd].join("\n") : "";
 
   return `${[kept.join("\n").trim(), block].filter(Boolean).join("\n\n")}\n`;

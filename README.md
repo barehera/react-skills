@@ -1,6 +1,7 @@
 <div align="center">
-  <h1>React Skills</h1>
-  <p><strong>A growing catalog of maintainable Agent Skills for React development.</strong></p>
+  <h1>Thinstack</h1>
+  <p><strong>Lean, layered Agent Skills for React development.</strong></p>
+  <p>Formerly React Skills. Thin context, plain files, no hooks.</p>
 
   <p>
     <a href="https://agentskills.io"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-open_standard-7C3AED?style=for-the-badge"></a>
@@ -11,7 +12,7 @@
 
 ## What is this?
 
-React Skills gives repository-aware AI coding agents focused workflows for building clean, consistent React applications.
+Thinstack gives repository-aware AI coding agents focused workflows for building clean, consistent React applications.
 
 Each skill is independently documented and installable, while the catalog is
 released as one versioned unit. The GitHub `v*` release is canonical; root
@@ -64,7 +65,7 @@ expert compound families.
 Run the installer from your project root:
 
 ```bash
-npx --yes github:barehera/react-skills
+npx --yes github:barehera/thinstack
 ```
 
 1. **Pick where.** This project, or every project for your user; see
@@ -100,12 +101,12 @@ the model: Cursor running Claude, Gemini, or GPT models reads the same
 `.agents/skills`, so pick `cursor`, not `claude`, for Cursor.
 
 A pointer sends its agent to the canonical `SKILL.md`. The installer also
-writes `.agents/skills/VERSION`, the React Skills release, and
-`.agents/skills/react-skills.json`, your skills, agents, and companions.
+writes `.agents/skills/VERSION`, the Thinstack release, and
+`.agents/skills/thinstack.json`, your skills, agents, and companions.
 
 ### Keep the skills out of git
 
-After each install or update, the installer lists every React Skills path in
+After each install or update, the installer lists every Thinstack path in
 the repository's `.git/info/exclude`. Git reads that file like `.gitignore` but
 never commits it, so the skills stay on your machine and teammates see no
 change. Files that are already committed stay tracked; the installer names them
@@ -116,8 +117,8 @@ with shadcn directly does not change `.git/info/exclude`.
 ### Install without questions
 
 ```bash
-npx --yes github:barehera/react-skills build-forms manage-server-state --agent cursor
-npx --yes github:barehera/react-skills --all --agent claude,cursor --companions karpathy
+npx --yes github:barehera/thinstack build-forms manage-server-state --agent cursor
+npx --yes github:barehera/thinstack --all --agent claude,cursor --companions karpathy
 ```
 
 | Option | What it does |
@@ -125,8 +126,8 @@ npx --yes github:barehera/react-skills --all --agent claude,cursor --companions 
 | `--agent <ids>` | Agent ids from the table above, comma-separated. Saved for updates. |
 | `--companions <ids>` | Companion packs to add, comma-separated, or `none`. Never chosen by `--yes`. |
 | `--all` | Every skill in the catalog. |
-| `--overwrite` | Replace existing React Skills files without asking. |
-| `--prune` | Remove React Skills pointer files for agents you did not pick. |
+| `--overwrite` | Replace existing Thinstack files without asking. |
+| `--prune` | Remove Thinstack pointer files for agents you did not pick. |
 | `--dry-run` | Show what would change without writing. |
 | `--yes` | Accept every default without asking. |
 | `--global`, `-g` | Install for your user in every project instead of this project. |
@@ -135,15 +136,15 @@ npx --yes github:barehera/react-skills --all --agent claude,cursor --companions 
 See the skills, agents, and companions without installing:
 
 ```bash
-npx --yes github:barehera/react-skills list
+npx --yes github:barehera/thinstack list
 ```
 
 ### Install for every project
 
 ```bash
-npx --yes github:barehera/react-skills --global
-npx --yes github:barehera/react-skills --global --all --agent claude,cursor --companions karpathy
-npx --yes github:barehera/react-skills update --global
+npx --yes github:barehera/thinstack --global
+npx --yes github:barehera/thinstack --global --all --agent claude,cursor --companions karpathy
+npx --yes github:barehera/thinstack update --global
 ```
 
 `--global` (or `-g`, or "Every project" in the selector) installs the skills
@@ -153,7 +154,7 @@ for your user, the same way the companion packs install. The
 OpenCode, and Cline read, and links it into `~/.claude/skills`,
 `~/.codeium/windsurf/skills`, or `~/.kiro/skills` for Claude Code, Windsurf,
 and Kiro. Every agent reads the full skill, so no pointer file is needed. Your
-selection and the release live in `~/.agents/skills/react-skills.json` and
+selection and the release live in `~/.agents/skills/thinstack.json` and
 `VERSION`; `update --global` reinstalls them from the latest release. Projects
 stay untouched, so nothing goes into git. Install a skill either globally or
 in a project, not both, or the agent sees it twice.
@@ -166,10 +167,10 @@ agent; the installer above picks skills per project.
 
 | Agent | Commands |
 | --- | --- |
-| Claude Code | `/plugin marketplace add barehera/react-skills`, then `/plugin install react-skills@react-skills` |
-| Codex | `codex plugin marketplace add barehera/react-skills`, then `codex plugin add react-skills@react-skills` |
-| GitHub Copilot CLI | `copilot plugin marketplace add barehera/react-skills`, then `copilot plugin install react-skills@react-skills` |
-| Gemini CLI | `gemini extensions install https://github.com/barehera/react-skills` |
+| Claude Code | `/plugin marketplace add barehera/thinstack`, then `/plugin install thinstack@thinstack` |
+| Codex | `codex plugin marketplace add barehera/thinstack`, then `codex plugin add thinstack@thinstack` |
+| GitHub Copilot CLI | `copilot plugin marketplace add barehera/thinstack`, then `copilot plugin install thinstack@thinstack` |
+| Gemini CLI | `gemini extensions install https://github.com/barehera/thinstack` |
 | Cursor | Use the installer; `.cursor-plugin/plugin.json` is ready for a local or marketplace plugin |
 
 Use one route per agent: a plugin and a project install of the same skill load
@@ -181,8 +182,8 @@ Every skill has one registry item, plus one per pointer agent. A pointer item
 installs the skill too:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/build-forms
-npx shadcn@latest add barehera/react-skills/build-forms-claude
+npx shadcn@latest add barehera/thinstack/build-forms
+npx shadcn@latest add barehera/thinstack/build-forms-claude
 ```
 
 The first line is all Cursor, Copilot, Windsurf, Codex, Gemini CLI, and
@@ -190,8 +191,8 @@ OpenCode need. Pointer items end in `-claude`, `-kiro`, or `-cline`. Review an
 item before installing it:
 
 ```bash
-npx shadcn@latest view barehera/react-skills/build-forms
-npx shadcn@latest add barehera/react-skills/build-forms-claude --dry-run
+npx shadcn@latest view barehera/thinstack/build-forms
+npx shadcn@latest add barehera/thinstack/build-forms-claude --dry-run
 ```
 
 ### Companion packs
@@ -228,7 +229,7 @@ section already carries its ladder and handoff lines.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
 `update` reinstalls your saved skills for your saved agents from the latest
@@ -238,12 +239,23 @@ directly or with an older installer, it finds the installed skills and asks for
 your agents once. Companion packs update through their own channel.
 
 - Add a skill with your saved agents:
-  `npx --yes github:barehera/react-skills write-feature-tests`
-- Change agents: `npx --yes github:barehera/react-skills update --agent cursor,claude`
+  `npx --yes github:barehera/thinstack write-feature-tests`
+- Change agents: `npx --yes github:barehera/thinstack update --agent cursor,claude`
 - Remove pointer files for agents you do not use:
-  `npx --yes github:barehera/react-skills update --agent cursor --prune`.
-  Only generated React Skills pointers are removed; a file you rewrote so it no
+  `npx --yes github:barehera/thinstack update --agent cursor --prune`.
+  Only generated Thinstack pointers are removed; a file you rewrote so it no
   longer points to its skill is kept.
+
+### Upgrade from React Skills (v5 and earlier)
+
+v6 renamed the catalog from React Skills to Thinstack. Run `update` in a
+project that has React Skills installed: it reads the old
+`.agents/skills/react-skills.json`, writes `thinstack.json` in its place, and
+replaces the old git exclude block. The old `github:barehera/react-skills`
+address redirects here. If you installed the Claude Code plugin, install it
+again as `thinstack@thinstack`. shadcn items now live at
+`barehera/thinstack/<item>`, and the shared version item is
+`thinstack-version`.
 
 ### Upgrade from v4
 
@@ -326,13 +338,13 @@ for this task.
 ## Contribute through feedback
 
 Use the feedback skill to turn a real product-project correction into a reviewable
-React Skills pull request.
+Thinstack pull request.
 
 1. Install both the skill being tested and the feedback skill in the product
    repository:
 
    ```bash
-   npx --yes github:barehera/react-skills build-forms evolve-skills-from-feedback
+   npx --yes github:barehera/thinstack build-forms evolve-skills-from-feedback
    ```
 
 2. Complete a real task with the target skill. Keep the accepted implementation,

@@ -10,12 +10,12 @@ carefully scoped skill changes.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff
+Read `../VERSION` and include `Thinstack v<version>` in the final handoff
 and in every feedback report's frontmatter.
 
 ## Layer placement
 
-React Skills code lives in one of three layers: primitives (shadcn/Radix and
+Thinstack code lives in one of three layers: primitives (shadcn/Radix and
 `cn`), composable families (compound roots, slots, item boundaries, scoped
 stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.
@@ -86,7 +86,7 @@ recommend a consuming-repo change.
    editing a skill; do not require the user to rewrite their feedback.
 2. Read the source skill (`SKILL.md`, routed references, examples, scripts,
    registry item), the repository instructions and validation workflow, and
-   its skill-authoring and technology guides (in React Skills,
+   its skill-authoring and technology guides (in Thinstack,
    `docs/technology-stack.md` and `docs/adding-a-skill.md`) before evaluating a
    finding or creating a skill. Compare the report's version with the current
    source.

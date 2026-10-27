@@ -1,4 +1,4 @@
-// Third-party packs the installer can add next to React Skills. None installs
+// Third-party packs the installer can add next to Thinstack. None installs
 // without a choice: the selector asks, and a run without a terminal installs
 // only the packs named with --companions. Packs are personal tools, so they
 // install for the user, not into the project.

@@ -7,7 +7,7 @@
       "title": "Document Business Logic",
       "description": "Preserve non-obvious product rules without inline implementation narration.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -34,7 +34,7 @@
       "title": "Document Business Logic for Claude Code",
       "description": "Claude Code pointer that loads the Document Business Logic skill.",
       "registryDependencies": [
-        "barehera/react-skills/document-business-logic"
+        "barehera/thinstack/document-business-logic"
       ],
       "files": [
         {
@@ -54,7 +54,7 @@
       "title": "Document Business Logic for Kiro",
       "description": "Kiro pointer that loads the Document Business Logic skill.",
       "registryDependencies": [
-        "barehera/react-skills/document-business-logic"
+        "barehera/thinstack/document-business-logic"
       ],
       "files": [
         {
@@ -74,7 +74,7 @@
       "title": "Document Business Logic for Cline",
       "description": "Cline pointer that loads the Document Business Logic skill.",
       "registryDependencies": [
-        "barehera/react-skills/document-business-logic"
+        "barehera/thinstack/document-business-logic"
       ],
       "files": [
         {

@@ -35,7 +35,7 @@ import {
 const root = resolve(import.meta.dirname, "..")
 
 async function withProject(run) {
-  const cwd = await mkdtemp(join(tmpdir(), "react-skills-"))
+  const cwd = await mkdtemp(join(tmpdir(), "thinstack-"))
 
   try {
     await run(cwd)
@@ -100,7 +100,7 @@ test("a global install runs the skills CLI and writes VERSION where skills land"
   assert.throws(() => parseArguments(["--global", "--cwd", "other"], "/project"), /drop --cwd/)
   assert.equal(
     globalSkillsCommand(["build-forms", "derived-types"], ["cursor", "claude"]).join(" "),
-    "npx --yes skills add barehera/react-skills --skill build-forms derived-types --agent claude-code cursor --global --yes",
+    "npx --yes skills add barehera/thinstack --skill build-forms derived-types --agent claude-code cursor --global --yes",
   )
   assert.deepEqual(globalVersionPaths(["cursor", "codex", "claude", "kiro"]), [
     ".agents/skills/VERSION",
@@ -129,21 +129,21 @@ test("the catalog lists skills, and every skill has one item per adapter agent",
 
 test("a plan installs each skill once plus only the selected agents' pointers", () => {
   assert.deepEqual(planItems(["build-forms"], ["claude", "cursor"]), [
-    "barehera/react-skills/build-forms",
-    "barehera/react-skills/build-forms-claude",
+    "barehera/thinstack/build-forms",
+    "barehera/thinstack/build-forms-claude",
   ])
   assert.deepEqual(planItems(["build-forms"], ["cursor", "copilot", "windsurf", "codex", "gemini"]), [
-    "barehera/react-skills/build-forms",
+    "barehera/thinstack/build-forms",
   ])
   assert.equal(planItems(["a", "b"], ["claude", "kiro", "cline", "codex"]).length, 8)
 })
 
-test("the git exclude block lists every React Skills path and replaces itself", () => {
+test("the git exclude block lists every Thinstack path and replaces itself", () => {
   const paths = projectPaths(["a"])
 
   assert.ok(paths.includes(".agents/skills/a/"))
   assert.ok(paths.includes(".agents/skills/VERSION"))
-  assert.ok(paths.includes(".agents/skills/react-skills.json"))
+  assert.ok(paths.includes(".agents/skills/thinstack.json"))
 
   for (const agent of adapterAgents) {
     assert.ok(paths.includes(agent.targetPath("a")), agent.id)
@@ -155,16 +155,22 @@ test("the git exclude block lists every React Skills path and replaces itself", 
 
   assert.equal(
     once,
-    `${userRules}\n# >>> React Skills: installed for this clone only\n/.agents/skills/a/\n# <<< React Skills\n`,
+    `${userRules}\n# >>> Thinstack: installed for this clone only\n/.agents/skills/a/\n# <<< Thinstack\n`,
   )
-  assert.equal(twice.match(/# >>> React Skills/g).length, 1)
+  assert.equal(twice.match(/# >>> Thinstack/g).length, 1)
   assert.ok(twice.includes("/.agents/skills/b/"))
   assert.ok(twice.includes("*.local"))
   assert.equal(mergeExcludeBlock(twice, []), userRules)
   assert.equal(
-    mergeExcludeBlock(once.replaceAll("\n", "\r\n"), ["/x/"]).match(/# >>> React Skills/g).length,
+    mergeExcludeBlock(once.replaceAll("\n", "\r\n"), ["/x/"]).match(/# >>> Thinstack/g).length,
     1,
   )
+
+  const legacy = `${userRules}\n# >>> React Skills: installed for this clone only\n/.agents/skills/a/\n# <<< React Skills\n`
+  const migrated = mergeExcludeBlock(legacy, ["/.agents/skills/a/"])
+
+  assert.equal(migrated, once)
+  assert.ok(!migrated.includes("React Skills"))
 })
 
 test("agents are detected from their project folders", async () => {
@@ -178,7 +184,7 @@ test("agents are detected from their project folders", async () => {
   })
 })
 
-test("folders holding only React Skills pointers do not count as an agent", async () => {
+test("folders holding only Thinstack pointers do not count as an agent", async () => {
   await withProject(async (cwd) => {
     const pointer = "Read and follow `.agents/skills/a/SKILL.md`, and the references."
 
@@ -208,11 +214,26 @@ test("install state round-trips and ignores unknown agents", async () => {
     })
     await put(
       cwd,
-      ".agents/skills/react-skills.json",
+      ".agents/skills/thinstack.json",
       '{"skills":["a"],"agents":["claude","vim"],"companions":["ponytail"]}',
     )
     assert.deepEqual((await readInstallState(cwd)).agents, ["claude"])
     assert.deepEqual((await readInstallState(cwd)).companions, [])
+  })
+})
+
+test("a React Skills state file is read and replaced on the next save", async () => {
+  await withProject(async (cwd) => {
+    const legacy = join(cwd, ".agents/skills/react-skills.json")
+
+    await put(cwd, ".agents/skills/react-skills.json", '{"version":"5.2.0","skills":["a"],"agents":["cursor"]}')
+    const state = await readInstallState(cwd)
+
+    assert.deepEqual(state, { version: "5.2.0", skills: ["a"], agents: ["cursor"], companions: [] })
+    await writeInstallState(cwd, { ...state, version: "6.0.0" })
+    assert.equal(existsSync(legacy), false)
+    assert.equal((await readInstallState(cwd)).version, "6.0.0")
+    assert.ok(existsSync(join(cwd, ".agents/skills/thinstack.json")))
   })
 })
 

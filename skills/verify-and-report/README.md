@@ -18,7 +18,7 @@ when its description matches the task.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills verify-and-report
+npx --yes github:barehera/thinstack verify-and-report
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -30,7 +30,7 @@ Claude Code, Kiro, or Cline. Skip the question with `--agent`, for example
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/verify-and-report
+npx shadcn@latest add barehera/thinstack/verify-and-report
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -67,7 +67,7 @@ Not checked: the download in a real browser.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

@@ -7,7 +7,7 @@
       "title": "Debug from Root Cause",
       "description": "Find the mechanism behind a bug, fix it in the owning layer, and lock it with a regression test.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -29,7 +29,7 @@
       "title": "Debug from Root Cause for Claude Code",
       "description": "Claude Code pointer that loads the Debug from Root Cause skill.",
       "registryDependencies": [
-        "barehera/react-skills/debug-from-root-cause"
+        "barehera/thinstack/debug-from-root-cause"
       ],
       "files": [
         {
@@ -49,7 +49,7 @@
       "title": "Debug from Root Cause for Kiro",
       "description": "Kiro pointer that loads the Debug from Root Cause skill.",
       "registryDependencies": [
-        "barehera/react-skills/debug-from-root-cause"
+        "barehera/thinstack/debug-from-root-cause"
       ],
       "files": [
         {
@@ -69,7 +69,7 @@
       "title": "Debug from Root Cause for Cline",
       "description": "Cline pointer that loads the Debug from Root Cause skill.",
       "registryDependencies": [
-        "barehera/react-skills/debug-from-root-cause"
+        "barehera/thinstack/debug-from-root-cause"
       ],
       "files": [
         {

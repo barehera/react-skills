@@ -1,6 +1,6 @@
 # Extract Named Helpers
 
-[React Skills catalog](../../README.md)
+[Thinstack catalog](../../README.md)
 
 Extract focused helpers without needless indirection.
 
@@ -9,7 +9,7 @@ Extract focused helpers without needless indirection.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills extract-named-helpers
+npx --yes github:barehera/thinstack extract-named-helpers
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -20,7 +20,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/extract-named-helpers
+npx shadcn@latest add barehera/thinstack/extract-named-helpers
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -47,7 +47,7 @@ Complete examples live in [examples](examples). Installation adds guidance, not 
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

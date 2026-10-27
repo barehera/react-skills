@@ -1,4 +1,4 @@
-name: Release React Skills
+name: Release Thinstack
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: react-skills-release
+  group: thinstack-release
   cancel-in-progress: false
 
 jobs:

@@ -1,6 +1,6 @@
 # Use Preferred React Stack
 
-[React Skills catalog](../../README.md)
+[Thinstack catalog](../../README.md)
 
 Choose verified React libraries by concern.
 
@@ -9,7 +9,7 @@ Choose verified React libraries by concern.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills use-preferred-react-stack
+npx --yes github:barehera/thinstack use-preferred-react-stack
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -20,7 +20,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/use-preferred-react-stack
+npx shadcn@latest add barehera/thinstack/use-preferred-react-stack
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -49,7 +49,7 @@ Complete examples live in [examples](examples). Installation adds guidance, not 
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

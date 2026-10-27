@@ -7,7 +7,7 @@
       "title": "Use Preferred React Stack",
       "description": "Choose verified React libraries by concern.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -74,7 +74,7 @@
       "title": "Use Preferred React Stack for Claude Code",
       "description": "Claude Code pointer that loads the Use Preferred React Stack skill.",
       "registryDependencies": [
-        "barehera/react-skills/use-preferred-react-stack"
+        "barehera/thinstack/use-preferred-react-stack"
       ],
       "files": [
         {
@@ -94,7 +94,7 @@
       "title": "Use Preferred React Stack for Kiro",
       "description": "Kiro pointer that loads the Use Preferred React Stack skill.",
       "registryDependencies": [
-        "barehera/react-skills/use-preferred-react-stack"
+        "barehera/thinstack/use-preferred-react-stack"
       ],
       "files": [
         {
@@ -114,7 +114,7 @@
       "title": "Use Preferred React Stack for Cline",
       "description": "Cline pointer that loads the Use Preferred React Stack skill.",
       "registryDependencies": [
-        "barehera/react-skills/use-preferred-react-stack"
+        "barehera/thinstack/use-preferred-react-stack"
       ],
       "files": [
         {

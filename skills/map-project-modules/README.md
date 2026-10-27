@@ -17,7 +17,7 @@ map is plain Markdown the agent writes with `git ls-files` and `grep`.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills map-project-modules
+npx --yes github:barehera/thinstack map-project-modules
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -29,7 +29,7 @@ Claude Code, Kiro, or Cline. Skip the question with `--agent`, for example
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/map-project-modules
+npx shadcn@latest add barehera/thinstack/map-project-modules
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -55,8 +55,8 @@ The module map is from last month. Refresh what changed.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose. Your map is
+This updates all installed Thinstack skills for the agents you chose. Your map is
 yours and is never touched by an update.

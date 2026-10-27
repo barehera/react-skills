@@ -13,7 +13,7 @@ instead of trying a fourth.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills debug-from-root-cause
+npx --yes github:barehera/thinstack debug-from-root-cause
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -25,7 +25,7 @@ Claude Code, Kiro, or Cline. Skip the question with `--agent`, for example
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/debug-from-root-cause
+npx shadcn@latest add barehera/thinstack/debug-from-root-cause
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -61,7 +61,7 @@ Not checked: the same flow on the mobile layout.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

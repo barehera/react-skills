@@ -1,4 +1,4 @@
-# React Skills technology contract
+# Thinstack technology contract
 
 ## Contents
 
@@ -13,7 +13,7 @@
 
 ## Purpose
 
-React Skills is an opinionated skeleton for the React ecosystem, not a
+Thinstack is an opinionated skeleton for the React ecosystem, not a
 framework-neutral skill collection. New source skills, references, and
 canonical examples must reinforce the same technology choices and architecture
 language so skills can be composed without teaching conflicting patterns.
@@ -21,7 +21,7 @@ language so skills can be composed without teaching conflicting patterns.
 Installed skills still inspect a consuming repository before editing it. They
 should preserve a coherent existing application instead of replacing its stack
 without permission. That repository-awareness is an integration rule, not an
-invitation to make canonical React Skills examples technology-agnostic.
+invitation to make canonical Thinstack examples technology-agnostic.
 
 ## Preferred stack
 
@@ -290,5 +290,5 @@ local example preference. A proposal must include:
 
 Do not add interchangeable branches such as “Axios or any client” or “React
 Hook Form or any form library” to new canonical examples. A consuming project
-may require an adapter, but the React Skills source remains centered on this
+may require an adapter, but the Thinstack source remains centered on this
 stack until an explicit repository decision changes it.

@@ -1,13 +1,13 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "react-skills",
-  "homepage": "https://github.com/barehera/react-skills",
+  "name": "thinstack",
+  "homepage": "https://github.com/barehera/thinstack",
   "items": [
     {
-      "name": "react-skills-version",
+      "name": "thinstack-version",
       "type": "registry:file",
-      "title": "React Skills Version",
-      "description": "Installs the shared React Skills repository release version.",
+      "title": "Thinstack Version",
+      "description": "Installs the shared Thinstack repository release version.",
       "files": [
         {
           "path": "VERSION",

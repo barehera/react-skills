@@ -10,11 +10,11 @@ index the agent reads first and one short file per fact.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff.
+Read `../VERSION` and include `Thinstack v<version>` in the final handoff.
 
 ## Layer placement
 
-React Skills code lives in one of three layers: primitives (shadcn/Radix and
+Thinstack code lives in one of three layers: primitives (shadcn/Radix and
 `cn`), composable families (compound roots, slots, item boundaries, scoped
 stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.
@@ -117,7 +117,7 @@ works:
 - A non-obvious product rule belongs next to its code as a business-logic
   block, owned by `$document-business-logic`, not in memory. A memory may
   point to it.
-- A lesson about a React Skills skill itself (a missing rule, a bad example)
+- A lesson about a Thinstack skill itself (a missing rule, a bad example)
   goes in a feedback report through `$evolve-skills-from-feedback`.
 - Placement and import decisions belong to `$feature-sliced-design`; record
   only the project-specific exception and its reason.

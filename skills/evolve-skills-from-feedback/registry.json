@@ -7,7 +7,7 @@
       "title": "Evolve Skills from Feedback",
       "description": "Capture evidence from real projects and turn it into validated, durable Agent Skill improvements.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -59,7 +59,7 @@
       "title": "Evolve Skills from Feedback for Claude Code",
       "description": "Claude Code pointer that loads the Evolve Skills from Feedback skill.",
       "registryDependencies": [
-        "barehera/react-skills/evolve-skills-from-feedback"
+        "barehera/thinstack/evolve-skills-from-feedback"
       ],
       "files": [
         {
@@ -79,7 +79,7 @@
       "title": "Evolve Skills from Feedback for Kiro",
       "description": "Kiro pointer that loads the Evolve Skills from Feedback skill.",
       "registryDependencies": [
-        "barehera/react-skills/evolve-skills-from-feedback"
+        "barehera/thinstack/evolve-skills-from-feedback"
       ],
       "files": [
         {
@@ -99,7 +99,7 @@
       "title": "Evolve Skills from Feedback for Cline",
       "description": "Cline pointer that loads the Evolve Skills from Feedback skill.",
       "registryDependencies": [
-        "barehera/react-skills/evolve-skills-from-feedback"
+        "barehera/thinstack/evolve-skills-from-feedback"
       ],
       "files": [
         {

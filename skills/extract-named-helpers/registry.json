@@ -7,7 +7,7 @@
       "title": "Extract Named Helpers",
       "description": "Extract focused helpers without needless indirection.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -44,7 +44,7 @@
       "title": "Extract Named Helpers for Claude Code",
       "description": "Claude Code pointer that loads the Extract Named Helpers skill.",
       "registryDependencies": [
-        "barehera/react-skills/extract-named-helpers"
+        "barehera/thinstack/extract-named-helpers"
       ],
       "files": [
         {
@@ -64,7 +64,7 @@
       "title": "Extract Named Helpers for Kiro",
       "description": "Kiro pointer that loads the Extract Named Helpers skill.",
       "registryDependencies": [
-        "barehera/react-skills/extract-named-helpers"
+        "barehera/thinstack/extract-named-helpers"
       ],
       "files": [
         {
@@ -84,7 +84,7 @@
       "title": "Extract Named Helpers for Cline",
       "description": "Cline pointer that loads the Extract Named Helpers skill.",
       "registryDependencies": [
-        "barehera/react-skills/extract-named-helpers"
+        "barehera/thinstack/extract-named-helpers"
       ],
       "files": [
         {

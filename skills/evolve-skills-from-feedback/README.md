@@ -25,7 +25,7 @@ removed.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills evolve-skills-from-feedback
+npx --yes github:barehera/thinstack evolve-skills-from-feedback
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -36,7 +36,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/evolve-skills-from-feedback
+npx shadcn@latest add barehera/thinstack/evolve-skills-from-feedback
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -69,12 +69,12 @@ The skill distinguishes universal contracts from conditional references,
 worked examples, automated validation, project-local conventions, and findings
 that need more evidence.
 
-## Open a React Skills pull request
+## Open a Thinstack pull request
 
 1. Preserve the validated report at
    `.agents/feedback/<target-skill>/<YYYY-MM-DD>-<topic>.md` or link it when the
    consuming project cannot be published.
-2. In the React Skills repository, read `docs/technology-stack.md` and
+2. In the Thinstack repository, read `docs/technology-stack.md` and
    `docs/adding-a-skill.md` before proposing source changes.
 3. Run this skill in ingest mode. Require one decision per finding and apply
    only accepted or adapted improvements.
@@ -92,7 +92,7 @@ the evidence is complete and safely redacted.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.
