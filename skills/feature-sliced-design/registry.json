@@ -7,7 +7,7 @@
       "title": "Feature-Sliced Design",
       "description": "Design, migrate, and audit scalable React application structure around feature ownership, explicit runtime boundaries, and direct imports.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -54,7 +54,7 @@
       "title": "Feature-Sliced Design for Claude Code",
       "description": "Claude Code pointer that loads the Feature-Sliced Design skill.",
       "registryDependencies": [
-        "barehera/react-skills/feature-sliced-design"
+        "barehera/thinstack/feature-sliced-design"
       ],
       "files": [
         {
@@ -74,7 +74,7 @@
       "title": "Feature-Sliced Design for Kiro",
       "description": "Kiro pointer that loads the Feature-Sliced Design skill.",
       "registryDependencies": [
-        "barehera/react-skills/feature-sliced-design"
+        "barehera/thinstack/feature-sliced-design"
       ],
       "files": [
         {
@@ -94,7 +94,7 @@
       "title": "Feature-Sliced Design for Cline",
       "description": "Cline pointer that loads the Feature-Sliced Design skill.",
       "registryDependencies": [
-        "barehera/react-skills/feature-sliced-design"
+        "barehera/thinstack/feature-sliced-design"
       ],
       "files": [
         {

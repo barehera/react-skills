@@ -1,6 +1,6 @@
 # Build Composable Components
 
-[← React Skills catalog](../../README.md)
+[← Thinstack catalog](../../README.md)
 
 Design, implement, refactor, or review React component families that know
 only UI. Data, copy, and configuration come from outside, so a family stays
@@ -46,7 +46,7 @@ a primitive already covers one call site and the task asks for reuse.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills build-composable-components
+npx --yes github:barehera/thinstack build-composable-components
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -57,7 +57,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/build-composable-components
+npx shadcn@latest add barehera/thinstack/build-composable-components
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -98,15 +98,15 @@ live, keyboard behavior, and maintainability.
   list; a `ShiftCrewRosterItem` record part; one documented product rule; and
   the optimistic TanStack Query mutation it calls
 
-The shared `.agents/skills/VERSION` file records the React Skills release that
+The shared `.agents/skills/VERSION` file records the Thinstack release that
 supplied the installed workflow.
 
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.
 
 Companion guidance: [library defaults](../use-preferred-react-stack/README.md) and [helper extraction](../extract-named-helpers/README.md). Existing form, server-state, and component ownership stays with its focused skill.

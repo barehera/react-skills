@@ -1,4 +1,4 @@
-# React Skills repository instructions
+# Thinstack repository instructions
 
 Before creating or changing a skill:
 

@@ -1,7 +1,7 @@
-// Where React Skills installs. Shared by the installer, the package sync
+// Where Thinstack installs. Shared by the installer, the package sync
 // script, and the registry validator so the agent list exists once.
 
-export const registryAddress = "barehera/react-skills";
+export const registryAddress = "barehera/thinstack";
 
 export const skillsRoot = ".agents/skills";
 

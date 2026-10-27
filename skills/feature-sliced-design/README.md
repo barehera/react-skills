@@ -1,12 +1,12 @@
 # Feature-Sliced Design
 
-[← React Skills catalog](../../README.md)
+[← Thinstack catalog](../../README.md)
 
 Design, migrate, or audit large React applications around clear feature
 ownership, downward dependencies, stable direct imports, and explicit
 framework/client/server boundaries.
 
-The shared `.agents/skills/VERSION` file records the single React Skills
+The shared `.agents/skills/VERSION` file records the single Thinstack
 repository release that supplied the installed workflow.
 
 This skill refines common flat roots such as `components`, `hooks`, `schemas`,
@@ -19,7 +19,7 @@ Feature-Sliced Design to the catalog's no-re-export-barrel convention.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills feature-sliced-design
+npx --yes github:barehera/thinstack feature-sliced-design
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -30,7 +30,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/feature-sliced-design
+npx shadcn@latest add barehera/thinstack/feature-sliced-design
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -76,10 +76,10 @@ Use `$manage-server-state` for the internals of Axios/TanStack Query code,
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.
 
 Check the installed version:
 

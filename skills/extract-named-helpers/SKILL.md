@@ -9,11 +9,11 @@ Make call sites express intent while keeping small, obvious logic local.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff.
+Read `../VERSION` and include `Thinstack v<version>` in the final handoff.
 
 ## Layer placement
 
-React Skills code lives in one of three layers: primitives (shadcn/Radix and
+Thinstack code lives in one of three layers: primitives (shadcn/Radix and
 `cn`), composable families (compound roots, slots, item boundaries, scoped
 stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.

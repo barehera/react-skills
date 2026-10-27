@@ -1,6 +1,6 @@
 # Write Feature Tests
 
-[React Skills catalog](../../README.md)
+[Thinstack catalog](../../README.md)
 
 Lock product rules with reusable case tables and a baked-defaults contract.
 
@@ -9,7 +9,7 @@ Lock product rules with reusable case tables and a baked-defaults contract.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills write-feature-tests
+npx --yes github:barehera/thinstack write-feature-tests
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -20,7 +20,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/write-feature-tests
+npx shadcn@latest add barehera/thinstack/write-feature-tests
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -52,7 +52,7 @@ Vitest in Node. Installation adds guidance, not runtime dependencies.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

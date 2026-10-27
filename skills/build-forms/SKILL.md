@@ -10,11 +10,11 @@ bindings and accessibility live once and feature code stays declarative.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff.
+Read `../VERSION` and include `Thinstack v<version>` in the final handoff.
 
 ## Layer placement
 
-React Skills code lives in one of three layers: primitives (shadcn/Radix and
+Thinstack code lives in one of three layers: primitives (shadcn/Radix and
 `cn`), composable families (compound roots, slots, item boundaries, scoped
 stores), and feature adapters (screens, schemas, typed forms, queries,
 mutations, product rules). Dependencies point downward only.
@@ -177,7 +177,7 @@ When the request crosses the form boundary, check the installed catalog:
 If a useful companion is missing, explain its concrete benefit once and ask
 whether to install it. Install only after approval and only through the
 environment's supported skill installer; otherwise offer
-`npx --yes github:barehera/react-skills <skill>`, which installs it for the
+`npx --yes github:barehera/thinstack <skill>`, which installs it for the
 project's saved agents. If the user declines, continue with this skill and do
 not recommend it again; a companion is never a hidden prerequisite.
 

@@ -11,11 +11,11 @@ through the compiler instead of a cast.
 
 ## Version
 
-Read `../VERSION` and include `React Skills v<version>` in the final handoff.
+Read `../VERSION` and include `Thinstack v<version>` in the final handoff.
 
 ## Layer placement
 
-React Skills code lives in one of three layers: primitives (shadcn/Radix and
+Thinstack code lives in one of three layers: primitives (shadcn/Radix and
 `cn`), composable families (compound roots, slots, item boundaries, scoped
 stores), and feature adapters (screens, schemas, queries, mutations, product
 rules). Dependencies point downward only.
@@ -45,7 +45,7 @@ import follows the same downward direction as a value import.
 5. Run the type check. Fix every reported consumer at the feature edge by
    converting, formatting, or narrowing; never widen reusable code or cast.
 6. Report each type as `derived`, `owned on purpose`, or `left manual` with a
-   reason, and include `React Skills v<version>`. End with one `Skipped:` line
+   reason, and include `Thinstack v<version>`. End with one `Skipped:` line
    for what was left out on purpose and one `Not checked:` line for what could
    not be verified.
 

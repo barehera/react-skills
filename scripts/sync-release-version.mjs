@@ -55,4 +55,4 @@ await Promise.all([
   writeFile(packageLockPath, `${JSON.stringify(packageLock, null, 2)}\n`),
 ]);
 
-console.log(`Synchronized React Skills to v${version}.`);
+console.log(`Synchronized Thinstack to v${version}.`);

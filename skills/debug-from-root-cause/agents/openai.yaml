@@ -1,0 +1,4 @@
+interface:
+  display_name: "Debug from Root Cause"
+  short_description: "Find the mechanism, fix its owner, add a regression test"
+  default_prompt: "Use $debug-from-root-cause to reproduce this failure, name the mechanism behind it, fix it in the owning layer, and lock it with a regression test."

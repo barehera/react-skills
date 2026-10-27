@@ -82,4 +82,4 @@ remaining hit needs a report row.
 | `features/billing/api.ts` | `as Invoice` | left manual | no payload sample for a schema yet |
 
 End with a count per decision, the type-check result, and
-`React Skills v<version>`.
+`Thinstack v<version>`.

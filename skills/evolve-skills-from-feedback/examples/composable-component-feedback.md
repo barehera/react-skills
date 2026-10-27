@@ -74,5 +74,5 @@ arbitrary maximum line length.
 
 ## Validation Requested
 
-- Run the feedback validator and the React Skills catalog validation.
+- Run the feedback validator and the Thinstack catalog validation.
 - Forward-test an interaction-heavy Button and a variant-heavy Card.

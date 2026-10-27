@@ -1,10 +1,10 @@
 # Manage Server State
 
-[← React Skills catalog](../../README.md)
+[← Thinstack catalog](../../README.md)
 
 Build, extend, refactor, or review React server-state code that matches the project and its real backend contracts.
 
-The shared `.agents/skills/VERSION` file records the single React Skills
+The shared `.agents/skills/VERSION` file records the single Thinstack
 repository release that supplied the installed workflow.
 
 The skill guides an AI coding agent through TanStack Query keys, option factories, hooks, authentication, mutations, pagination, runtime validation, and deliberate cache synchronization. Its default cache factory binds QueryClient once, while a thin hook exposes domain-focused operations to React callers. It adapts to existing architecture instead of copying the bundled example.
@@ -14,7 +14,7 @@ The skill guides an AI coding agent through TanStack Query keys, option factorie
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills manage-server-state
+npx --yes github:barehera/thinstack manage-server-state
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -25,7 +25,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/manage-server-state
+npx shadcn@latest add barehera/thinstack/manage-server-state
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -95,10 +95,10 @@ type-safety problems.
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.
 
 Check the installed version:
 

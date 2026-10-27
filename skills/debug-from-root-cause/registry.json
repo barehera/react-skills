@@ -1,0 +1,87 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "debug-from-root-cause",
+      "type": "registry:item",
+      "title": "Debug from Root Cause",
+      "description": "Find the mechanism behind a bug, fix it in the owning layer, and lock it with a regression test.",
+      "registryDependencies": [
+        "barehera/thinstack/thinstack-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/debug-from-root-cause/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/debug-from-root-cause/agents/openai.yaml"
+        }
+      ],
+      "docs": "Installs the root-cause debugging skill. No hooks, scripts, or session-start text."
+    },
+    {
+      "name": "debug-from-root-cause-claude",
+      "type": "registry:item",
+      "title": "Debug from Root Cause for Claude Code",
+      "description": "Claude Code pointer that loads the Debug from Root Cause skill.",
+      "registryDependencies": [
+        "barehera/thinstack/debug-from-root-cause"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/debug-from-root-cause/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "debug-from-root-cause",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "debug-from-root-cause-kiro",
+      "type": "registry:item",
+      "title": "Debug from Root Cause for Kiro",
+      "description": "Kiro pointer that loads the Debug from Root Cause skill.",
+      "registryDependencies": [
+        "barehera/thinstack/debug-from-root-cause"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.kiro/skills/debug-from-root-cause/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "debug-from-root-cause",
+        "agent": "kiro"
+      }
+    },
+    {
+      "name": "debug-from-root-cause-cline",
+      "type": "registry:item",
+      "title": "Debug from Root Cause for Cline",
+      "description": "Cline pointer that loads the Debug from Root Cause skill.",
+      "registryDependencies": [
+        "barehera/thinstack/debug-from-root-cause"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.cline/skills/debug-from-root-cause/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "debug-from-root-cause",
+        "agent": "cline"
+      }
+    }
+  ]
+}

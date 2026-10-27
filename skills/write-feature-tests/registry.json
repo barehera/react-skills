@@ -7,7 +7,7 @@
       "title": "Write Feature Tests",
       "description": "Lock product rules with reusable case tables and a baked-defaults contract.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -74,7 +74,7 @@
       "title": "Write Feature Tests for Claude Code",
       "description": "Claude Code pointer that loads the Write Feature Tests skill.",
       "registryDependencies": [
-        "barehera/react-skills/write-feature-tests"
+        "barehera/thinstack/write-feature-tests"
       ],
       "files": [
         {
@@ -94,7 +94,7 @@
       "title": "Write Feature Tests for Kiro",
       "description": "Kiro pointer that loads the Write Feature Tests skill.",
       "registryDependencies": [
-        "barehera/react-skills/write-feature-tests"
+        "barehera/thinstack/write-feature-tests"
       ],
       "files": [
         {
@@ -114,7 +114,7 @@
       "title": "Write Feature Tests for Cline",
       "description": "Cline pointer that loads the Write Feature Tests skill.",
       "registryDependencies": [
-        "barehera/react-skills/write-feature-tests"
+        "barehera/thinstack/write-feature-tests"
       ],
       "files": [
         {

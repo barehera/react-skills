@@ -1,6 +1,6 @@
 # Document Business Logic
 
-[← React Skills catalog](../../README.md)
+[← Thinstack catalog](../../README.md)
 
 Preserve non-obvious product rules without filling React and TypeScript code
 with implementation narration.
@@ -27,7 +27,7 @@ invent a product `Why` from implementation details.
 From your project root:
 
 ```bash
-npx --yes github:barehera/react-skills document-business-logic
+npx --yes github:barehera/thinstack document-business-logic
 ```
 
 The installer asks which agents you use and writes only their files: the skill
@@ -38,7 +38,7 @@ or Cline. Skip the question with `--agent`, for example `--agent cursor`.
 Or install it with shadcn:
 
 ```bash
-npx shadcn@latest add barehera/react-skills/document-business-logic
+npx shadcn@latest add barehera/thinstack/document-business-logic
 ```
 
 Add `-claude`, `-kiro`, or `-cline` to the item name for the pointer those
@@ -65,13 +65,13 @@ purpose, product reason, or protected rule is missing, ask before writing it.
 - [Canonical skill instructions](SKILL.md)
 - [Typed wait-lock example](examples/wait-lock.tsx)
 
-The shared `.agents/skills/VERSION` file records the React Skills release that
+The shared `.agents/skills/VERSION` file records the Thinstack release that
 supplied the installed workflow.
 
 ## Update
 
 ```bash
-npx --yes github:barehera/react-skills update
+npx --yes github:barehera/thinstack update
 ```
 
-This updates all installed React Skills for the agents you chose.
+This updates all installed Thinstack skills for the agents you chose.

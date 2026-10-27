@@ -13,5 +13,5 @@ Purpose: Extract focused helpers without needless indirection.
 - Keep primitives, composable families, and feature adapters in separate
   layers with dependencies pointing downward only.
 - Route work the skill does not own to the companion skill it names.
-- Report `React Skills v<version>` from `.agents/skills/VERSION` in the
+- Report `Thinstack v<version>` from `.agents/skills/VERSION` in the
   final handoff.

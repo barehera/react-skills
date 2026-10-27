@@ -54,7 +54,7 @@ function restoreTerminal() {
 }
 
 function printHelp() {
-  console.log(`React Skills
+  console.log(`Thinstack
 
 Install Agent Skills from ${registryAddress} for the agents you use.
 
@@ -77,8 +77,8 @@ Options:
                      (comma-separated; saved for the next update)
   --companions <ids> Third-party packs to add: ${companions.map((companion) => companion.id).join(", ")}, or none
   --all            Select every skill
-  --overwrite        Replace existing React Skills files without asking
-  --prune            Remove React Skills pointer files for agents you did not select
+  --overwrite        Replace existing Thinstack files without asking
+  --prune            Remove Thinstack pointer files for agents you did not select
   --yes              Accept every default without asking
   --dry-run          Preview the installation
   --silent           Reduce shadcn output
@@ -89,7 +89,7 @@ Options:
 }
 
 function printCatalog(skills, releaseVersion) {
-  console.log(`\nReact Skills v${releaseVersion}\n`);
+  console.log(`\nThinstack v${releaseVersion}\n`);
 
   skills.forEach((skill, index) => {
     console.log(`${index + 1}. ${skill.title ?? skill.name}`);
@@ -132,7 +132,7 @@ async function chooseSkills(skills, releaseVersion, preselected) {
   const selected = await ask({
     type: "multiselect",
     name: "value",
-    message: `Which skills would you like to install? (React Skills v${releaseVersion})`,
+    message: `Which skills would you like to install? (Thinstack v${releaseVersion})`,
     hint: "Space to select. A to toggle all. Enter to submit.",
     instructions: false,
     choices: skills.map((skill) => ({
@@ -188,7 +188,7 @@ async function chooseCompanions(available) {
 }
 
 function countFiles(count) {
-  return `${count} React Skills ${count === 1 ? "file" : "files"}`;
+  return `${count} Thinstack ${count === 1 ? "file" : "files"}`;
 }
 
 function confirm(message, initial) {
@@ -324,7 +324,7 @@ async function keepOutOfGit(cwd, skillNames) {
   );
 
   if (committed.length > 0) {
-    console.log(`\nThese React Skills files are committed, so git keeps tracking them:
+    console.log(`\nThese Thinstack files are committed, so git keeps tracking them:
   ${committed.join("\n  ")}
 To keep them local only (your copies stay), run:
   git rm -r --cached ${committed.join(" ")}`);
@@ -350,7 +350,7 @@ async function selectSkills(options, skills, state, releaseVersion, interactive)
     }
 
     if (known.length === 0) {
-      throw new Error(`No installed React Skills found in ${options.cwd}. Run ${command} first.`);
+      throw new Error(`No installed Thinstack skills found in ${options.cwd}. Run ${command} first.`);
     }
 
     return known;
@@ -549,7 +549,7 @@ async function main() {
   const skills = catalogSkills(registryItems);
 
   if (skills.length === 0) {
-    throw new Error("The React Skills catalog is empty.");
+    throw new Error("The Thinstack catalog is empty.");
   }
 
   if (options.command === "list") {
@@ -644,7 +644,7 @@ main()
       return;
     }
 
-    console.error(`\nReact Skills: ${error.message}`);
+    console.error(`\nThinstack: ${error.message}`);
     process.exitCode = 1;
   })
   .finally(restoreTerminal);

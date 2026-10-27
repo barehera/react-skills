@@ -7,7 +7,7 @@
       "title": "Manage Server State",
       "description": "Create, extend, refactor, and audit type-safe React server state from documented, observed, or conservatively inferred backend contracts.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -179,7 +179,7 @@
       "title": "Manage Server State for Claude Code",
       "description": "Claude Code pointer that loads the Manage Server State skill.",
       "registryDependencies": [
-        "barehera/react-skills/manage-server-state"
+        "barehera/thinstack/manage-server-state"
       ],
       "files": [
         {
@@ -199,7 +199,7 @@
       "title": "Manage Server State for Kiro",
       "description": "Kiro pointer that loads the Manage Server State skill.",
       "registryDependencies": [
-        "barehera/react-skills/manage-server-state"
+        "barehera/thinstack/manage-server-state"
       ],
       "files": [
         {
@@ -219,7 +219,7 @@
       "title": "Manage Server State for Cline",
       "description": "Cline pointer that loads the Manage Server State skill.",
       "registryDependencies": [
-        "barehera/react-skills/manage-server-state"
+        "barehera/thinstack/manage-server-state"
       ],
       "files": [
         {

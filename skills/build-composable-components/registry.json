@@ -7,7 +7,7 @@
       "title": "Build Composable Components",
       "description": "Design and refactor React component families that know only UI: preserved base contracts, roots holding only shared state, consumer-mapped lists, record parts, cva variants on container parts, and correct async boundaries.",
       "registryDependencies": [
-        "barehera/react-skills/react-skills-version"
+        "barehera/thinstack/thinstack-version"
       ],
       "files": [
         {
@@ -99,7 +99,7 @@
       "title": "Build Composable Components for Claude Code",
       "description": "Claude Code pointer that loads the Build Composable Components skill.",
       "registryDependencies": [
-        "barehera/react-skills/build-composable-components"
+        "barehera/thinstack/build-composable-components"
       ],
       "files": [
         {
@@ -119,7 +119,7 @@
       "title": "Build Composable Components for Kiro",
       "description": "Kiro pointer that loads the Build Composable Components skill.",
       "registryDependencies": [
-        "barehera/react-skills/build-composable-components"
+        "barehera/thinstack/build-composable-components"
       ],
       "files": [
         {
@@ -139,7 +139,7 @@
       "title": "Build Composable Components for Cline",
       "description": "Cline pointer that loads the Build Composable Components skill.",
       "registryDependencies": [
-        "barehera/react-skills/build-composable-components"
+        "barehera/thinstack/build-composable-components"
       ],
       "files": [
         {

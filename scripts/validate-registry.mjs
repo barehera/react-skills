@@ -108,10 +108,10 @@ const rootRegistry = await readJson(rootRegistryPath);
 
 if (
   rootRegistry.$schema !== registrySchema ||
-  rootRegistry.name !== "react-skills" ||
-  rootRegistry.homepage !== "https://github.com/barehera/react-skills"
+  rootRegistry.name !== "thinstack" ||
+  rootRegistry.homepage !== "https://github.com/barehera/thinstack"
 ) {
-  throw new Error("The root registry metadata must identify React Skills");
+  throw new Error("The root registry metadata must identify Thinstack");
 }
 
 const [releaseItem] = rootRegistry.items ?? [];
@@ -119,7 +119,7 @@ const [releaseFile] = releaseItem?.files ?? [];
 
 if (
   rootRegistry.items?.length !== 1 ||
-  releaseItem?.name !== "react-skills-version" ||
+  releaseItem?.name !== "thinstack-version" ||
   releaseItem?.type !== "registry:file" ||
   releaseItem?.files?.length !== 1 ||
   resolve(root, releaseFile?.path ?? "") !== releaseVersionPath ||
@@ -135,7 +135,7 @@ const skillDirectories = (await readdir(skillsRoot, { withFileTypes: true }))
   .sort();
 
 if (skillDirectories.length === 0) {
-  throw new Error("The React Skills catalog must contain at least one skill");
+  throw new Error("The Thinstack catalog must contain at least one skill");
 }
 
 const expectedIncludes = skillDirectories.map(
@@ -271,11 +271,11 @@ for (const { item, registryPath } of resolvedSkillItems) {
 
   if (
     !item.registryDependencies?.includes(
-      "barehera/react-skills/react-skills-version",
+      "barehera/thinstack/thinstack-version",
     )
   ) {
     throw new Error(
-      `${item.name} must depend on the shared React Skills version item`,
+      `${item.name} must depend on the shared Thinstack version item`,
     );
   }
 
@@ -507,7 +507,7 @@ if (
 }
 
 await stat(resolve(root, ".github/workflows/release.yml"));
-const installer = await readFile(resolve(root, "bin/react-skills.mjs"), "utf8");
+const installer = await readFile(resolve(root, "bin/thinstack.mjs"), "utf8");
 const [
   repositoryInstructions,
   authoringGuide,
@@ -546,7 +546,7 @@ if (
   stackMarkers.some((marker) => !technologyContract.includes(marker))
 ) {
   throw new Error(
-    "Skill authoring guidance must preserve the React Skills technology contract",
+    "Skill authoring guidance must preserve the Thinstack technology contract",
   );
 }
 
@@ -567,15 +567,15 @@ if (
   !installer.includes('type: "multiselect"') ||
   !installer.includes("Space to select. A to toggle all. Enter to submit.")
 ) {
-  throw new Error("The React Skills installer must expose a multi-select UI");
+  throw new Error("The Thinstack installer must expose a multi-select UI");
 }
 
 const packageJson = await readJson(resolve(root, "package.json"));
 const packageLock = await readJson(resolve(root, "package-lock.json"));
 
 if (
-  packageJson.name !== "react-skills" ||
-  packageJson.bin?.["react-skills"] !== "./bin/react-skills.mjs" ||
+  packageJson.name !== "thinstack" ||
+  packageJson.bin?.["thinstack"] !== "./bin/thinstack.mjs" ||
   !packageJson.files?.includes("VERSION") ||
   packageJson.version !== releaseVersion ||
   packageLock.version !== releaseVersion ||
@@ -591,11 +591,11 @@ for (const path of pluginManifests) {
   const versions = manifestVersions(manifest);
 
   if (
-    manifest.name !== "react-skills" ||
+    manifest.name !== "thinstack" ||
     versions.length === 0 ||
     versions.some((version) => version !== releaseVersion)
   ) {
-    throw new Error(`${path} must name react-skills and carry release v${releaseVersion}`);
+    throw new Error(`${path} must name thinstack and carry release v${releaseVersion}`);
   }
 }
 
@@ -642,7 +642,7 @@ if (
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Changes") ||
   !githubReleaseOptions?.releaseBodyTemplate?.includes("### Choose and install")
 ) {
-  throw new Error("React Skills release automation is incomplete or invalid");
+  throw new Error("Thinstack release automation is incomplete or invalid");
 }
 
 for (const dependency of ["@semantic-release/exec", "@semantic-release/git"]) {
@@ -656,5 +656,5 @@ if (!packageJson.dependencies?.prompts?.startsWith("^")) {
 }
 
 console.log(
-  `Validated ${skillItemNames.size} skill${skillItemNames.size === 1 ? "" : "s"} and ${itemNames.size - skillItemNames.size} agent items in the React Skills catalog.`,
+  `Validated ${skillItemNames.size} skill${skillItemNames.size === 1 ? "" : "s"} and ${itemNames.size - skillItemNames.size} agent items in the Thinstack catalog.`,
 );
