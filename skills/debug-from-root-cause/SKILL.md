@@ -59,7 +59,7 @@ Symptom: <verbatim failure>
 Cause: <the mechanism in one sentence>
 Proof: <the observation that confirms it>
 Fix: <file and layer>
-Regression test: <test name> — fails before, passes after
+Regression test: <test name>, fails before and passes after
 Skipped: <left out on purpose>
 Not checked: <could not verify>
 ```

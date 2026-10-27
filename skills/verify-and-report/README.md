@@ -56,10 +56,10 @@ tell me which hold.
 
 ```text
 Done: the CSV export button downloads the filtered rows.
-pass — npx vitest run src/features/orders/export.test.ts — 6 passed
-pass — npx tsc --noEmit — exit 0
-unavailable — browser check — no dev server configured
-Ruling: comma-separated, UTF-8 with BOM — Excel opens it correctly — easy to switch
+pass | npx vitest run src/features/orders/export.test.ts | 6 passed
+pass | npx tsc --noEmit | exit 0
+unavailable | browser check | no dev server configured
+Ruling: comma-separated, UTF-8 with BOM; why: Excel opens it correctly; if wrong: easy to switch
 Skipped: column picker, not requested.
 Not checked: the download in a real browser.
 ```

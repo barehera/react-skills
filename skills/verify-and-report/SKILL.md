@@ -29,7 +29,7 @@ reported; the skill that owns the layer decides what code to write.
    not a check yet; turn "make it work" into a command, a rendered state, or a
    test case.
 2. While working, decide reversible choices yourself and log each one as
-   `Ruling: <choice> — <why> — <cost if wrong>`. Stop and ask only before an
+   `Ruling: <choice>; why: <reason>; if wrong: <cost>`. Stop and ask only before an
    action that cannot be undone, a security-sensitive change, an effect
    outside the workspace (push, publish, send, deploy), or a request that
    cannot be followed as written.
@@ -65,7 +65,7 @@ when it is unclear. Work one comment at a time, and skip thanks and praise.
 
 1. **Result:** the first line answers what was asked: done, partly done, or
    not done, and why.
-2. **Checks:** one line each, `<label> — <command or check> — <what it showed>`.
+2. **Checks:** one line each, `<label> | <command or check> | <what it showed>`.
 3. **Rulings:** the `Ruling:` lines that shaped the result, if any.
 4. **Handoff:** one `Skipped:` line and one `Not checked:` line.
 
@@ -75,7 +75,7 @@ sentences. Start with the result rather than an announcement, and end with
 the handoff lines rather than a recap or an offer.
 
 Write each review finding you give as one line:
-`<path>:<line> — <blocker|major|minor> — <problem>. <fix>.`
+`<path>:<line> [blocker|major|minor] <problem>. <fix>.`
 
 Ask a subagent for `<path>:<line>` citations and a one-line verdict, not
 prose, so its result costs the main context little.

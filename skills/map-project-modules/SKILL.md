@@ -31,13 +31,13 @@ Commit: <short hash> (<YYYY-MM-DD>)
 
 ## Entry points
 
-- `<path>` — <what starts here: app root, router, providers, server entry>
+- `<path>`: <what starts here: app root, router, providers, server entry>
 
 ## Modules
 
 | Path | Layer | Purpose | Entry file | Uses |
 | --- | --- | --- | --- | --- |
-| `src/components/ui` | primitive, family | shadcn primitives and generic families | — | — |
+| `src/components/ui` | primitive, family | shadcn primitives and generic families | none | none |
 | `src/features/orders` | feature adapter | Order list, cancel and refund rules | `index.tsx` | `components/ui`, `lib/api` |
 
 ## Hub files

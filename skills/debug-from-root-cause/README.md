@@ -52,8 +52,8 @@ The build fails on CI but not locally. Find the cause.
 Symptom: "Order list shows stale rows after Cancel order until reload."
 Cause: the cancel mutation invalidates ["orders"], but the list query key is ["orders", "list", filters].
 Proof: the devtools cache shows the list entry is never marked stale after the mutation.
-Fix: features/orders/queries.ts, feature adapter — invalidate orderKeys.lists().
-Regression test: "cancel marks order lists stale" — fails before, passes after
+Fix: features/orders/queries.ts (feature adapter): invalidate orderKeys.lists().
+Regression test: "cancel marks order lists stale", fails before and passes after
 Skipped: none.
 Not checked: the same flow on the mobile layout.
 ```

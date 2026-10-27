@@ -47,7 +47,7 @@ Why: <the reason or the incident behind it>
 How to apply: <what to do differently next time>
 ```
 
-Each index line: `- [Title](<slug>.md) — <hook of a few words>`.
+Each index line: `- [Title](<slug>.md): <hook of a few words>`.
 
 | Type | Holds |
 | --- | --- |
