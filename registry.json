@@ -27,6 +27,9 @@
     "skills/extract-named-helpers/registry.json",
     "skills/derived-types/registry.json",
     "skills/keep-project-memory/registry.json",
+    "skills/verify-and-report/registry.json",
+    "skills/debug-from-root-cause/registry.json",
+    "skills/map-project-modules/registry.json",
     "skills/use-preferred-react-stack/registry.json",
     "skills/write-feature-tests/registry.json"
   ]

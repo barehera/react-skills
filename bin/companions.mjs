@@ -4,10 +4,12 @@
 // install for the user, not into the project.
 //
 // Each pack installs through its own best channel per agent: a Claude Code
-// plugin (with its hooks), the `npx skills` CLI for every other agent, or the
-// pack's own CLI. Ponytail is not listed: its ladder and handoff lines already
-// live in every skill's `Smallest complete change` section. claude-mem is not
-// listed: the keep-project-memory skill replaces it with Markdown files.
+// plugin (with its hooks), or the `npx skills` CLI for every other agent.
+// Ponytail is not listed: its ladder and handoff lines already live in every
+// skill's `Smallest complete change` section. claude-mem, Superpowers,
+// Caveman, and Graphify are not listed: keep-project-memory, verify-and-report,
+// debug-from-root-cause, and map-project-modules keep their useful ideas in
+// plain files, without their hooks and runtimes.
 
 import { agents } from "./install-targets.mjs";
 
@@ -22,37 +24,6 @@ export const companions = [
       name: "andrej-karpathy-skills@karpathy-skills",
     },
     skills: "forrestchang/andrej-karpathy-skills",
-  },
-  {
-    id: "superpowers",
-    label: "Superpowers",
-    summary: "Brainstorm, plan, TDD, subagent workflow; its gates add steps to every task",
-    plugin: {
-      marketplace: "obra/superpowers-marketplace",
-      name: "superpowers@superpowers-marketplace",
-    },
-    skills: "obra/superpowers",
-  },
-  {
-    id: "caveman",
-    label: "Caveman",
-    summary: "Terse replies in every session; set DO_NOT_TRACK=1 for its CLI",
-    plugin: { marketplace: "JuliusBrussee/caveman", name: "caveman@caveman" },
-    skills: "JuliusBrussee/caveman",
-  },
-  {
-    id: "graphify",
-    label: "Graphify",
-    summary: "Code knowledge graph in graphify-out/; needs uv (Python)",
-    setup: [["uv", "tool", "install", "graphifyy"]],
-    platforms: {
-      claude: ["graphify", "install"],
-      cursor: ["graphify", "cursor", "install"],
-      codex: ["graphify", "install", "--platform", "codex"],
-      copilot: ["graphify", "install", "--platform", "copilot"],
-      gemini: ["graphify", "install", "--platform", "gemini"],
-      opencode: ["graphify", "install", "--platform", "opencode"],
-    },
   },
 ];
 
@@ -82,12 +53,7 @@ export function parseCompanionIds(value) {
 }
 
 export function supportedAgents(companion, agentIds) {
-  return agentIds.filter(
-    (id) =>
-      (id === "claude" && companion.plugin) ||
-      companion.skills ||
-      companion.platforms?.[id],
-  );
+  return agentIds.filter((id) => (id === "claude" && companion.plugin) || companion.skills);
 }
 
 export function pluginSlashCommands(companion) {
@@ -113,8 +79,6 @@ export function companionPlan(companion, agentIds, { hasClaudeCli }) {
       );
     } else if (companion.skills) {
       viaSkills.push(id);
-    } else if (companion.platforms?.[id]) {
-      steps.push(companion.platforms[id]);
     } else {
       notes.push(...pluginSlashCommands(companion));
     }
@@ -140,8 +104,5 @@ export function companionPlan(companion, agentIds, { hasClaudeCli }) {
     }
   }
 
-  return {
-    steps: steps.length > 0 && companion.setup ? [...companion.setup, ...steps] : steps,
-    notes,
-  };
+  return { steps, notes };
 }

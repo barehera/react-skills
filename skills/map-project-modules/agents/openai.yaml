@@ -1,0 +1,4 @@
+interface:
+  display_name: "Map Project Modules"
+  short_description: "Keep a one-page Markdown map of modules and hub files"
+  default_prompt: "Use $map-project-modules to read or build this project's module map, then search only the modules this task touches."

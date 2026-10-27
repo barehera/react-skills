@@ -194,8 +194,12 @@ Use and extend the existing skill that owns the concern:
 | type ownership across layers: derived feature props, hook and helper signatures, owned reusable contracts, and drift without casts | `derived-types` |
 | product-rule case tables, rule-change test discipline, and baked-defaults contracts | `write-feature-tests` |
 | project memory across sessions: what to save, recall, update, and forget | `keep-project-memory` |
+| acceptance checks, proof before claims, rulings, and the report shape | `verify-and-report` |
+| reproduction, root-cause mechanism, owning-layer fix, and regression lock | `debug-from-root-cause` |
+| the module map, hub files, and map-first code search | `map-project-modules` |
 
-`keep-project-memory` and `evolve-skills-from-feedback` are agent workflow
+`keep-project-memory`, `verify-and-report`, `debug-from-root-cause`,
+`map-project-modules`, and `evolve-skills-from-feedback` are agent workflow
 skills: they own no application layer and no stack library. A workflow skill
 works with plain files the agent already reads and writes, adds no hooks,
 background processes, or databases, and routes every code concern to the
@@ -206,14 +210,16 @@ skill rather than copying its complete rules. Recommend an uninstalled
 companion once, explain the concrete benefit, and require approval before
 installation.
 
-Third-party packs (Karpathy guidelines, Superpowers, Caveman, Graphify) are
-optional installer companions listed in `bin/companions.mjs`, not catalog
-skills. No `SKILL.md` names or routes to them, and none of their rules
-replaces a skill's ladder, layer model, or handoff. The reasons for each pack,
-and for leaving Ponytail out, are in
+Karpathy guidelines is the one optional installer companion, listed in
+`bin/companions.mjs`, not a catalog skill. No `SKILL.md` names or routes to
+it, and none of its rules replaces a skill's ladder, layer model, or handoff.
+The reasons for each pack, and for leaving Ponytail out, are in
 [the companion packs decision ledger](skill-feedback/2026-10-22-companion-packs-decisions.md).
 claude-mem was replaced by `keep-project-memory`, as recorded in
 [the project memory decision ledger](skill-feedback/2026-10-27-project-memory-decisions.md).
+Superpowers, Caveman, and Graphify were replaced by `verify-and-report`,
+`debug-from-root-cause`, and `map-project-modules`, as recorded in
+[the workflow skills decision ledger](skill-feedback/2026-10-27-workflow-skills-decisions.md).
 
 ## Canonical example rules
 

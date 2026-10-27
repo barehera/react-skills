@@ -42,6 +42,9 @@ the layer model, and responsibility boundaries.
 | [Extract Named Helpers](skills/extract-named-helpers/README.md) | Extract focused helpers without needless indirection. |
 | [Derived Types](skills/derived-types/README.md) | Derive component, hook, and helper types from one owner so they follow server, form, and store changes. |
 | [Keep Project Memory](skills/keep-project-memory/README.md) | Remember project decisions, gotchas, and preferences across sessions in plain Markdown files. |
+| [Verify and Report](skills/verify-and-report/README.md) | Prove every claim before making it and report results in a compact, fixed shape. |
+| [Debug from Root Cause](skills/debug-from-root-cause/README.md) | Find the mechanism behind a bug, fix it in the owning layer, and lock it with a regression test. |
+| [Map Project Modules](skills/map-project-modules/README.md) | Keep a one-page Markdown map of modules, entry points, and hub files, and search through it. |
 | [Use Preferred React Stack](skills/use-preferred-react-stack/README.md) | Choose verified React libraries by concern. |
 | [Write Feature Tests](skills/write-feature-tests/README.md) | Lock product rules with reusable case tables and a baked-defaults contract. |
 
@@ -201,20 +204,26 @@ each agent has:
 | Id | Pack | Claude Code | Other agents | What to know |
 | --- | --- | --- | --- | --- |
 | `karpathy` | [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) | Plugin | `npx skills` | Recommended. A short rule set that agrees with the skills: think first, simplest code, surgical diffs. |
-| `superpowers` | [superpowers](https://github.com/obra/superpowers) | Plugin | `npx skills` | Brainstorm, plan, TDD, and subagent gates on every task. Good for large features; slow for small edits. |
-| `caveman` | [caveman](https://github.com/JuliusBrussee/caveman) | Plugin | `npx skills` | Terse replies in every session. Its CLI sends telemetry unless `DO_NOT_TRACK=1`. |
-| `graphify` | [graphify](https://github.com/Graphify-Labs/graphify) | `graphify install` | Cursor, Codex, Copilot, Gemini CLI, OpenCode | Code knowledge graph in `graphify-out/`. Needs [uv](https://docs.astral.sh/uv/). |
 
 `npx skills` is the [skills CLI](https://github.com/vercel-labs/skills) and
-needs Node 22.20 or later. Plugins add a pack's hooks as well as its skills;
-without the `claude` command on your PATH, Claude Code gets the skills through
-`npx skills` and the installer prints the `/plugin` commands that add the
-hooks. Ponytail is not offered: every skill's `Smallest complete change`
-section already carries its ladder and handoff lines. claude-mem is not
-offered either: the [Keep Project Memory](skills/keep-project-memory/README.md)
-skill keeps memory in Markdown files without its worker, database, and hooks. Packs bring their own
-instructions; when one disagrees with a skill about code that skill owns, tell
-the agent to follow the skill.
+needs Node 22.20 or later. Without the `claude` command on your PATH, Claude
+Code gets the skills through `npx skills` and the installer prints the
+`/plugin` commands. Packs bring their own instructions; when one disagrees
+with a skill about code that skill owns, tell the agent to follow the skill.
+
+Earlier releases offered heavier packs. The catalog now keeps their useful
+ideas in its own skills, as plain files with no hooks, background processes,
+or session-start text:
+
+| Former pack | Replaced by | What it kept |
+| --- | --- | --- |
+| claude-mem | [Keep Project Memory](skills/keep-project-memory/README.md) | Index-first recall, save what was learned, no duplicates |
+| Superpowers | [Verify and Report](skills/verify-and-report/README.md), [Debug from Root Cause](skills/debug-from-root-cause/README.md) | Proof before claims, root cause before fixes, decide and log |
+| Caveman | [Verify and Report](skills/verify-and-report/README.md) | Result first, exact numbers and errors, one-line findings |
+| Graphify | [Map Project Modules](skills/map-project-modules/README.md) | A module map, hub files, search before reading |
+
+Ponytail is not offered either: every skill's `Smallest complete change`
+section already carries its ladder and handoff lines.
 
 ## Update
 
