@@ -1,0 +1,87 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "keep-project-memory",
+      "type": "registry:item",
+      "title": "Keep Project Memory",
+      "description": "Remember project decisions, gotchas, and preferences across sessions in plain Markdown files.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/keep-project-memory/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/keep-project-memory/agents/openai.yaml"
+        }
+      ],
+      "docs": "Installs the project-memory skill. The agent keeps memories in .agents/memory/ and adds one line to AGENTS.md the first time it saves one. No hooks, background process, or database."
+    },
+    {
+      "name": "keep-project-memory-claude",
+      "type": "registry:item",
+      "title": "Keep Project Memory for Claude Code",
+      "description": "Claude Code pointer that loads the Keep Project Memory skill.",
+      "registryDependencies": [
+        "barehera/react-skills/keep-project-memory"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/keep-project-memory/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "keep-project-memory",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "keep-project-memory-kiro",
+      "type": "registry:item",
+      "title": "Keep Project Memory for Kiro",
+      "description": "Kiro pointer that loads the Keep Project Memory skill.",
+      "registryDependencies": [
+        "barehera/react-skills/keep-project-memory"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.kiro/skills/keep-project-memory/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "keep-project-memory",
+        "agent": "kiro"
+      }
+    },
+    {
+      "name": "keep-project-memory-cline",
+      "type": "registry:item",
+      "title": "Keep Project Memory for Cline",
+      "description": "Cline pointer that loads the Keep Project Memory skill.",
+      "registryDependencies": [
+        "barehera/react-skills/keep-project-memory"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.cline/skills/keep-project-memory/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "keep-project-memory",
+        "agent": "cline"
+      }
+    }
+  ]
+}

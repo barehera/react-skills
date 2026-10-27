@@ -41,6 +41,7 @@ the layer model, and responsibility boundaries.
 | [Feature-Sliced Design](skills/feature-sliced-design/README.md) | Design, migrate, and audit scalable React application structure around feature ownership, runtime boundaries, and direct imports. |
 | [Extract Named Helpers](skills/extract-named-helpers/README.md) | Extract focused helpers without needless indirection. |
 | [Derived Types](skills/derived-types/README.md) | Derive component, hook, and helper types from one owner so they follow server, form, and store changes. |
+| [Keep Project Memory](skills/keep-project-memory/README.md) | Remember project decisions, gotchas, and preferences across sessions in plain Markdown files. |
 | [Use Preferred React Stack](skills/use-preferred-react-stack/README.md) | Choose verified React libraries by concern. |
 | [Write Feature Tests](skills/write-feature-tests/README.md) | Lock product rules with reusable case tables and a baked-defaults contract. |
 
@@ -202,7 +203,6 @@ each agent has:
 | `karpathy` | [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) | Plugin | `npx skills` | Recommended. A short rule set that agrees with the skills: think first, simplest code, surgical diffs. |
 | `superpowers` | [superpowers](https://github.com/obra/superpowers) | Plugin | `npx skills` | Brainstorm, plan, TDD, and subagent gates on every task. Good for large features; slow for small edits. |
 | `caveman` | [caveman](https://github.com/JuliusBrussee/caveman) | Plugin | `npx skills` | Terse replies in every session. Its CLI sends telemetry unless `DO_NOT_TRACK=1`. |
-| `claude-mem` | [claude-mem](https://github.com/thedotmack/claude-mem) | Plugin | Not offered | Memory across sessions through a background worker that records tool calls. Review its privacy settings. |
 | `graphify` | [graphify](https://github.com/Graphify-Labs/graphify) | `graphify install` | Cursor, Codex, Copilot, Gemini CLI, OpenCode | Code knowledge graph in `graphify-out/`. Needs [uv](https://docs.astral.sh/uv/). |
 
 `npx skills` is the [skills CLI](https://github.com/vercel-labs/skills) and
@@ -210,7 +210,9 @@ needs Node 22.20 or later. Plugins add a pack's hooks as well as its skills;
 without the `claude` command on your PATH, Claude Code gets the skills through
 `npx skills` and the installer prints the `/plugin` commands that add the
 hooks. Ponytail is not offered: every skill's `Smallest complete change`
-section already carries its ladder and handoff lines. Packs bring their own
+section already carries its ladder and handoff lines. claude-mem is not
+offered either: the [Keep Project Memory](skills/keep-project-memory/README.md)
+skill keeps memory in Markdown files without its worker, database, and hooks. Packs bring their own
 instructions; when one disagrees with a skill about code that skill owns, tell
 the agent to follow the skill.
 

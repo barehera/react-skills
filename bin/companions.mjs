@@ -6,7 +6,8 @@
 // Each pack installs through its own best channel per agent: a Claude Code
 // plugin (with its hooks), the `npx skills` CLI for every other agent, or the
 // pack's own CLI. Ponytail is not listed: its ladder and handoff lines already
-// live in every skill's `Smallest complete change` section.
+// live in every skill's `Smallest complete change` section. claude-mem is not
+// listed: the keep-project-memory skill replaces it with Markdown files.
 
 import { agents } from "./install-targets.mjs";
 
@@ -38,13 +39,6 @@ export const companions = [
     summary: "Terse replies in every session; set DO_NOT_TRACK=1 for its CLI",
     plugin: { marketplace: "JuliusBrussee/caveman", name: "caveman@caveman" },
     skills: "JuliusBrussee/caveman",
-  },
-  {
-    // Its skills need the plugin's background worker, so Claude Code only.
-    id: "claude-mem",
-    label: "claude-mem",
-    summary: "Memory across sessions; runs a background worker that records tool calls",
-    plugin: { marketplace: "thedotmack/claude-mem", name: "claude-mem@thedotmack" },
   },
   {
     id: "graphify",

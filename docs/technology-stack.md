@@ -193,18 +193,27 @@ Use and extend the existing skill that owns the concern:
 | extraction thresholds, helper signatures, naming, and hook/helper separation | `extract-named-helpers` |
 | type ownership across layers: derived feature props, hook and helper signatures, owned reusable contracts, and drift without casts | `derived-types` |
 | product-rule case tables, rule-change test discipline, and baked-defaults contracts | `write-feature-tests` |
+| project memory across sessions: what to save, recall, update, and forget | `keep-project-memory` |
+
+`keep-project-memory` and `evolve-skills-from-feedback` are agent workflow
+skills: they own no application layer and no stack library. A workflow skill
+works with plain files the agent already reads and writes, adds no hooks,
+background processes, or databases, and routes every code concern to the
+owning skill above.
 
 A new skill may compose these capabilities, but it must route to the owning
 skill rather than copying its complete rules. Recommend an uninstalled
 companion once, explain the concrete benefit, and require approval before
 installation.
 
-Third-party packs (Karpathy guidelines, Superpowers, Caveman, claude-mem,
-Graphify) are optional installer companions listed in
-`bin/companions.mjs`, not catalog skills. No `SKILL.md` names or routes to
-them, and none of their rules replaces a skill's ladder, layer model, or
-handoff. The reasons for each pack, and for leaving Ponytail out, are in
+Third-party packs (Karpathy guidelines, Superpowers, Caveman, Graphify) are
+optional installer companions listed in `bin/companions.mjs`, not catalog
+skills. No `SKILL.md` names or routes to them, and none of their rules
+replaces a skill's ladder, layer model, or handoff. The reasons for each pack,
+and for leaving Ponytail out, are in
 [the companion packs decision ledger](skill-feedback/2026-10-22-companion-packs-decisions.md).
+claude-mem was replaced by `keep-project-memory`, as recorded in
+[the project memory decision ledger](skill-feedback/2026-10-27-project-memory-decisions.md).
 
 ## Canonical example rules
 
