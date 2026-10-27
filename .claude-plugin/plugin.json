@@ -1,7 +1,7 @@
 {
   "name": "thinstack",
   "description": "Opinionated React and TypeScript skills: composable shadcn components, React Hook Form and Zod forms, TanStack Query server state, feature-sliced structure, and Vitest rule tests.",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "author": {
     "name": "barehera",
     "url": "https://github.com/barehera"
