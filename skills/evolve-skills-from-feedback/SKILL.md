@@ -98,7 +98,8 @@ recommend a consuming-repo change.
 5. Read [evaluation-and-integration.md](references/evaluation-and-integration.md)
    before deciding placement or changing a source skill, and put each accepted
    finding in the smallest durable destination it lists, chosen in the order
-   of [Smallest complete change](#smallest-complete-change). Use
+   of [Smallest complete change](#smallest-complete-change). Word each rule
+   in the form that reference matches to the failure. Use
    [worked-example.md](references/worked-example.md) when the report concerns
    code style, component composition, or another example-driven rule.
 6. Match the user's requested action:

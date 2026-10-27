@@ -22,6 +22,22 @@ Avoid duplicating the same instruction in several files. Keep a brief contract i
 when it must always be loaded, and route detailed guidance directly to one
 reference.
 
+## Match the wording to the failure
+
+Classify how the agent failed before writing the rule, because the form that
+fixes one failure makes another worse:
+
+| The agent | Write | Not |
+| --- | --- | --- |
+| knows the rule and skips it under pressure | a prohibition with its reason | soft "prefer" or "consider" wording |
+| follows the rules, but the output has the wrong shape | a recipe: the parts of the output, in order | a list of things not to do |
+| leaves out a part of something it already produces | a required field or slot in the template it fills | a reminder near the template |
+| should act differently in some situations | a condition the agent can observe ("if the report names a version") | a rule plus exemption clauses |
+
+A prohibition aimed at a shape problem invites the agent to negotiate with it,
+and an exemption clause ("except in code blocks") still suppresses what it
+exempts. State a real exception as its own condition instead.
+
 ## Integrate safely
 
 1. Write the smallest rule that explains the accepted behavior and its scope.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify and Report"
+  short_description: "Prove each claim and report results in a fixed shape"
+  default_prompt: "Use $verify-and-report to turn this request into acceptance checks, prove each claim before making it, and report the result with Skipped and Not checked lines."

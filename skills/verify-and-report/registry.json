@@ -1,0 +1,87 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "verify-and-report",
+      "type": "registry:item",
+      "title": "Verify and Report",
+      "description": "Prove every claim before making it and report results in a compact, fixed shape.",
+      "registryDependencies": [
+        "barehera/react-skills/react-skills-version"
+      ],
+      "files": [
+        {
+          "path": "SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/verify-and-report/SKILL.md"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "type": "registry:file",
+          "target": "~/.agents/skills/verify-and-report/agents/openai.yaml"
+        }
+      ],
+      "docs": "Installs the verification and reporting skill. No hooks, session-start text, or approval gates."
+    },
+    {
+      "name": "verify-and-report-claude",
+      "type": "registry:item",
+      "title": "Verify and Report for Claude Code",
+      "description": "Claude Code pointer that loads the Verify and Report skill.",
+      "registryDependencies": [
+        "barehera/react-skills/verify-and-report"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/verify-and-report/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "verify-and-report",
+        "agent": "claude"
+      }
+    },
+    {
+      "name": "verify-and-report-kiro",
+      "type": "registry:item",
+      "title": "Verify and Report for Kiro",
+      "description": "Kiro pointer that loads the Verify and Report skill.",
+      "registryDependencies": [
+        "barehera/react-skills/verify-and-report"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.kiro/skills/verify-and-report/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "verify-and-report",
+        "agent": "kiro"
+      }
+    },
+    {
+      "name": "verify-and-report-cline",
+      "type": "registry:item",
+      "title": "Verify and Report for Cline",
+      "description": "Cline pointer that loads the Verify and Report skill.",
+      "registryDependencies": [
+        "barehera/react-skills/verify-and-report"
+      ],
+      "files": [
+        {
+          "path": "adapters/pointer.md",
+          "type": "registry:file",
+          "target": "~/.cline/skills/verify-and-report/SKILL.md"
+        }
+      ],
+      "meta": {
+        "skill": "verify-and-report",
+        "agent": "cline"
+      }
+    }
+  ]
+}

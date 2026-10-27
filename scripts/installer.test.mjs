@@ -69,12 +69,10 @@ test("arguments select a command, skills, agents, and flags", () => {
 
 test("companions are opt-in and install through each agent's channel", () => {
   assert.equal(parseArguments([]).companionIds, null)
-  assert.deepEqual(parseArguments(["--companions", "karpathy,Caveman", "--companion", "karpathy"]).companionIds, [
-    "karpathy",
-    "caveman",
-  ])
+  assert.deepEqual(parseArguments(["--companions", "Karpathy", "--companion", "karpathy"]).companionIds, ["karpathy"])
   assert.deepEqual(parseArguments(["--companions", "none"]).companionIds, [])
   assert.throws(() => parseArguments(["--companions", "ponytail"]), /Unknown companion: ponytail/)
+  assert.throws(() => parseArguments(["--companions", "caveman"]), /Unknown companion: caveman/)
   assert.deepEqual(recommendedCompanions, ["karpathy"])
 
   const pack = (id) => companions.find((companion) => companion.id === id)
@@ -86,19 +84,14 @@ test("companions are opt-in and install through each agent's channel", () => {
     "claude plugin install andrej-karpathy-skills@karpathy-skills --scope user",
     "npx --yes skills add forrestchang/andrej-karpathy-skills --skill * --agent cursor gemini-cli --global --yes",
   ])
-  assert.deepEqual(commands("caveman", ["claude"], false), [
-    "npx --yes skills add JuliusBrussee/caveman --skill * --agent claude-code --global --yes",
+  assert.deepEqual(commands("karpathy", ["claude"], false), [
+    "npx --yes skills add forrestchang/andrej-karpathy-skills --skill * --agent claude-code --global --yes",
   ])
-  assert.equal(companionPlan(pack("caveman"), ["claude"], { hasClaudeCli: false }).notes.length, 2)
+  assert.equal(companionPlan(pack("karpathy"), ["claude"], { hasClaudeCli: false }).notes.length, 2)
   assert.deepEqual(
     supportedAgents({ id: "plugin-only", plugin: { marketplace: "a/b", name: "b@a" } }, ["cursor", "claude"]),
     ["claude"],
   )
-  assert.deepEqual(commands("graphify", ["cursor", "kiro"], false), [
-    "uv tool install graphifyy",
-    "graphify cursor install",
-  ])
-  assert.deepEqual(commands("graphify", ["kiro"], false), [])
 })
 
 test("a global install runs the skills CLI and writes VERSION where skills land", () => {
@@ -211,7 +204,7 @@ test("install state round-trips and ignores unknown agents", async () => {
       version: "1.2.3",
       skills: ["a", "b"],
       agents: ["claude", "windsurf"],
-      companions: ["karpathy", "caveman"],
+      companions: ["karpathy"],
     })
     await put(
       cwd,
