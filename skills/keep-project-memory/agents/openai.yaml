@@ -1,0 +1,4 @@
+interface:
+  display_name: "Keep Project Memory"
+  short_description: "Remember project decisions and gotchas in Markdown"
+  default_prompt: "Use $keep-project-memory to read this project's memory index before starting, and save any decision, gotcha, or preference worth keeping."

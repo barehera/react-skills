@@ -90,7 +90,10 @@ test("companions are opt-in and install through each agent's channel", () => {
     "npx --yes skills add JuliusBrussee/caveman --skill * --agent claude-code --global --yes",
   ])
   assert.equal(companionPlan(pack("caveman"), ["claude"], { hasClaudeCli: false }).notes.length, 2)
-  assert.deepEqual(supportedAgents(pack("claude-mem"), ["cursor", "claude"]), ["claude"])
+  assert.deepEqual(
+    supportedAgents({ id: "plugin-only", plugin: { marketplace: "a/b", name: "b@a" } }, ["cursor", "claude"]),
+    ["claude"],
+  )
   assert.deepEqual(commands("graphify", ["cursor", "kiro"], false), [
     "uv tool install graphifyy",
     "graphify cursor install",

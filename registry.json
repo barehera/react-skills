@@ -26,6 +26,7 @@
     "skills/feature-sliced-design/registry.json",
     "skills/extract-named-helpers/registry.json",
     "skills/derived-types/registry.json",
+    "skills/keep-project-memory/registry.json",
     "skills/use-preferred-react-stack/registry.json",
     "skills/write-feature-tests/registry.json"
   ]
